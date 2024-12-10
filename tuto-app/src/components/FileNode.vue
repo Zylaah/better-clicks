@@ -18,7 +18,20 @@
           class="file-icon" 
         />
       </span>
-      <span class="node-name">{{ node.name }}</span>
+      
+      <span v-if="!isEditing" class="node-name" @dblclick="startRename">
+        {{ node.name }}
+      </span>
+      <input
+        v-else
+        ref="nameInput"
+        v-model="editedName"
+        class="name-input"
+        @blur="confirmRename"
+        @keyup.enter="confirmRename"
+        @keyup.esc="cancelRename"
+      />
+
       <font-awesome-icon 
         v-if="isFolder" 
         :icon="isOpen ? 'chevron-down' : 'chevron-right'"
@@ -66,6 +79,8 @@ export default {
       isOpen: false,
       isSelected: false,
       showContextMenu: false,
+      isEditing: false,
+      editedName: '',
       contextMenuPosition: { x: 0, y: 0 }
     }
   },
@@ -115,8 +130,6 @@ export default {
       this.showContextMenu = false
     },
     handleContextMenuAction(action) {
-      let newName;
-      
       switch (action) {
         case 'newFile':
           this.isOpen = true
@@ -142,10 +155,7 @@ export default {
           })
           break
         case 'rename':
-          newName = prompt('Nouveau nom:', this.node.name)
-          if (newName) {
-            this.$emit('rename-node', { node: this.node, newName })
-          }
+          this.startRename()
           break
         case 'delete':
           if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
@@ -154,6 +164,33 @@ export default {
           break
       }
       this.closeContextMenu()
+    },
+    startRename() {
+      this.isEditing = true
+      this.editedName = this.node.name
+      this.$nextTick(() => {
+        const input = this.$refs.nameInput
+        input.focus()
+        if (!this.isFolder) {
+          const lastDotIndex = this.node.name.lastIndexOf('.')
+          if (lastDotIndex > 0) {
+            input.setSelectionRange(0, lastDotIndex)
+          } else {
+            input.select()
+          }
+        } else {
+          input.select()
+        }
+      })
+    },
+    confirmRename() {
+      if (this.editedName.trim() && this.editedName !== this.node.name) {
+        this.$emit('rename-node', { node: this.node, newName: this.editedName })
+      }
+      this.isEditing = false
+    },
+    cancelRename() {
+      this.isEditing = false
     }
   }
 }
@@ -228,5 +265,23 @@ export default {
 /* Style pour les fichiers */
 .file-node:not(.is-folder) > .node-content:hover {
   background-color: var(--file-hover);
+}
+
+.name-input {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 2px 4px;
+  margin: 0;
+  font-size: 0.9em;
+  width: auto;
+  min-width: 100px;
+  outline: none;
+  border-radius: 2px;
+}
+
+.name-input:focus {
+  border-color: var(--focus-color, #0066cc);
+  background: var(--input-background, #2d2d2d);
 }
 </style>
