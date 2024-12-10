@@ -1,26 +1,28 @@
 <template>
-  <nav class="navbar">
-    <div class="nav-brand">
-      <font-awesome-icon icon="code" class="brand-icon" />
-      <span>Les Meilleurs Clics</span>
-    </div>
-    <div class="nav-links">
-      <router-link to="/" class="nav-link">
-        <font-awesome-icon icon="home" />
-        <span>Accueil</span>
-      </router-link>
-      <router-link to="/file-tree" class="nav-link">
-        <font-awesome-icon icon="folder-tree" />
-        <span>Explorateur</span>
-      </router-link>
-      <router-link to="/about" class="nav-link">
-        <font-awesome-icon icon="info-circle" />
-        <span>À propos</span>
-      </router-link>
-      <ThemeToggle />
-    </div>
-  </nav>
-  <router-view/>
+  <div class="app-container">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <font-awesome-icon icon="code" class="brand-icon" />
+        <span>Les Meilleurs Clics</span>
+      </div>
+      <div class="nav-links">
+        <router-link to="/" class="nav-link">
+          <font-awesome-icon icon="home" />
+          <span>Accueil</span>
+        </router-link>
+        <router-link to="/file-tree" class="nav-link">
+          <font-awesome-icon icon="folder-tree" />
+          <span>Explorateur</span>
+        </router-link>
+        <router-link to="/about" class="nav-link">
+          <font-awesome-icon icon="info-circle" />
+          <span>À propos</span>
+        </router-link>
+        <ThemeToggle />
+      </div>
+    </nav>
+    <router-view/>
+  </div>
 </template>
 
 <script>
