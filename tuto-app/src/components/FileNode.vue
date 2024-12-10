@@ -27,7 +27,7 @@
         ref="nameInput"
         v-model="editedName"
         class="name-input"
-        @blur="confirmRename"
+        @blur="onBlur"
         @keyup.enter="confirmRename"
         @keyup.esc="cancelRename"
       />
@@ -168,10 +168,55 @@ export default {
             this.$emit('delete-node', this.node)
           }
           break
-        case 'close':
-          this.closeContextMenu()
-          break
       }
+      this.closeContextMenu()
+    },
+    startRename() {
+      this.isEditing = true
+      this.editedName = this.node.name
+      this.$nextTick(() => {
+        const input = this.$refs.nameInput
+        if (input) {
+          input.focus()
+          // Sélectionner le nom sans l'extension pour les fichiers
+          if (!this.isFolder) {
+            const lastDotIndex = this.node.name.lastIndexOf('.')
+            if (lastDotIndex > 0) {
+              input.setSelectionRange(0, lastDotIndex)
+            } else {
+              input.select()
+            }
+          } else {
+            input.select()
+          }
+        }
+      })
+    },
+    onBlur(event) {
+      event.stopPropagation()
+      this.confirmRename()
+    },
+    confirmRename() {
+      if (this.editedName && this.editedName !== this.node.name) {
+        this.$emit('rename-node', {
+          node: this.node,
+          newName: this.editedName
+        })
+        
+        // Mettre à jour le chemin avec le nouveau nom
+        const currentPath = this.parentPath 
+          ? `${this.parentPath}/${this.editedName}`
+          : this.editedName
+        this.$emit('select', { 
+          node: this.node, 
+          path: currentPath 
+        })
+      }
+      this.cancelRename()
+    },
+    cancelRename() {
+      this.isEditing = false
+      this.editedName = ''
     }
   }
 }

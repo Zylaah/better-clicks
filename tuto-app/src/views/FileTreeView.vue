@@ -133,7 +133,12 @@ export default defineComponent({
     
     renameNode({ node, newName }) {
       if (node) {
+        const oldName = node.name
         node.name = newName
+        
+        if (this.selectedFile === node) {
+          this.currentPath = this.currentPath.replace(oldName, newName)
+        }
       }
     },
     
@@ -284,10 +289,10 @@ export default defineComponent({
   gap: 10px;
   color: var(--text-secondary);
   font-size: 0.9em;
-  user-select: none;
-  -webkit-user-select: none; /* Pour Safari */
-  -moz-user-select: none; /* Pour Firefox */
-  -ms-user-select: none; /* Pour IE/Edge */
+  /*user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; */
 }
 
 .selected-content {
