@@ -3,7 +3,6 @@
     <div 
       class="node-content" 
       @click="toggle"
-      @contextmenu.prevent="showContextMenu"
       :class="{ 'selected': isSelected }"
     >
       <span class="icon">
@@ -25,21 +24,6 @@
         class="chevron-icon" 
       />
     </div>
-    
-    <div v-if="showMenu" 
-         class="context-menu"
-         :style="{ top: menuY + 'px', left: menuX + 'px' }"
-         @blur="closeMenu"
-         tabindex="-1"
-         ref="contextMenu">
-      <ul>
-        <li v-if="isFolder" @click="addNewItem('file')">Nouveau fichier</li>
-        <li v-if="isFolder" @click="addNewItem('folder')">Nouveau dossier</li>
-        <li @click="renameItem">Renommer</li>
-        <li @click="deleteItem">Supprimer</li>
-      </ul>
-    </div>
-
     <transition name="slide-fade">
       <ul v-if="isOpen && node.children" class="node-children">
         <file-node 
@@ -62,10 +46,7 @@ export default {
   data() {
     return {
       isOpen: false,
-      isSelected: false,
-      showMenu: false,
-      menuX: 0,
-      menuY: 0
+      isSelected: false
     }
   },
   computed: {
@@ -87,52 +68,7 @@ export default {
     },
     onChildSelect(node) {
       this.$emit('select', node)
-    },
-    showContextMenu(event) {
-      event.preventDefault()
-      this.menuX = event.clientX
-      this.menuY = event.clientY
-      this.showMenu = true
-      this.$nextTick(() => {
-        this.$refs.contextMenu?.focus()
-      })
-    },
-    closeMenu() {
-      this.showMenu = false
-    },
-    addNewItem(type) {
-      const newName = type === 'file' ? 'Nouveau fichier' : 'Nouveau dossier'
-      const newNode = {
-        name: newName,
-        type: type,
-        children: type === 'folder' ? [] : undefined
-      }
-      this.$emit('add-node', this.node, newNode)
-      this.closeMenu()
-    },
-    renameItem() {
-      const newName = prompt('Nouveau nom:', this.node.name)
-      if (newName) {
-        this.$emit('rename-node', this.node, newName)
-      }
-      this.closeMenu()
-    },
-    deleteItem() {
-      if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
-        this.$emit('delete-node', this.node)
-      }
-      this.closeMenu()
     }
-  },
-  mounted() {
-    document.addEventListener('click', (e) => {
-      if (this.showMenu && !this.$el.contains(e.target)) {
-        this.closeMenu()
-      }
-    })
-  },
-  beforeUnmount() {
-    document.removeEventListener('click', this.closeMenu)
   }
 }
 </script>
@@ -206,33 +142,5 @@ export default {
 /* Style pour les fichiers */
 .file-node:not(.is-folder) > .node-content:hover {
   background-color: var(--file-hover);
-}
-
-.context-menu {
-  position: fixed;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 5px 0;
-  min-width: 150px;
-  z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.context-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.context-menu li {
-  padding: 8px 15px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-
-.context-menu li:hover {
-  background-color: var(--accent-color);
-  color: white;
 }
 </style>
