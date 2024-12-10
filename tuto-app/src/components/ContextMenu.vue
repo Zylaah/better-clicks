@@ -1,32 +1,33 @@
 <template>
   <Teleport to="body">
-    <div 
-      v-if="show" 
-      ref="menu"
-      class="context-menu" 
-      :style="menuStyle"
-      @click.stop
-    >
-      <div class="menu-items">
-        <template v-if="isFolder">
-          <div class="menu-item" @click="$emit('action', 'newFile')">
-            <font-awesome-icon icon="file" />
-            <span>Nouveau fichier</span>
+    <div v-if="show">
+      <div 
+        ref="menu"
+        class="context-menu" 
+        :style="menuStyle"
+        @click.stop
+      >
+        <div class="menu-items">
+          <template v-if="isFolder">
+            <div class="menu-item" @click="$emit('action', 'newFile')">
+              <font-awesome-icon icon="file" />
+              <span>Nouveau fichier</span>
+            </div>
+            <div class="menu-item" @click="$emit('action', 'newFolder')">
+              <font-awesome-icon icon="folder" />
+              <span>Nouveau dossier</span>
+            </div>
+            <div class="menu-divider"></div>
+          </template>
+          
+          <div class="menu-item" @click="$emit('action', 'rename')">
+            <font-awesome-icon icon="edit" />
+            <span>Renommer</span>
           </div>
-          <div class="menu-item" @click="$emit('action', 'newFolder')">
-            <font-awesome-icon icon="folder" />
-            <span>Nouveau dossier</span>
+          <div class="menu-item delete" @click="$emit('action', 'delete')">
+            <font-awesome-icon icon="trash" />
+            <span>Supprimer</span>
           </div>
-          <div class="menu-divider"></div>
-        </template>
-        
-        <div class="menu-item" @click="$emit('action', 'rename')">
-          <font-awesome-icon icon="edit" />
-          <span>Renommer</span>
-        </div>
-        <div class="menu-item delete" @click="$emit('action', 'delete')">
-          <font-awesome-icon icon="trash" />
-          <span>Supprimer</span>
         </div>
       </div>
     </div>
@@ -57,6 +58,18 @@ const menuStyle = computed(() => {
 })
 
 // Gestion du clic en dehors du menu
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+  window.addEventListener('resize', adjustMenuPosition)
+  window.addEventListener('scroll', adjustMenuPosition)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('resize', adjustMenuPosition)
+  window.removeEventListener('scroll', adjustMenuPosition)
+})
+
 const handleClickOutside = (event) => {
   if (menu.value && !menu.value.contains(event.target)) {
     emit('action', 'close')
@@ -90,18 +103,6 @@ watch(() => props.show, (newValue) => {
   if (newValue) {
     nextTick(adjustMenuPosition)
   }
-})
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-  window.addEventListener('resize', adjustMenuPosition)
-  window.addEventListener('scroll', adjustMenuPosition)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-  window.removeEventListener('resize', adjustMenuPosition)
-  window.removeEventListener('scroll', adjustMenuPosition)
 })
 </script>
 
