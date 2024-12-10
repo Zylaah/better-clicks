@@ -241,6 +241,12 @@ export default {
 
 .node-name {
   font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px; /* Ajustez selon vos besoins */
+  display: inline-block;
+  word-break: keep-all;
 }
 
 .node-children {

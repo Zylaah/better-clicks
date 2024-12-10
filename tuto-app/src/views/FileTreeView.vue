@@ -146,7 +146,7 @@ export default defineComponent({
 <style scoped>
 .file-explorer {
   display: flex;
-  height: calc(100vh - 100px);
+  height: 600px;
   max-width: 1200px;
   margin: 20px auto;
   background-color: var(--bg-primary);
