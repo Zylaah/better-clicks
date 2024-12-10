@@ -13,8 +13,8 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1440,
-    height: 900,
+    width: 1720,
+    height: 1080,
     titleBarStyle: {
       backgroundColor: '#000000',
       color: '#94a3b8', 

@@ -184,14 +184,15 @@ export default defineComponent({
 <style scoped>
 .file-explorer {
   display: flex;
-  height: 600px;
-  max-width: 1200px;
+  height: 60vh;
+  width:60vw;
+  max-width: none;
   background-color: var(--bg-primary);
   color: var(--text-color);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 6px var(--shadow-color);
-  /* Ajout du centrage */
+  /* Centrage */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -323,8 +324,7 @@ export default defineComponent({
 
 @media (max-width: 1200px) {
   .file-explorer {
-    margin: 20px;
-    height: calc(100vh - 160px);
+    height: calc(80vh - 160px);
   }
   /* Masquer le resizer en mode responsive */
   .resizer {
@@ -335,7 +335,7 @@ export default defineComponent({
 @media (max-width: 768px) {
   .file-explorer {
     flex-direction: column;
-    height: calc(100vh - 140px);
+    height: calc(80vh - 140px);
   }
 
   .sidebar {

@@ -158,6 +158,7 @@ body, html{
   --link-color: #42b883;
   --link-hover: #3aa876;
   --file-hover: #d8d8d8;
+  --scrollbar-color: #d8d8d8;
 }
 
 [data-theme="dark"] {
@@ -181,6 +182,7 @@ body, html{
   --link-color: #42b883;
   --link-hover: #3aa876;
   --file-hover: #4c4c4d;
+  --scrollbar-color: #131313;
 }
 
 /* Personnalisation de la scrollbar pour Webkit (Chrome, Safari, Edge) */
@@ -195,7 +197,7 @@ body, html{
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-secondary);
+  background: var(--scrollbar-color);
   border-radius: 4px;
   transition: background 0.2s ease;
 }
