@@ -15,6 +15,14 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    frame: true,
+    backgroundColor: '#1e293b',
+    titleBarStyle: {
+      backgroundColor: '#000000',
+      color: '#94a3b8',
+      height: 70
+    },
+    autoHideMenuBar: true,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
