@@ -2,9 +2,9 @@
   <li :class="['file-node', { 'is-folder': isFolder }]">
     <div 
       class="node-content" 
-      @click="toggle"
+      @click="onNodeClick"
       @contextmenu.prevent="onContextMenu"
-      :class="{ 'selected': isSelected }"
+      :class="{ 'selected': isNodeSelected }"
     >
       <span class="icon">
         <font-awesome-icon 
@@ -39,26 +39,26 @@
       />
     </div>
 
+    <ul v-if="isOpen && node.children" class="node-children">
+      <file-node 
+        v-for="child in node.children" 
+        :key="child.name" 
+        :node="child"
+        :parent-path="parentPath ? `${parentPath}/${node.name}` : node.name"
+        :selected-node="selectedNode"
+        @select="onChildSelect"
+        @add-node="$emit('add-node', $event)"
+        @rename-node="$emit('rename-node', $event)"
+        @delete-node="$emit('delete-node', $event)"
+      />
+    </ul>
+
     <context-menu
       :show="showContextMenu"
       :position="contextMenuPosition"
       :is-folder="isFolder"
       @action="handleContextMenuAction"
     />
-
-    <transition name="slide-fade">
-      <ul v-if="isOpen && node.children" class="node-children">
-        <file-node 
-          v-for="child in node.children" 
-          :key="child.name" 
-          :node="child"
-          @select="onChildSelect"
-          @add-node="$emit('add-node', $event)"
-          @rename-node="$emit('rename-node', $event)"
-          @delete-node="$emit('delete-node', $event)"
-        />
-      </ul>
-    </transition>
   </li>
 </template>
 
@@ -71,54 +71,74 @@ export default {
     ContextMenu
   },
   props: {
-    node: Object
+    node: Object,
+    parentPath: {
+      type: String,
+      default: ''
+    },
+    selectedNode: {
+      type: Object,
+      default: null
+    }
+  },
+  computed: {
+    isFolder() {
+      return this.node.type === 'folder'
+    },
+    isNodeSelected() {
+      return this.selectedNode === this.node
+    }
   },
   data() {
     return {
       isOpen: false,
-      isSelected: false,
       showContextMenu: false,
       isEditing: false,
       editedName: '',
       contextMenuPosition: { x: 0, y: 0 }
     }
   },
-  computed: {
-    isFolder() {
-      return this.node.type === 'folder'
-    }
-  },
   methods: {
+    onNodeClick() {
+      console.log('Click sur le nœud:', this.node.name)
+      this.toggle()
+    },
     toggle() {
+      console.log('Toggle appelé pour:', this.node.name)
       if (this.isFolder) {
         this.isOpen = !this.isOpen
+        this.select()
       } else {
         this.select()
       }
     },
     select() {
-      this.isSelected = true
-      this.$emit('select', this.node)
+      console.log('Select appelé pour:', this.node.name)
+      const currentPath = this.parentPath 
+        ? `${this.parentPath}/${this.node.name}`
+        : this.node.name
+      console.log('Chemin construit:', currentPath)
+      this.$emit('select', { node: this.node, path: currentPath })
     },
-    onChildSelect(node) {
-      this.$emit('select', node)
+    onChildSelect(payload) {
+      console.log('FileNode - onChildSelect:', payload)
+      this.$emit('select', payload)
     },
     onContextMenu(event) {
       event.preventDefault()
-      
-      const x = event.clientX
-      const y = event.clientY
-      
-      this.contextMenuPosition = { x, y }
+      this.contextMenuPosition = {
+        x: event.clientX,
+        y: event.clientY
+      }
       this.showContextMenu = true
+      this.select()
     },
     closeContextMenu() {
       this.showContextMenu = false
     },
     handleContextMenuAction(action) {
-      switch (action) {
+      switch(action) {
         case 'newFile':
-          this.isOpen = true
           this.$emit('add-node', {
             parent: this.node,
             newNode: { 
@@ -148,35 +168,10 @@ export default {
             this.$emit('delete-node', this.node)
           }
           break
+        case 'close':
+          this.closeContextMenu()
+          break
       }
-      this.closeContextMenu()
-    },
-    startRename() {
-      this.isEditing = true
-      this.editedName = this.node.name
-      this.$nextTick(() => {
-        const input = this.$refs.nameInput
-        input.focus()
-        if (!this.isFolder) {
-          const lastDotIndex = this.node.name.lastIndexOf('.')
-          if (lastDotIndex > 0) {
-            input.setSelectionRange(0, lastDotIndex)
-          } else {
-            input.select()
-          }
-        } else {
-          input.select()
-        }
-      })
-    },
-    confirmRename() {
-      if (this.editedName.trim() && this.editedName !== this.node.name) {
-        this.$emit('rename-node', { node: this.node, newName: this.editedName })
-      }
-      this.isEditing = false
-    },
-    cancelRename() {
-      this.isEditing = false
     }
   }
 }

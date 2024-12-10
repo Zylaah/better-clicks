@@ -6,7 +6,17 @@
       </div>
       <div class="tree-container">
         <ul class="file-tree">
-          <file-node v-for="node in fileTree" :key="node.id" :node="node" @add-node="addNode" @rename-node="renameNode" @delete-node="deleteNode" />
+          <file-node 
+            v-for="node in fileTree" 
+            :key="node.id" 
+            :node="node"
+            :parent-path="''"
+            :selected-node="selectedFile"
+            @select="handleSelect"
+            @add-node="addNode" 
+            @rename-node="renameNode" 
+            @delete-node="deleteNode" 
+          />
         </ul>
       </div>
       <div class="resizer" @mousedown="startResize"></div>
@@ -14,7 +24,8 @@
     <div class="content-area">
       <div class="content-header">
         <div class="breadcrumb">
-          <font-awesome-icon icon="home" /> / {{ currentPath }}
+          <font-awesome-icon icon="home" /> 
+          <template v-if="currentPath">/ {{ currentPath }}</template>
         </div>
       </div>
       <div class="selected-content">
@@ -80,7 +91,7 @@ export default defineComponent({
   data() {
     return {
       selectedFile: null,
-      currentPath: 'root',
+      currentPath: '',
       fileTree: [
         {
           name: 'Documents',
@@ -172,7 +183,13 @@ export default defineComponent({
       resizer.classList.remove('resizing');
       document.removeEventListener('mousemove', this.resize);
       document.removeEventListener('mouseup', this.stopResize);
-    }
+    },
+    
+    handleSelect(payload) {
+      console.log('FileTreeView - handleSelect:', payload)
+      this.selectedFile = payload.node
+      this.currentPath = payload.path
+    },
   },
   beforeUnmount() {
     document.removeEventListener('mousemove', this.resize);
