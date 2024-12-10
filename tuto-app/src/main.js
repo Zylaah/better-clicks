@@ -31,7 +31,13 @@ import {
     faRoad,
     faSignal,
     faGraduationCap,
-    faBook
+    faBook,
+    faFolderOpen,
+    faFile,
+    faEdit,
+    faTrash,
+    faChevronRight,
+    faChevronDown
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -62,7 +68,13 @@ library.add(
     faRoad,
     faSignal,
     faGraduationCap,
-    faBook
+    faBook,
+    faFolderOpen,
+    faFile,
+    faEdit,
+    faTrash,
+    faChevronRight,
+    faChevronDown
 )
 
 const app = createApp(App)

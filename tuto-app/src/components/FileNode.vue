@@ -3,6 +3,7 @@
     <div 
       class="node-content" 
       @click="toggle"
+      @contextmenu.prevent="onContextMenu"
       :class="{ 'selected': isSelected }"
     >
       <span class="icon">
@@ -24,6 +25,15 @@
         class="chevron-icon" 
       />
     </div>
+
+    <context-menu
+      :show="showContextMenu"
+      :position="contextMenuPosition"
+      :is-folder="isFolder"
+      @action="handleContextMenuAction"
+      v-click-outside="closeContextMenu"
+    />
+
     <transition name="slide-fade">
       <ul v-if="isOpen && node.children" class="node-children">
         <file-node 
@@ -31,6 +41,9 @@
           :key="child.name" 
           :node="child"
           @select="onChildSelect"
+          @add-node="$emit('add-node', $event)"
+          @rename-node="$emit('rename-node', $event)"
+          @delete-node="$emit('delete-node', $event)"
         />
       </ul>
     </transition>
@@ -38,20 +51,42 @@
 </template>
 
 <script>
+import ContextMenu from './ContextMenu.vue'
+
 export default {
   name: 'FileNode',
+  components: {
+    ContextMenu
+  },
   props: {
     node: Object
   },
   data() {
     return {
       isOpen: false,
-      isSelected: false
+      isSelected: false,
+      showContextMenu: false,
+      contextMenuPosition: { x: 0, y: 0 }
     }
   },
   computed: {
     isFolder() {
       return this.node.type === 'folder'
+    }
+  },
+  directives: {
+    'click-outside': {
+      mounted(el, binding) {
+        el.clickOutsideEvent = (event) => {
+          if (!(el === event.target || el.contains(event.target))) {
+            binding.value(event)
+          }
+        }
+        document.addEventListener('click', el.clickOutsideEvent)
+      },
+      unmounted(el) {
+        document.removeEventListener('click', el.clickOutsideEvent)
+      }
     }
   },
   methods: {
@@ -68,6 +103,57 @@ export default {
     },
     onChildSelect(node) {
       this.$emit('select', node)
+    },
+    onContextMenu(event) {
+      this.contextMenuPosition = {
+        x: event.clientX,
+        y: event.clientY
+      }
+      this.showContextMenu = true
+    },
+    closeContextMenu() {
+      this.showContextMenu = false
+    },
+    handleContextMenuAction(action) {
+      let newName;
+      
+      switch (action) {
+        case 'newFile':
+          this.isOpen = true
+          this.$emit('add-node', {
+            parent: this.node,
+            newNode: { 
+              name: 'Nouveau fichier', 
+              type: 'file',
+              id: Date.now()
+            }
+          })
+          break
+        case 'newFolder':
+          this.isOpen = true
+          this.$emit('add-node', {
+            parent: this.node,
+            newNode: { 
+              name: 'Nouveau dossier', 
+              type: 'folder', 
+              children: [],
+              id: Date.now()
+            }
+          })
+          break
+        case 'rename':
+          newName = prompt('Nouveau nom:', this.node.name)
+          if (newName) {
+            this.$emit('rename-node', { node: this.node, newName })
+          }
+          break
+        case 'delete':
+          if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
+            this.$emit('delete-node', this.node)
+          }
+          break
+      }
+      this.closeContextMenu()
     }
   }
 }

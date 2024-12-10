@@ -6,7 +6,7 @@
       </div>
       <div class="tree-container">
         <ul class="file-tree">
-          <file-node v-for="node in fileTree" :key="node.name" :node="node" @add-node="addNode" @rename-node="renameNode" @delete-node="deleteNode" />
+          <file-node v-for="node in fileTree" :key="node.id" :node="node" @add-node="addNode" @rename-node="renameNode" @delete-node="deleteNode" />
         </ul>
       </div>
     </div>
@@ -101,14 +101,17 @@ export default defineComponent({
     }
   },
   methods: {
-    addNode(parentNode, newNode) {
-      if (!parentNode.children) {
-        parentNode.children = []
+    addNode({ parent, newNode }) {
+      if (parent && parent.type === 'folder') {
+        if (!parent.children) {
+          parent.children = []
+        }
+        newNode.id = Date.now()
+        parent.children.push(newNode)
       }
-      parentNode.children.push(newNode)
     },
     
-    renameNode(node, newName) {
+    renameNode({ node, newName }) {
       if (node) {
         node.name = newName
       }
