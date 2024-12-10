@@ -120,10 +120,12 @@ export default {
       this.$emit('select', node)
     },
     onContextMenu(event) {
-      this.contextMenuPosition = {
-        x: event.clientX,
-        y: event.clientY
-      }
+      event.preventDefault()
+      
+      const x = event.clientX
+      const y = event.clientY
+      
+      this.contextMenuPosition = { x, y }
       this.showContextMenu = true
     },
     closeContextMenu() {

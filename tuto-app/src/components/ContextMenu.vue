@@ -1,73 +1,167 @@
 <template>
+  <Teleport to="body">
     <div 
       v-if="show" 
+      ref="menu"
       class="context-menu" 
-      :style="{ top: position.y + 'px', left: position.x + 'px' }"
+      :style="menuStyle"
+      @click.stop
     >
-      <ul>
-        <li v-if="isFolder" @click="$emit('action', 'newFile')">
-          <font-awesome-icon icon="file" /> Nouveau fichier
-        </li>
-        <li v-if="isFolder" @click="$emit('action', 'newFolder')">
-          <font-awesome-icon icon="folder" /> Nouveau dossier
-        </li>
-        <li @click="$emit('action', 'rename')">
-          <font-awesome-icon icon="edit" /> Renommer
-        </li>
-        <li @click="$emit('action', 'delete')" class="delete">
-          <font-awesome-icon icon="trash" /> Supprimer
-        </li>
-      </ul>
+      <div class="menu-items">
+        <template v-if="isFolder">
+          <div class="menu-item" @click="$emit('action', 'newFile')">
+            <font-awesome-icon icon="file" />
+            <span>Nouveau fichier</span>
+          </div>
+          <div class="menu-item" @click="$emit('action', 'newFolder')">
+            <font-awesome-icon icon="folder" />
+            <span>Nouveau dossier</span>
+          </div>
+          <div class="menu-divider"></div>
+        </template>
+        
+        <div class="menu-item" @click="$emit('action', 'rename')">
+          <font-awesome-icon icon="edit" />
+          <span>Renommer</span>
+        </div>
+        <div class="menu-item delete" @click="$emit('action', 'delete')">
+          <font-awesome-icon icon="trash" />
+          <span>Supprimer</span>
+        </div>
+      </div>
     </div>
-  </template>
+  </Teleport>
+</template>
+
+<script setup>
+import { ref, computed, watch, onMounted, onUnmounted, defineProps, defineEmits, nextTick } from 'vue'
+
+const props = defineProps({
+  show: Boolean,
+  position: Object,
+  isFolder: Boolean
+})
+
+const emit = defineEmits(['action'])
+const menu = ref(null)
+
+const menuStyle = computed(() => {
+  if (!props.position) return {}
   
-  <script>
-  export default {
-    name: 'ContextMenu',
-    props: {
-      show: Boolean,
-      position: Object,
-      isFolder: Boolean
-    }
+  return {
+    left: `${props.position.x}px`,
+    top: `${props.position.y}px`
   }
-  </script>
-  
-  <style scoped>
-  .context-menu {
-    position: fixed;
-    background: #2d2d2d;
-    border: 1px solid #3c3c3c;
-    border-radius: 4px;
-    padding: 5px 0;
-    min-width: 200px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+})
+
+// Gestion du clic en dehors du menu
+const handleClickOutside = (event) => {
+  if (menu.value && !menu.value.contains(event.target)) {
+    emit('action', 'close')
   }
+}
+
+// Gestion de la position du menu
+const adjustMenuPosition = () => {
+  if (!menu.value || !props.show) return
+
+  const menuRect = menu.value.getBoundingClientRect()
+  const { innerWidth, innerHeight } = window
   
-  .context-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
+  let { x, y } = props.position
   
-  .context-menu li {
-    padding: 8px 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #e1e1e1;
-  }
-  
-  .context-menu li:hover {
-    background-color: #3c3c3c;
-  }
-  
-  .context-menu li.delete {
-    color: #ff6b6b;
+  // Ajuster horizontalement si nécessaire
+  if (x + menuRect.width > innerWidth) {
+    x = innerWidth - menuRect.width - 5
   }
   
-  .context-menu svg {
-    width: 14px;
+  // Ajuster verticalement si nécessaire
+  if (y + menuRect.height > innerHeight) {
+    y = innerHeight - menuRect.height - 5
   }
-  </style>
+  
+  menu.value.style.left = `${x}px`
+  menu.value.style.top = `${y}px`
+}
+
+watch(() => props.show, (newValue) => {
+  if (newValue) {
+    nextTick(adjustMenuPosition)
+  }
+})
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+  window.addEventListener('resize', adjustMenuPosition)
+  window.addEventListener('scroll', adjustMenuPosition)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('resize', adjustMenuPosition)
+  window.removeEventListener('scroll', adjustMenuPosition)
+})
+</script>
+
+<style scoped>
+.context-menu {
+  position: fixed;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  opacity: 0;
+  transform: scale(0.95);
+  animation: menuAppear 0.1s ease forwards;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.menu-items {
+  padding: 6px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.menu-item:hover {
+  background-color: var(--hover-color);
+}
+
+.menu-item.delete {
+  color: var(--error-color);
+}
+
+.menu-item.delete:hover {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 6px 0;
+}
+
+@keyframes menuAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+</style>
