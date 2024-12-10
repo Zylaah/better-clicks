@@ -146,14 +146,18 @@ export default defineComponent({
 <style scoped>
 .file-explorer {
   display: flex;
-  height: 600px;
+  height: 650px;
   max-width: 1200px;
-  margin: 20px auto;
   background-color: var(--bg-primary);
   color: var(--text-color);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 6px var(--shadow-color);
+  /* Ajout du centrage */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .sidebar {
