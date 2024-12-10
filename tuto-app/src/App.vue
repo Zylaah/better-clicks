@@ -46,7 +46,7 @@ body, html{
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-tertiary);
 }
 
 .navbar {
@@ -133,6 +133,7 @@ body, html{
   /* Light theme */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
+  --bg-tertiary: #ffffff;
   --text-color: #2c3e50;
   --text-secondary: #6c757d;
   --accent-color: #42b883;
@@ -155,6 +156,7 @@ body, html{
 [data-theme="dark"] {
   --bg-primary: #1a1a1a;
   --bg-secondary: #2c2c2c;
+  --bg-tertiary: #131313;
   --text-color: #ffffff;
   --text-secondary: #a0a0a0;
   --accent-color: #42b883;

@@ -157,14 +157,14 @@ export default defineComponent({
 }
 
 .sidebar {
-  width: 250px;
+  width: 300px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
 }
 
 .sidebar-header {
   padding: 15px;
-  background-color: var(--card-bg);
+  background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   height: 30px;
   display: flex;
@@ -194,7 +194,7 @@ export default defineComponent({
 
 .content-header {
   padding: 15px;
-  background-color: var(--card-bg);
+  background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   height: 30px;
   display: flex;
