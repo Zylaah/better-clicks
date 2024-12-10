@@ -1,6 +1,6 @@
 <template>
   <div class="file-explorer">
-    <div class="sidebar">
+    <div class="sidebar" ref="sidebar">
       <div class="sidebar-header">
         <h2><font-awesome-icon icon="folder" /> Explorateur</h2>
       </div>
@@ -19,7 +19,12 @@
           />
         </ul>
       </div>
-      <div class="resizer" @mousedown="startResize"></div>
+      <div 
+        class="resizer" 
+        @mousedown="startResize"
+        @mouseover="showResizeCursor"
+        @mouseleave="hideResizeCursor"
+      ></div>
     </div>
     <div class="content-area">
       <div class="content-header">
@@ -156,33 +161,43 @@ export default defineComponent({
     },
     
     startResize(event) {
-      this.isResizing = true;
-      this.startX = event.clientX;
-      this.startWidth = this.$el.querySelector('.sidebar').offsetWidth;
+      this.isResizing = true
+      this.startX = event.clientX
+      this.startWidth = this.$refs.sidebar.offsetWidth
       
-      document.addEventListener('mousemove', this.resize);
-      document.addEventListener('mouseup', this.stopResize);
+      document.addEventListener('mousemove', this.resize)
+      document.addEventListener('mouseup', this.stopResize)
+      document.body.style.cursor = 'ew-resize'
+      document.body.style.userSelect = 'none'
     },
     
     resize(event) {
-      if (!this.isResizing) return;
+      if (!this.isResizing) return
       
-      const sidebar = this.$el.querySelector('.sidebar');
-      const resizer = this.$el.querySelector('.resizer');
-      resizer.classList.add('resizing');
+      const sidebar = this.$refs.sidebar
+      const newWidth = this.startWidth + (event.clientX - this.startX)
       
-      const newWidth = this.startWidth + (event.clientX - this.startX);
       if (newWidth >= 200 && newWidth <= 600) {
-        sidebar.style.width = `${newWidth}px`;
+        sidebar.style.width = `${newWidth}px`
       }
     },
     
     stopResize() {
-      this.isResizing = false;
-      const resizer = this.$el.querySelector('.resizer');
-      resizer.classList.remove('resizing');
-      document.removeEventListener('mousemove', this.resize);
-      document.removeEventListener('mouseup', this.stopResize);
+      this.isResizing = false
+      document.removeEventListener('mousemove', this.resize)
+      document.removeEventListener('mouseup', this.stopResize)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    },
+
+    showResizeCursor() {
+      document.body.style.cursor = 'ew-resize'
+    },
+
+    hideResizeCursor() {
+      if (!this.isResizing) {
+        document.body.style.cursor = ''
+      }
     },
     
     handleSelect(payload) {
@@ -325,17 +340,30 @@ export default defineComponent({
 }
 
 .resizer {
-  width: 4px;
+  width: 12px;
   height: 100%;
-  background-color: var(--border-color);
   position: absolute;
-  right: -2px;
+  right: -6px;
   top: 0;
   cursor: ew-resize;
+  background: transparent;
+  z-index: 10;
+}
+
+.resizer:hover::after,
+.resizer.resizing::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--accent-color);
+  transform: translateX(-50%);
   transition: background-color 0.2s;
 }
 
-.resizer:hover, .resizer.resizing {
+.resizer:hover::after {
   background-color: var(--accent-color);
 }
 
