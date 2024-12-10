@@ -197,7 +197,7 @@ export default {
 }
 
 .node-content.selected {
-  background-color: #37373d;
+  background-color: var(--selected-node-bg);
 }
 
 .icon {
