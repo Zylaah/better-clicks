@@ -3,7 +3,6 @@
     <div 
       class="node-content" 
       @click="toggle"
-      @contextmenu.prevent="showContextMenu"
       :class="{ 'selected': isSelected }"
     >
       <span class="icon">
@@ -18,29 +17,13 @@
           class="file-icon" 
         />
       </span>
-      <span v-if="!isEditing" class="node-name">{{ node.name }}</span>
-      <input
-        v-else
-        v-model="editedName"
-        @blur="finishEditing"
-        @keyup.enter="finishEditing"
-        @keyup.esc="cancelEditing"
-        ref="nameInput"
-        class="name-input"
-      />
+      <span class="node-name">{{ node.name }}</span>
       <font-awesome-icon 
         v-if="isFolder" 
         :icon="isOpen ? 'chevron-down' : 'chevron-right'"
         class="chevron-icon" 
       />
     </div>
-    <context-menu
-      :show="showMenu"
-      :position="menuPosition"
-      :is-folder="isFolder"
-      @action="handleContextMenuAction"
-      @close="closeContextMenu"
-    />
     <transition name="slide-fade">
       <ul v-if="isOpen && node.children" class="node-children">
         <file-node 
@@ -48,9 +31,6 @@
           :key="child.name" 
           :node="child"
           @select="onChildSelect"
-          @add-node="(parentNode, newNode) => $emit('add-node', parentNode, newNode)"
-          @rename-node="(node, newName) => $emit('rename-node', node, newName)"
-          @delete-node="(node) => $emit('delete-node', node)"
         />
       </ul>
     </transition>
@@ -58,24 +38,15 @@
 </template>
 
 <script>
-import ContextMenu from './ContextMenu.vue'
-
 export default {
   name: 'FileNode',
-  components: {
-    ContextMenu
-  },
   props: {
     node: Object
   },
   data() {
     return {
       isOpen: false,
-      isSelected: false,
-      showMenu: false,
-      menuPosition: { x: 0, y: 0 },
-      isEditing: false,
-      editedName: ''
+      isSelected: false
     }
   },
   computed: {
@@ -91,82 +62,12 @@ export default {
         this.select()
       }
     },
-
     select() {
       this.isSelected = true
       this.$emit('select', this.node)
     },
-
     onChildSelect(node) {
       this.$emit('select', node)
-    },
-
-    closeContextMenu() {
-      this.showMenu = false
-    },
-    
-    showContextMenu(event) {
-      this.menuPosition = { x: event.clientX, y: event.clientY }
-      this.showMenu = true
-      event.stopPropagation()
-      
-      const closeHandler = () => {
-        this.closeContextMenu()
-        window.removeEventListener('click', closeHandler)
-      }
-      window.addEventListener('click', closeHandler)
-    },
-    
-    handleContextMenuAction(action) {
-      switch (action) {
-        case 'newFile':
-          this.createNew('file')
-          break
-        case 'newFolder':
-          this.createNew('folder')
-          break
-        case 'rename':
-          this.startEditing()
-          break
-        case 'delete':
-          this.deleteNode()
-          break
-      }
-      this.showMenu = false
-    },
-    
-    createNew(type) {
-      const newName = type === 'folder' ? 'Nouveau dossier' : 'Nouveau fichier'
-      const newNode = {
-        name: newName,
-        type: type,
-        children: type === 'folder' ? [] : undefined
-      }
-      this.$emit('add-node', this.node, newNode)
-      this.isOpen = true
-    },
-    
-    startEditing() {
-      this.editedName = this.node.name
-      this.isEditing = true
-      this.$nextTick(() => {
-        this.$refs.nameInput.focus()
-      })
-    },
-    
-    finishEditing() {
-      if (this.editedName.trim()) {
-        this.$emit('rename-node', this.node, this.editedName.trim())
-      }
-      this.isEditing = false
-    },
-    
-    cancelEditing() {
-      this.isEditing = false
-    },
-    
-    deleteNode() {
-      this.$emit('delete-node', this.node)
     }
   }
 }
@@ -223,29 +124,23 @@ export default {
   padding-left: 20px;
 }
 
-.name-input {
-  background: #3c3c3c;
-  border: 1px solid #525252;
-  color: #e1e1e1;
-  padding: 2px 6px;
-  border-radius: 3px;
-  outline: none;
-  font-size: 0.9em;
-}
-
-.name-input:focus {
-  border-color: #007acc;
-}
-
 /* Animations */
-.slide-fade-enter-active,
-.slide-fade-leave-active {
+.slide-fade-enter-active, .slide-fade-leave-active {
   transition: all 0.3s ease;
 }
 
-.slide-fade-enter-from,
-.slide-fade-leave-to {
+.slide-fade-enter-from, .slide-fade-leave-to {
   transform: translateX(-10px);
   opacity: 0;
+}
+
+/* Style pour les dossiers */
+.is-folder > .node-content:hover {
+  background-color: var(--file-hover);
+}
+
+/* Style pour les fichiers */
+.file-node:not(.is-folder) > .node-content:hover {
+  background-color: var(--file-hover);
 }
 </style>

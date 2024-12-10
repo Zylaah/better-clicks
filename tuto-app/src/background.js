@@ -16,7 +16,6 @@ async function createWindow() {
     width: 800,
     height: 600,
     frame: true,
-    backgroundColor: '#1e293b',
     titleBarStyle: {
       backgroundColor: '#000000',
       color: '#94a3b8',

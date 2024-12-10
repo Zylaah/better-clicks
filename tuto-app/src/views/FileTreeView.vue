@@ -82,21 +82,21 @@ export default defineComponent({
       currentPath: 'root',
       fileTree: [
         {
-          name: 'src',
+          name: 'Documents',
           type: 'folder',
           children: [
-            { name: 'main.js', type: 'file', content: 'Contenu de main.js' },
-            { name: 'App.vue', type: 'file', content: 'Contenu de App.vue' },
+            { name: 'Attestation.pdf', type: 'file', content: 'Contenu de l\'attestation de scolarité' },
+            { name: 'Repas du jour.pdf', type: 'file', content: 'Contenu du repas du jour' },
             {
-              name: 'components',
+              name: 'Photos',
               type: 'folder',
               children: [
-                { name: 'HelloWorld.vue', type: 'file', content: 'Contenu de HelloWorld.vue' }
+                { name: 'Reception.jpg', type: 'file', content: 'Contenu de la photo de la réception' }
               ]
             }
           ]
         },
-        { name: 'package.json', type: 'file', content: 'Contenu de package.json' }
+        { name: 'logo.png', type: 'file', content: 'Contenu du logo' }
       ]
     }
   },
@@ -143,26 +143,26 @@ export default defineComponent({
 <style scoped>
 .file-explorer {
   display: flex;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 100px);
   max-width: 1200px;
   margin: 20px auto;
-  background-color: #1e1e1e;
-  color: #ffffff;
+  background-color: var(--bg-primary);
+  color: var(--text-color);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 .sidebar {
   width: 250px;
-  background-color: #252526;
-  border-right: 1px solid #3c3c3c;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
 }
 
 .sidebar-header {
   padding: 15px;
-  background-color: #333333;
-  border-bottom: 1px solid #3c3c3c;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
   height: 30px;
   display: flex;
   align-items: center;
@@ -174,6 +174,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--text-color);
 }
 
 .tree-container {
@@ -190,8 +191,8 @@ export default defineComponent({
 
 .content-header {
   padding: 15px;
-  background-color: #333333;
-  border-bottom: 1px solid #3c3c3c;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
   height: 30px;
   display: flex;
   align-items: center;
@@ -201,7 +202,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #cccccc;
+  color: var(--text-secondary);
   font-size: 0.9em;
 }
 
@@ -209,11 +210,44 @@ export default defineComponent({
   padding: 15px;
   flex: 1;
   overflow-y: auto;
+  background-color: var(--bg-primary);
 }
 
 .file-tree {
   padding: 0;
   margin: 0;
+}
+
+.file-system-explanation {
+  color: var(--text-color);
+}
+
+.modern-title {
+  color: var(--accent-color);
+}
+
+.title-icon {
+  color: var(--accent-color);
+}
+
+.intro-card {
+  background-color: var(--bg-primary);
+}
+
+.feature-card {
+  background-color: var(--bg-primary);
+}
+
+.feature-card h5 {
+  color: var(--accent-color);
+}
+
+.feature-card ul li {
+  color: var(--text-secondary);
+}
+
+.highlight {
+  color: var(--accent-color);
 }
 
 @media (max-width: 1200px) {

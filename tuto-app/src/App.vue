@@ -39,7 +39,6 @@ export default {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
 }
 
 body, html{
@@ -47,6 +46,7 @@ body, html{
   padding: 0;
   width: 100%;
   height: 100%;
+  background-color: var(--bg-primary);
 }
 
 .navbar {
@@ -149,6 +149,7 @@ body, html{
   --code-bg: #f8fafc;
   --link-color: #42b883;
   --link-hover: #3aa876;
+  --file-hover: #d8d8d8;
 }
 
 [data-theme="dark"] {
@@ -170,6 +171,7 @@ body, html{
   --code-bg: #3c3c3c;
   --link-color: #42b883;
   --link-hover: #3aa876;
+  --file-hover: #4c4c4d;
 }
 
 /* Personnalisation de la scrollbar pour Webkit (Chrome, Safari, Edge) */
