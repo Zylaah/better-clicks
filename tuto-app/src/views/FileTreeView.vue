@@ -9,6 +9,7 @@
           <file-node v-for="node in fileTree" :key="node.id" :node="node" @add-node="addNode" @rename-node="renameNode" @delete-node="deleteNode" />
         </ul>
       </div>
+      <div class="resizer" @mousedown="startResize"></div>
     </div>
     <div class="content-area">
       <div class="content-header">
@@ -97,7 +98,10 @@ export default defineComponent({
           ]
         },
         { name: 'logo.png', type: 'file', content: 'Contenu du logo' }
-      ]
+      ],
+      isResizing: false,
+      startWidth: 0,
+      startX: 0,
     }
   },
   methods: {
@@ -138,7 +142,41 @@ export default defineComponent({
         }
       }
       return null
+    },
+    
+    startResize(event) {
+      this.isResizing = true;
+      this.startX = event.clientX;
+      this.startWidth = this.$el.querySelector('.sidebar').offsetWidth;
+      
+      document.addEventListener('mousemove', this.resize);
+      document.addEventListener('mouseup', this.stopResize);
+    },
+    
+    resize(event) {
+      if (!this.isResizing) return;
+      
+      const sidebar = this.$el.querySelector('.sidebar');
+      const resizer = this.$el.querySelector('.resizer');
+      resizer.classList.add('resizing');
+      
+      const newWidth = this.startWidth + (event.clientX - this.startX);
+      if (newWidth >= 200 && newWidth <= 600) {
+        sidebar.style.width = `${newWidth}px`;
+      }
+    },
+    
+    stopResize() {
+      this.isResizing = false;
+      const resizer = this.$el.querySelector('.resizer');
+      resizer.classList.remove('resizing');
+      document.removeEventListener('mousemove', this.resize);
+      document.removeEventListener('mouseup', this.stopResize);
     }
+  },
+  beforeUnmount() {
+    document.removeEventListener('mousemove', this.resize);
+    document.removeEventListener('mouseup', this.stopResize);
   }
 })
 </script>
@@ -146,7 +184,7 @@ export default defineComponent({
 <style scoped>
 .file-explorer {
   display: flex;
-  height: 650px;
+  height: 600px;
   max-width: 1200px;
   background-color: var(--bg-primary);
   color: var(--text-color);
@@ -161,9 +199,11 @@ export default defineComponent({
 }
 
 .sidebar {
-  width: 300px;
+  width: 200px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
+  position: relative;
+  flex-shrink: 0;
 }
 
 .sidebar-header {
@@ -211,6 +251,10 @@ export default defineComponent({
   gap: 10px;
   color: var(--text-secondary);
   font-size: 0.9em;
+  user-select: none;
+  -webkit-user-select: none; /* Pour Safari */
+  -moz-user-select: none; /* Pour Firefox */
+  -ms-user-select: none; /* Pour IE/Edge */
 }
 
 .selected-content {
@@ -218,6 +262,11 @@ export default defineComponent({
   flex: 1;
   overflow-y: auto;
   background-color: var(--bg-primary);
+  /* Ajout de la propriété pour empêcher la sélection */
+  user-select: none;
+  -webkit-user-select: none; /* Pour Safari */
+  -moz-user-select: none; /* Pour Firefox */
+  -ms-user-select: none; /* Pour IE/Edge */
 }
 
 .file-tree {
@@ -257,10 +306,29 @@ export default defineComponent({
   color: var(--accent-color);
 }
 
+.resizer {
+  width: 4px;
+  height: 100%;
+  background-color: var(--border-color);
+  position: absolute;
+  right: -2px;
+  top: 0;
+  cursor: ew-resize;
+  transition: background-color 0.2s;
+}
+
+.resizer:hover, .resizer.resizing {
+  background-color: var(--accent-color);
+}
+
 @media (max-width: 1200px) {
   .file-explorer {
     margin: 20px;
     height: calc(100vh - 160px);
+  }
+  /* Masquer le resizer en mode responsive */
+  .resizer {
+    display: none;
   }
 }
 
@@ -271,7 +339,7 @@ export default defineComponent({
   }
 
   .sidebar {
-    width: 100%;
+    width: 100% !important; /* Force la largeur à 100% */
     height: 300px;
   }
 

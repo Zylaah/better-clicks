@@ -34,14 +34,16 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted, defineProps, defineEmits, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 
+// eslint-disable-next-line no-undef
 const props = defineProps({
   show: Boolean,
   position: Object,
   isFolder: Boolean
 })
 
+// eslint-disable-next-line no-undef
 const emit = defineEmits(['action'])
 const menu = ref(null)
 

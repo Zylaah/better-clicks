@@ -13,12 +13,11 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    frame: true,
+    width: 1440,
+    height: 900,
     titleBarStyle: {
       backgroundColor: '#000000',
-      color: '#94a3b8',
+      color: '#94a3b8', 
       height: 70
     },
     autoHideMenuBar: true,
@@ -30,6 +29,8 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
     }
   })
+
+  win.maximize()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
