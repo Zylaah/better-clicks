@@ -30,6 +30,7 @@
         @blur="onBlur"
         @keyup.enter="confirmRename"
         @keyup.esc="cancelRename"
+        @select.stop="onInputSelect"
       />
 
       <font-awesome-icon 
@@ -171,6 +172,9 @@ export default {
       }
       this.closeContextMenu()
     },
+    onInputSelect(event) {
+      event.stopPropagation()
+    },
     startRename() {
       this.isEditing = true
       this.editedName = this.node.name
@@ -178,17 +182,19 @@ export default {
         const input = this.$refs.nameInput
         if (input) {
           input.focus()
-          // Sélectionner le nom sans l'extension pour les fichiers
-          if (!this.isFolder) {
-            const lastDotIndex = this.node.name.lastIndexOf('.')
-            if (lastDotIndex > 0) {
-              input.setSelectionRange(0, lastDotIndex)
+          const selectText = () => {
+            if (!this.isFolder) {
+              const lastDotIndex = this.node.name.lastIndexOf('.')
+              if (lastDotIndex > 0) {
+                input.setSelectionRange(0, lastDotIndex)
+              } else {
+                input.select()
+              }
             } else {
               input.select()
             }
-          } else {
-            input.select()
           }
+          selectText()
         }
       })
     },
@@ -203,7 +209,6 @@ export default {
           newName: this.editedName
         })
         
-        // Mettre à jour le chemin avec le nouveau nom
         const currentPath = this.parentPath 
           ? `${this.parentPath}/${this.editedName}`
           : this.editedName
