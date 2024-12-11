@@ -1,118 +1,128 @@
 <template>
   <div class="container">
-    <!-- Boutons de navigation -->
-    <div class="navigation-buttons">
-      <button 
-        :class="['nav-button', { active: currentView === 'demo' }]"
-        @click="currentView = 'demo'"
-      >
-        Démonstration
-      </button>
-      <button 
-        :class="['nav-button', { active: currentView === 'exercises' }]"
-        @click="currentView = 'exercises'"
-      >
-        Les exercices
-      </button>
+    <!-- Message pour mobile et tablette -->
+    <div class="mobile-message">
+      <font-awesome-icon icon="desktop" class="desktop-icon" />
+      <h2>Version Desktop uniquement</h2>
+      <p>Ce module n'est disponible que sur ordinateur pour une meilleure expérience d'apprentissage.</p>
     </div>
 
-    <!-- Vue Démonstration -->
-    <div v-if="currentView === 'demo'" class="file-explorer fade">
-      <div class="sidebar" ref="sidebar">
-        <div class="sidebar-header">
-          <h2><font-awesome-icon icon="folder" /> Explorateur</h2>
-        </div>
-        <div class="tree-container">
-          <ul class="file-tree">
-            <file-node 
-              v-for="node in fileTree" 
-              :key="node.id" 
-              :node="node"
-              :parent-path="''"
-              :selected-node="selectedFile"
-              @select="handleSelect"
-              @add-node="addNode" 
-              @rename-node="renameNode" 
-              @delete-node="deleteNode" 
-            />
-          </ul>
-        </div>
-        <div 
-          class="resizer" 
-          @mousedown="startResize"
-          @mouseover="showResizeCursor"
-          @mouseleave="hideResizeCursor"
-        ></div>
-      </div>
-      <div class="content-area">
-        <div class="content-header">
-          <div class="breadcrumb">
-            <font-awesome-icon icon="home" /> 
-            <template v-if="currentPath">/ {{ currentPath }}</template>
-          </div>
-        </div>
-        <div class="selected-content">
-              <div class="file-system-explanation">
-                  <h4 class="modern-title">
-                      <font-awesome-icon icon="folder-tree" class="title-icon" />
-                      Découvrez l'Arborescence des Fichiers
-                  </h4>
-
-                  <div class="intro-card">
-                      <p>Imaginez votre ordinateur comme une bibliothèque parfaitement organisée. L'arborescence des fichiers est votre guide numérique pour tout retrouver facilement ! 🚀</p>
-                  </div>
-
-                  <div class="feature-grid">
-                      <div class="feature-card">
-                          <h5><font-awesome-icon icon="folder" /> Structure de Base</h5>
-                          <ul>
-                              <li><span class="highlight">Dossiers racines</span> - Vos points de départ ("Documents", "Images")</li>
-                              <li><span class="highlight">Sous-dossiers</span> - Créez des catégories selon vos besoins</li>
-                              <li><span class="highlight">Fichiers</span> - Vos documents, photos et autres contenus</li>
-                          </ul>
-                      </div>
-
-                      <div class="feature-card">
-                          <h5><font-awesome-icon icon="code" /> Navigation Intuitive</h5>
-                          <ul>
-                              <li>💡 Un clic pour explorer les dossiers</li>
-                              <li>↕️ Flèches pour développer/réduire</li>
-                              <li>🧭 Suivez votre chemin en haut</li>
-                          </ul>
-                      </div>
-
-                      <div class="feature-card">
-                          <h5><font-awesome-icon icon="star" /> Avantages Clés</h5>
-                          <ul>
-                              <li>🎯 Retrouvez vos fichiers en quelques clics</li>
-                              <li>✨ Une organisation claire et efficace</li>
-                              <li>🎨 Une structure adaptée à vos besoins</li>
-                          </ul>
-                      </div>
-                  </div>
-              </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vue Exercices -->
-    <div v-else class="exercises-container fade">
-      <h2 class="exercises-title">Exercices sur l'arborescence des fichiers</h2>
-      <div class="exercises-grid">
-        <div 
-          v-for="(exercise, index) in exercises" 
-          :key="index"
-          class="exercise-card"
-          @click="selectExercise(exercise)"
+    <!-- Contenu desktop -->
+    <div class="desktop-content">
+      <!-- Boutons de navigation -->
+      <div class="navigation-buttons">
+        <button 
+          :class="['nav-button', { active: currentView === 'demo' }]"
+          @click="currentView = 'demo'"
         >
-          <div class="card-icon">
-            <font-awesome-icon :icon="exercise.icon" />
+          Démonstration
+        </button>
+        <button 
+          :class="['nav-button', { active: currentView === 'exercises' }]"
+          @click="currentView = 'exercises'"
+        >
+          Les exercices
+        </button>
+      </div>
+
+      <!-- Vue Démonstration -->
+      <div v-if="currentView === 'demo'" class="file-explorer fade">
+        <div class="sidebar" ref="sidebar">
+          <div class="sidebar-header">
+            <h2><font-awesome-icon icon="folder" /> Explorateur</h2>
           </div>
-          <h3>{{ exercise.title }}</h3>
-          <p>{{ exercise.description }}</p>
-          <div class="difficulty">
-            Difficulté: 
-            <span :class="exercise.difficulty">{{ exercise.difficulty }}</span>
+          <div class="tree-container">
+            <ul class="file-tree">
+              <file-node 
+                v-for="node in fileTree" 
+                :key="node.id" 
+                :node="node"
+                :parent-path="''"
+                :selected-node="selectedFile"
+                @select="handleSelect"
+                @add-node="addNode" 
+                @rename-node="renameNode" 
+                @delete-node="deleteNode" 
+              />
+            </ul>
+          </div>
+          <div 
+            class="resizer" 
+            @mousedown="startResize"
+            @mouseover="showResizeCursor"
+            @mouseleave="hideResizeCursor"
+          ></div>
+        </div>
+        <div class="content-area">
+          <div class="content-header">
+            <div class="breadcrumb">
+              <font-awesome-icon icon="home" /> 
+              <template v-if="currentPath">/ {{ currentPath }}</template>
+            </div>
+          </div>
+          <div class="selected-content">
+                <div class="file-system-explanation">
+                    <h4 class="modern-title">
+                        <font-awesome-icon icon="folder-tree" class="title-icon" />
+                        Découvrez l'Arborescence des Fichiers
+                    </h4>
+
+                    <div class="intro-card">
+                        <p>Imaginez votre ordinateur comme une bibliothèque parfaitement organisée. L'arborescence des fichiers est votre guide numérique pour tout retrouver facilement ! 🚀</p>
+                    </div>
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h5><font-awesome-icon icon="folder" /> Structure de Base</h5>
+                            <ul>
+                                <li><span class="highlight">Dossiers racines</span> - Vos points de départ ("Documents", "Images")</li>
+                                <li><span class="highlight">Sous-dossiers</span> - Créez des catégories selon vos besoins</li>
+                                <li><span class="highlight">Fichiers</span> - Vos documents, photos et autres contenus</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5><font-awesome-icon icon="code" /> Navigation Intuitive</h5>
+                            <ul>
+                                <li>💡 Un clic pour explorer les dossiers</li>
+                                <li>↕️ Flèches pour développer/réduire</li>
+                                <li>🧭 Suivez votre chemin en haut</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5><font-awesome-icon icon="star" /> Avantages Clés</h5>
+                            <ul>
+                                <li>🎯 Retrouvez vos fichiers en quelques clics</li>
+                                <li>✨ Une organisation claire et efficace</li>
+                                <li>🎨 Une structure adaptée à vos besoins</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vue Exercices -->
+      <div v-else class="exercises-container fade">
+        <h2 class="exercises-title">Exercices sur l'arborescence des fichiers</h2>
+        <div class="exercises-grid">
+          <div 
+            v-for="(exercise, index) in exercises" 
+            :key="index"
+            class="exercise-card"
+            @click="selectExercise(exercise)"
+          >
+            <div class="card-icon">
+              <font-awesome-icon :icon="exercise.icon" />
+            </div>
+            <h3>{{ exercise.title }}</h3>
+            <p>{{ exercise.description }}</p>
+            <div class="difficulty">
+              Difficulté: 
+              <span :class="exercise.difficulty">{{ exercise.difficulty }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -124,10 +134,10 @@
 import { defineComponent } from 'vue'
 import FileNode from '@/components/FileNode.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram } from '@fortawesome/free-solid-svg-icons'
+import { faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram, faDesktop } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram)
+library.add(faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram, faDesktop)
 
 export default defineComponent({
   name: 'FileTreeView',
@@ -313,9 +323,10 @@ export default defineComponent({
 .navigation-buttons {
   display: flex;
   gap: 10px;
+  margin-top: 11vh;
   z-index: 100;
-  margin-top: 15vh;
-  transform: translateY(-50%);
+  justify-content: center;
+  width: 100%;
 }
 
 .nav-button {
@@ -342,12 +353,15 @@ export default defineComponent({
 .exercises-container {
   width: 60vw;
   padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .exercises-title {
   text-align: center;
-  margin-bottom: 40px;
   color: var(--text-color);
+  margin: 0;
 }
 
 .exercises-grid {
@@ -355,6 +369,7 @@ export default defineComponent({
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   padding: 20px;
+  width: 100%;
 }
 
 .exercise-card {
@@ -416,8 +431,63 @@ export default defineComponent({
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .navigation-buttons {
+    margin-top: 15vh;
+    width: 100%;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .nav-button {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    flex: 1;
+    max-width: 150px;
+  }
+
+  .file-explorer {
+    width: 95vw;
+    height: 70vh;
+    margin-top: 10px;
+  }
+
+  .exercises-container {
+    width: 95vw;
+    padding: 15px;
+  }
+
   .exercises-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 10px;
+  }
+
+  .exercise-card {
+    padding: 15px;
+  }
+
+  .exercises-title {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .exercises-container {
+    width: 80vw;
+  }
+
+  .exercises-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .file-explorer {
+    width: 80vw;
   }
 }
 
@@ -589,16 +659,120 @@ export default defineComponent({
 @media (max-width: 768px) {
   .file-explorer {
     flex-direction: column;
-    height: calc(80vh - 140px);
+    height: calc(90vh - 140px);
+    width: 95vw;
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    margin: 10px auto;
+    overflow: hidden;
   }
 
   .sidebar {
-    width: 100% !important; /* Force la largeur à 100% */
-    height: 300px;
+    width: 100% !important;
+    height: 250px;
+    overflow-y: hidden;
   }
 
   .content-area {
-    height: calc(100% - 300px);
+    height: calc(100% - 250px);
+    overflow: hidden;
+  }
+
+  .selected-content {
+    padding: 15px;
+    min-height: 400px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .tree-container {
+    height: calc(100% - 60px);
+    overflow-y: auto;
+  }
+
+  .content-header {
+    padding: 10px;
+    height: auto;
+  }
+
+  .file-system-explanation {
+    font-size: 1em;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .feature-card {
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  .modern-title {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+  }
+
+  .intro-card {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+  }
+
+  .feature-card h5 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+
+  .feature-card ul li {
+    font-size: 1em;
+    margin-bottom: 8px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .file-explorer {
+    width: 80vw;
+    height: 70vh;
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    margin: 20px auto;
+  }
+
+  .sidebar {
+    width: 250px !important;
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+/* Ajustements pour les très petits écrans */
+@media (max-width: 480px) {
+  .file-explorer {
+    height: calc(90vh - 140px);
+  }
+
+  .sidebar {
+    height: 250px;
+  }
+
+  .content-area {
+    height: calc(100% - 250px);
+  }
+
+  .node-name {
+    max-width: 120px;
+  }
+
+  .breadcrumb {
+    font-size: 0.8em;
   }
 }
 
@@ -629,6 +803,70 @@ export default defineComponent({
   }
   to {
     opacity: 1;
+  }
+}
+
+/* Style pour le message mobile */
+.mobile-message {
+  display: none;
+  text-align: center;
+  padding: 30px;
+  margin: 20px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  /* Centrage absolu */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 400px;
+}
+
+.desktop-icon {
+  font-size: 3em;
+  color: var(--accent-color);
+  margin-bottom: 20px;
+}
+
+.mobile-message h2 {
+  color: var(--text-color);
+  margin: 0 0 15px 0;
+}
+
+.mobile-message p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Media queries */
+@media (max-width: 1024px) {
+  .desktop-content {
+    display: none;
+  }
+
+  .mobile-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Ajustement pour les très petits écrans */
+@media (max-width: 480px) {
+  .mobile-message {
+    width: 90%;
+    padding: 20px;
+    margin: 10px;
+  }
+}
+
+/* Garder les styles desktop uniquement pour les grands écrans */
+@media (min-width: 1025px) {
+  .mobile-message {
+    display: none;
   }
 }
 </style>
