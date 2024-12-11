@@ -138,8 +138,14 @@ export default {
       this.showContextMenu = false
     },
     handleContextMenuAction(action) {
+      if (action === 'close') {
+        this.closeContextMenu()
+        return
+      }
+      
       switch(action) {
         case 'newFile':
+          this.isOpen = true
           this.$emit('add-node', {
             parent: this.node,
             newNode: { 

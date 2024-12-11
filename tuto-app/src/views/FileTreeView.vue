@@ -1,79 +1,104 @@
 <template>
-  <div class="file-explorer">
-    <div class="sidebar" ref="sidebar">
-      <div class="sidebar-header">
-        <h2><font-awesome-icon icon="folder" /> Explorateur</h2>
-      </div>
-      <div class="tree-container">
-        <ul class="file-tree">
-          <file-node 
-            v-for="node in fileTree" 
-            :key="node.id" 
-            :node="node"
-            :parent-path="''"
-            :selected-node="selectedFile"
-            @select="handleSelect"
-            @add-node="addNode" 
-            @rename-node="renameNode" 
-            @delete-node="deleteNode" 
-          />
-        </ul>
-      </div>
-      <div 
-        class="resizer" 
-        @mousedown="startResize"
-        @mouseover="showResizeCursor"
-        @mouseleave="hideResizeCursor"
-      ></div>
+  <div class="container">
+    <!-- Boutons de navigation -->
+    <div class="navigation-buttons">
+      <button 
+        :class="['nav-button', { active: currentView === 'demo' }]"
+        @click="currentView = 'demo'"
+      >
+        Démonstration
+      </button>
+      <button 
+        :class="['nav-button', { active: currentView === 'exercises' }]"
+        @click="currentView = 'exercises'"
+      >
+        Les exercices
+      </button>
     </div>
-    <div class="content-area">
-      <div class="content-header">
-        <div class="breadcrumb">
-          <font-awesome-icon icon="home" /> 
-          <template v-if="currentPath">/ {{ currentPath }}</template>
+
+    <!-- Vue Démonstration -->
+    <div v-if="currentView === 'demo'" class="file-explorer fade">
+      <div class="sidebar" ref="sidebar">
+        <div class="sidebar-header">
+          <h2><font-awesome-icon icon="folder" /> Explorateur</h2>
+        </div>
+        <div class="tree-container">
+          <ul class="file-tree">
+            <file-node 
+              v-for="node in fileTree" 
+              :key="node.id" 
+              :node="node"
+              :parent-path="''"
+              :selected-node="selectedFile"
+              @select="handleSelect"
+              @add-node="addNode" 
+              @rename-node="renameNode" 
+              @delete-node="deleteNode" 
+            />
+          </ul>
+        </div>
+        <div 
+          class="resizer" 
+          @mousedown="startResize"
+          @mouseover="showResizeCursor"
+          @mouseleave="hideResizeCursor"
+        ></div>
+      </div>
+      <div class="content-area">
+        <div class="content-header">
+          <div class="breadcrumb">
+            <font-awesome-icon icon="home" /> 
+            <template v-if="currentPath">/ {{ currentPath }}</template>
+          </div>
+        </div>
+        <div class="selected-content">
+              <div class="file-system-explanation">
+                  <h4 class="modern-title">
+                      <font-awesome-icon icon="folder-tree" class="title-icon" />
+                      Découvrez l'Arborescence des Fichiers
+                  </h4>
+
+                  <div class="intro-card">
+                      <p>Imaginez votre ordinateur comme une bibliothèque parfaitement organisée. L'arborescence des fichiers est votre guide numérique pour tout retrouver facilement ! 🚀</p>
+                  </div>
+
+                  <div class="feature-grid">
+                      <div class="feature-card">
+                          <h5><font-awesome-icon icon="folder" /> Structure de Base</h5>
+                          <ul>
+                              <li><span class="highlight">Dossiers racines</span> - Vos points de départ ("Documents", "Images")</li>
+                              <li><span class="highlight">Sous-dossiers</span> - Créez des catégories selon vos besoins</li>
+                              <li><span class="highlight">Fichiers</span> - Vos documents, photos et autres contenus</li>
+                          </ul>
+                      </div>
+
+                      <div class="feature-card">
+                          <h5><font-awesome-icon icon="code" /> Navigation Intuitive</h5>
+                          <ul>
+                              <li>💡 Un clic pour explorer les dossiers</li>
+                              <li>↕️ Flèches pour développer/réduire</li>
+                              <li>🧭 Suivez votre chemin en haut</li>
+                          </ul>
+                      </div>
+
+                      <div class="feature-card">
+                          <h5><font-awesome-icon icon="star" /> Avantages Clés</h5>
+                          <ul>
+                              <li>🎯 Retrouvez vos fichiers en quelques clics</li>
+                              <li>✨ Une organisation claire et efficace</li>
+                              <li>🎨 Une structure adaptée à vos besoins</li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
         </div>
       </div>
-      <div class="selected-content">
-            <div class="file-system-explanation">
-                <h4 class="modern-title">
-                    <font-awesome-icon icon="folder-tree" class="title-icon" />
-                    Découvrez l'Arborescence des Fichiers
-                </h4>
+    </div>
 
-                <div class="intro-card">
-                    <p>Imaginez votre ordinateur comme une bibliothèque parfaitement organisée. L'arborescence des fichiers est votre guide numérique pour tout retrouver facilement ! 🚀</p>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h5><font-awesome-icon icon="folder" /> Structure de Base</h5>
-                        <ul>
-                            <li><span class="highlight">Dossiers racines</span> - Vos points de départ ("Documents", "Images")</li>
-                            <li><span class="highlight">Sous-dossiers</span> - Créez des catégories selon vos besoins</li>
-                            <li><span class="highlight">Fichiers</span> - Vos documents, photos et autres contenus</li>
-                        </ul>
-                    </div>
-
-                    <div class="feature-card">
-                        <h5><font-awesome-icon icon="code" /> Navigation Intuitive</h5>
-                        <ul>
-                            <li>💡 Un clic pour explorer les dossiers</li>
-                            <li>↕️ Flèches pour développer/réduire</li>
-                            <li>🧭 Suivez votre chemin en haut</li>
-                        </ul>
-                    </div>
-
-                    <div class="feature-card">
-                        <h5><font-awesome-icon icon="star" /> Avantages Clés</h5>
-                        <ul>
-                            <li>🎯 Retrouvez vos fichiers en quelques clics</li>
-                            <li>✨ Une organisation claire et efficace</li>
-                            <li>🎨 Une structure adaptée à vos besoins</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-      </div>
+    <!-- Vue Exercices -->
+    <div v-else class="exercises-container fade">
+      <h2>Exercices sur l'arborescence des fichiers</h2>
+      <!-- Ajoutez ici le contenu des exercices -->
     </div>
   </div>
 </template>
@@ -118,6 +143,7 @@ export default defineComponent({
       isResizing: false,
       startWidth: 0,
       startX: 0,
+      currentView: 'demo',
     }
   },
   methods: {
@@ -219,7 +245,55 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  z-index: 100;
+  margin-top: 15vh;
+  transform: translateY(-50%);
+}
+
+.nav-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.3s ease;
+  background-color: var(--bg-secondary);
+  color: var(--text-color);
+}
+
+.nav-button:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+.nav-button.active {
+  background-color: var(--accent-color);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.exercises-container {
+  width: 60vw;
+  background-color: var(--bg-primary);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+/* Ajustement du style existant */
 .file-explorer {
+  margin-top: 20px;
   display: flex;
   height: 60vh;
   width:60vw;
@@ -289,10 +363,10 @@ export default defineComponent({
   gap: 10px;
   color: var(--text-secondary);
   font-size: 0.9em;
-  /*user-select: none;
+  user-select: none;
   -webkit-user-select: none; 
   -moz-user-select: none; 
-  -ms-user-select: none; */
+  -ms-user-select: none;
 }
 
 .selected-content {
@@ -395,6 +469,36 @@ export default defineComponent({
 
   .content-area {
     height: calc(100% - 300px);
+  }
+}
+
+/* Animation de transition entre les vues */
+.file-explorer, .exercises-container {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Remplacer l'animation existante par un simple fade */
+.fade {
+  animation: fade 0.3s ease-in-out;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>
