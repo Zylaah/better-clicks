@@ -160,6 +160,7 @@ body, html{
   --file-hover: #d8d8d8;
   --scrollbar-color: #d8d8d8;
   --selected-node-bg: #dadada;
+  --switch-buttob-bg: #d8d8d8;
 }
 
 [data-theme="dark"] {
@@ -185,6 +186,7 @@ body, html{
   --file-hover: #1a1a1a;
   --scrollbar-color: #131313;
   --selected-node-bg: #1a1a1a;
+  --switch-buttob-bg: #1a1a1a;
 }
 
 /* Personnalisation de la scrollbar pour Webkit (Chrome, Safari, Edge) */

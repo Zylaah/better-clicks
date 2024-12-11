@@ -269,7 +269,7 @@ export default defineComponent({
   cursor: pointer;
   font-size: 1em;
   transition: all 0.3s ease;
-  background-color: var(--bg-secondary);
+  background-color: var(--switch-buttob-bg);
   color: var(--text-color);
 }
 
