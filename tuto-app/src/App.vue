@@ -3,7 +3,7 @@
     <nav class="navbar">
       <div class="nav-brand">
         <font-awesome-icon icon="code" class="brand-icon" />
-        <span>Les Meilleurs Clics</span>
+        <span>Numérix</span>
       </div>
       <div class="nav-links">
         <router-link to="/" class="nav-link">

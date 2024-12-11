@@ -80,4 +80,12 @@ library.add(
 const app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
+
+// S'assurer que l'application démarre sur la page d'accueil
+router.isReady().then(() => {
+    if (router.currentRoute.value.path !== '/') {
+        router.push('/')
+    }
+})
+
 app.mount('#app')
