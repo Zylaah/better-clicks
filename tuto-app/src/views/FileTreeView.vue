@@ -97,8 +97,25 @@
 
     <!-- Vue Exercices -->
     <div v-else class="exercises-container fade">
-      <h2>Exercices sur l'arborescence des fichiers</h2>
-      <!-- Ajoutez ici le contenu des exercices -->
+      <h2 class="exercises-title">Exercices sur l'arborescence des fichiers</h2>
+      <div class="exercises-grid">
+        <div 
+          v-for="(exercise, index) in exercises" 
+          :key="index"
+          class="exercise-card"
+          @click="selectExercise(exercise)"
+        >
+          <div class="card-icon">
+            <font-awesome-icon :icon="exercise.icon" />
+          </div>
+          <h3>{{ exercise.title }}</h3>
+          <p>{{ exercise.description }}</p>
+          <div class="difficulty">
+            Difficulté: 
+            <span :class="exercise.difficulty">{{ exercise.difficulty }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -107,10 +124,10 @@
 import { defineComponent } from 'vue'
 import FileNode from '@/components/FileNode.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown)
+library.add(faFolder, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram)
 
 export default defineComponent({
   name: 'FileTreeView',
@@ -144,6 +161,44 @@ export default defineComponent({
       startWidth: 0,
       startX: 0,
       currentView: 'demo',
+      exercises: [
+        {
+          title: "Navigation de Base",
+          description: "Apprenez à naviguer dans une arborescence simple de fichiers",
+          difficulty: "Facile",
+          icon: "compass",
+        },
+        {
+          title: "Création de Structure",
+          description: "Créez une structure de fichiers selon un schéma donné",
+          difficulty: "Facile",
+          icon: "folder-plus",
+        },
+        {
+          title: "Réorganisation",
+          description: "Réorganisez une structure de fichiers désordonnée",
+          difficulty: "Moyen",
+          icon: "sort",
+        },
+        {
+          title: "Recherche de Fichiers",
+          description: "Retrouvez des fichiers spécifiques dans une structure complexe",
+          difficulty: "Moyen",
+          icon: "search",
+        },
+        {
+          title: "Gestion des Permissions",
+          description: "Gérez les droits d'accès des fichiers et dossiers",
+          difficulty: "Difficile",
+          icon: "lock",
+        },
+        {
+          title: "Structure Avancée",
+          description: "Créez une structure complexe avec des liens symboliques",
+          difficulty: "Difficile",
+          icon: "project-diagram",
+        }
+      ]
     }
   },
   methods: {
@@ -236,6 +291,9 @@ export default defineComponent({
       this.selectedFile = payload.node
       this.currentPath = payload.path
     },
+    selectExercise(exercise) {
+      console.log('Exercice sélectionné:', exercise.title)
+    }
   },
   beforeUnmount() {
     document.removeEventListener('mousemove', this.resize);
@@ -249,14 +307,12 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
   padding: 20px;
 }
 
 .navigation-buttons {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
   z-index: 100;
   margin-top: 15vh;
   transform: translateY(-50%);
@@ -285,10 +341,84 @@ export default defineComponent({
 
 .exercises-container {
   width: 60vw;
-  background-color: var(--bg-primary);
-  border-radius: 10px;
+  padding: 30px;
+}
+
+.exercises-title {
+  text-align: center;
+  margin-bottom: 40px;
+  color: var(--text-color);
+}
+
+.exercises-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
   padding: 20px;
-  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.exercise-card {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exercise-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px var(--shadow-color);
+  border-color: var(--accent-color);
+}
+
+.card-icon {
+  font-size: 1.5em;
+  color: var(--accent-color);
+  margin-bottom: 8px;
+}
+
+.exercise-card h3 {
+  color: var(--text-color);
+  margin: 0;
+  font-size: 1.1em;
+}
+
+.exercise-card p {
+  color: var(--text-secondary);
+  margin: 0;
+  flex-grow: 1;
+  font-size: 0.9em;
+}
+
+.difficulty {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
+.difficulty span {
+  font-weight: bold;
+}
+
+.difficulty span.Facile {
+  color: #4CAF50;
+}
+
+.difficulty span.Moyen {
+  color: #FFC107;
+}
+
+.difficulty span.Difficile {
+  color: #f44336;
+}
+
+@media (max-width: 768px) {
+  .exercises-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Ajustement du style existant */
