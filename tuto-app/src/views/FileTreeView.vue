@@ -584,6 +584,10 @@ export default defineComponent({
 .file-tree {
   padding: 0;
   margin: 0;
+  user-select: none;
+  -webkit-user-select: none; /* Pour Safari */
+  -moz-user-select: none; /* Pour Firefox */
+  -ms-user-select: none; /* Pour IE/Edge */
 }
 
 .file-system-explanation {

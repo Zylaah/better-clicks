@@ -2,7 +2,9 @@
   <div class="home">
     <div class="hero-section">
       <div class="hero-content">
-        <h1>Découvrez l'Informatique Simplement</h1>
+        <h1>
+          <span class="line-1 anim-typewriter">Découvrez l'Informatique !</span>
+        </h1>
         <p class="subtitle">Apprenez à utiliser votre ordinateur pas à pas, sans stress et à votre rythme</p>
         <div class="cta-buttons">
           <router-link to="/tutorials" class="cta-button primary">
@@ -114,14 +116,37 @@ export default {
   max-width: 800px;
 }
 
-h1 {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(45deg, var(--accent-color), var(--link-hover));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 700;
+.typewriter {
+  overflow: hidden;
+  border-right: .15em solid var(--accent-color);
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: .15em;
+  animation: typing 4s steps(40, end), blink-caret .75s step-end infinite;
+}
+
+.text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 4s steps(40, end) forwards;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--accent-color) }
+}
+
+@media (max-width: 768px) {
+  .typewriter {
+    font-size: 1.8rem;
+    letter-spacing: .1em;
+  }
 }
 
 .subtitle {
@@ -221,8 +246,8 @@ h1 {
 }
 
 @media (max-width: 768px) {
-  h1 {
-    font-size: 2.5rem;
+  .title-wrapper {
+    font-size: 2rem;
   }
 
   .subtitle {
@@ -311,6 +336,58 @@ h1 {
   .tutorials-grid {
     grid-template-columns: 1fr;
     padding: 0 1rem;
+  }
+}
+
+h1 {
+  color: var(--accent-color);
+  position: relative;
+  display: inline-block;
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.line-1 {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  text-align: center;
+  border-right: 2px solid var(--accent-color);
+}
+
+.anim-typewriter {
+  animation: typewriter 2s steps(20) 1s 1 normal both,
+             blinkTextCursor 500ms steps(20) infinite normal;
+}
+
+.anim-typewriter-2 {
+  opacity: 0;
+  animation: typewriter 1.5s steps(10) 3s 1 normal both,
+             blinkTextCursor 500ms steps(10) infinite normal,
+             fadeIn 1ms 3s forwards;
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blinkTextCursor {
+  from { border-right-color: var(--accent-color); }
+  to { border-right-color: transparent; }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
   }
 }
 </style>

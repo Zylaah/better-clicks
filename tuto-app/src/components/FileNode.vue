@@ -248,6 +248,13 @@ export default {
   transition: all 0.2s ease;
 }
 
+.node-label {
+  user-select: none;
+  -webkit-user-select: none; /* Pour Safari */
+  -moz-user-select: none; /* Pour Firefox */
+  -ms-user-select: none; /* Pour IE/Edge */
+}
+
 .node-content:hover {
   background-color: #2a2d2e;
 }
