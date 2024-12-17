@@ -95,7 +95,7 @@ export default {
       isOpen: false,
       showContextMenu: false,
       isEditing: false,
-      editedName: '',
+      editedName: this.node.name,
       contextMenuPosition: { x: 0, y: 0 }
     }
   },
@@ -182,27 +182,28 @@ export default {
       event.stopPropagation()
     },
     startRename() {
-      this.isEditing = true
-      this.editedName = this.node.name
+      if (!this.node) return;
+      this.isEditing = true;
+      this.editedName = this.node.name;
       this.$nextTick(() => {
-        const input = this.$refs.nameInput
+        const input = this.$refs.nameInput;
         if (input) {
-          input.focus()
+          input.focus();
           const selectText = () => {
             if (!this.isFolder) {
-              const lastDotIndex = this.node.name.lastIndexOf('.')
+              const lastDotIndex = this.node.name.lastIndexOf('.');
               if (lastDotIndex > 0) {
-                input.setSelectionRange(0, lastDotIndex)
+                input.setSelectionRange(0, lastDotIndex);
               } else {
-                input.select()
+                input.select();
               }
             } else {
-              input.select()
+              input.select();
             }
-          }
-          selectText()
+          };
+          selectText();
         }
-      })
+      });
     },
     onBlur(event) {
       event.stopPropagation()

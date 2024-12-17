@@ -7,7 +7,7 @@
       <div class="tree-container">
         <ul class="file-tree">
           <file-node 
-            v-for="node in fileTree" 
+            v-for="node in localFileTree" 
             :key="node.id" 
             :node="node"
             :parent-path="''"
@@ -57,6 +57,7 @@ export default defineComponent({
   },
   data() {
     return {
+      localFileTree: JSON.parse(JSON.stringify(this.fileTree)),
       selectedFile: null,
       currentPath: '',
       isResizing: false,
@@ -76,37 +77,53 @@ export default defineComponent({
     },
     
     renameNode({ node, newName }) {
-      if (node) {
-        const oldName = node.name
-        node.name = newName
-        
-        if (this.selectedFile === node) {
-          this.currentPath = this.currentPath.replace(oldName, newName)
-        }
+    console.log('Nom actuel du nœud:', node.name);
+    console.log('Nouveau nom proposé:', newName);
+
+    if (node && newName && node.name !== newName) {
+      const oldName = node.name;
+      node.name = newName;
+      
+      if (this.selectedFile === node) {
+        this.currentPath = this.currentPath.replace(oldName, newName);
+        console.log("Renommage réussi du nœud:", oldName, "à", newName);
       }
-    },
+    } else {
+      console.log("Le nom n'a pas changé ou est invalide.");
+    }
+  },
     
     deleteNode(node) {
-      const parent = this.findParent(node)
+      const parent = this.findParent(node, this.localFileTree);
       if (parent && parent.children) {
-        const index = parent.children.indexOf(node)
+        const index = parent.children.indexOf(node);
         if (index > -1) {
-          parent.children.splice(index, 1)
+          parent.children.splice(index, 1);
+        }
+      } else {
+        const index = this.localFileTree.indexOf(node);
+        if (index > -1) {
+          this.localFileTree.splice(index, 1);
         }
       }
+      if (this.selectedFile === node) {
+        this.selectedFile = null;
+        this.currentPath = '';
+      }
+      console.log("Arborescence après suppression:", this.localFileTree);
     },
     
-    findParent(node, tree = this.fileTree) {
+    findParent(node, tree = this.localFileTree) {
       for (const item of tree) {
         if (item.children && item.children.includes(node)) {
-          return item
+          return item;
         }
         if (item.children) {
-          const parent = this.findParent(node, item.children)
-          if (parent) return parent
+          const parent = this.findParent(node, item.children);
+          if (parent) return parent;
         }
       }
-      return null
+      return null;
     },
     
     startResize(event) {
