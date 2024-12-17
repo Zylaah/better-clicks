@@ -29,6 +29,18 @@
       "fileTree": [
         { "name": "Documents", "type": "folder", "children": [] }
       ]
+    },
+
+    {
+      "title": "Navigation et création de fichiers",
+      "description": "Apprenez à naviguer dans une arborescence simple de fichiers et à créer un fichier.",
+      "difficulty": "Facile",
+      "icon": "compass",
+      "type": "A",
+      "task": "Créez un fichier 'Rapport.txt' dans le dossier 'Documents'.",
+      "fileTree": [
+        { "name": "Documents", "type": "folder", "children": [] }
+      ]
     }
 
   ]

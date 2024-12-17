@@ -14,6 +14,11 @@
         </div>
       </file-explorer>
     </div>
+    <div class="mobile-message">
+      <font-awesome-icon icon="desktop" class="desktop-icon" />
+      <h2>Version Desktop uniquement</h2>
+      <p>Ce module n'est disponible que sur ordinateur pour une meilleure expérience d'apprentissage.</p>
+    </div>
   </div>
 </template>
 
@@ -99,5 +104,34 @@ export default {
   background-color: var(--bg-primary);
   border-radius: 5px;
   color: var(--text-color);
+}
+
+.mobile-message {
+  display: none;
+  text-align: center;
+  padding: 30px;
+  margin: 20px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 400px;
+}
+
+@media (max-width: 1024px) {
+  .exercise-container {
+    display: none;
+  }
+
+  .mobile-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>

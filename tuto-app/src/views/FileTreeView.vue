@@ -223,6 +223,8 @@ export default defineComponent({
   gap: 20px;
   padding: 20px;
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .exercise-card {
@@ -234,8 +236,12 @@ export default defineComponent({
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   gap: 10px;
   box-shadow: 0 2px 4px var(--shadow-color);
+  height: 250px;
+  text-align: center;
 }
 
 .exercise-card:hover {
@@ -254,6 +260,10 @@ export default defineComponent({
   color: var(--text-color);
   margin: 0;
   font-size: 0.9em;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .difficulty {
