@@ -5,18 +5,23 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Naviguez jusqu'au dossier 'Documents'.",
+      "task": "Naviguez jusqu'au dossier 'Projets'.",
       "fileTree": [
         {
           "name": "Documents",
           "type": "folder",
           "children": [
             { "name": "Attestation.pdf", "type": "file", "content": "Contenu de l'attestation de scolarité" },
-            { "name": "Repas du jour.pdf", "type": "file", "content": "Contenu du repas du jour" }
+            { "name": "Repas du jour.pdf", "type": "file", "content": "Contenu du repas du jour" },
+            { "name": "Projets", "type": "folder", "children": [
+                { "name": "Projet 1.txt", "type": "file", "content": "Contenu du projet 1" },
+                { "name": "Projet 2.txt", "type": "file", "content": "Contenu du projet 2" }
+            ] }
           ]
         },
         { "name": "logo.png", "type": "file", "content": "Contenu du logo" }
-      ]
+      ],
+      "hasInput": false
     },
 
     {
@@ -28,19 +33,26 @@
       "task": "Créez un fichier 'Rapport.txt' dans le dossier 'Documents'.",
       "fileTree": [
         { "name": "Documents", "type": "folder", "children": [] }
-      ]
+      ],
+      "hasInput": false
     },
 
     {
-      "title": "Navigation et création de fichiers",
-      "description": "Apprenez à naviguer dans une arborescence simple de fichiers et à créer un fichier.",
+      "title": "Navigation et chemin d'accès",
+      "description": "Apprenez à naviguer dans une arborescence simple de fichiers et lire un chemin d'accès.",
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Créez un fichier 'Rapport.txt' dans le dossier 'Documents'.",
+      "task": "Donnez le chemin d'accès au fichier 'Rapport.txt' avec le format suivant : '/NomDeDossier1/NomDeDossier2/NomDuFichier.txt'.",
       "fileTree": [
-        { "name": "Documents", "type": "folder", "children": [] }
-      ]
+        { "name": "Documents", "type": "folder", "children": [
+            { "name": "Rapports", "type": "folder", "children": [
+                { "name": "Rapport.txt", "type": "file", "content": "Contenu du rapport" }
+            ] }
+        ] }
+      ],
+      "hasInput": true,
+      "expectedAnswer": "/Documents/Rapports/Rapport.txt"
     }
 
   ]

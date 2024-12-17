@@ -7,10 +7,17 @@
       <file-explorer :fileTree="exercise.fileTree">
         <div class="exercise-instructions">
           <h3>{{ exercise.title }}</h3>
-          <p>{{ exercise.description }}</p>
           <div class="exercise-task">
-            <p>Votre tâche : {{ exercise.task }}</p>
+            <h4>Tâche</h4>
+            <p>{{ exercise.task }}</p>
           </div>
+        </div>
+        <div v-if="exercise.hasInput" class="exercise-input-container">
+          <input v-model="userInput" type="text" placeholder="Entrez votre réponse ici" class="exercise-input"/>
+          <button class="exercise-input-button" @click="validateAnswer">Valider</button>
+        </div>
+        <div class="validation-message-container">
+          <p v-if="validationMessage" :class="['validation-message', validationClass]">{{ validationMessage }}</p>
         </div>
       </file-explorer>
     </div>
@@ -36,9 +43,27 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      userInput: '',
+      validationMessage: ''
+    }
+  },
+  computed: {
+    validationClass() {
+      return this.validationMessage === 'Réponse correcte !' ? 'success' : 'error';
+    }
+  },
   methods: {
     goBack() {
       this.$router.push({ name: 'file-tree', query: { view: 'exercises' } })
+    },
+    validateAnswer() {
+      if (this.userInput === this.exercise.expectedAnswer) {
+        this.validationMessage = 'Réponse correcte !';
+      } else {
+        this.validationMessage = 'Réponse incorrecte. Veuillez réessayer.';
+      }
     }
   }
 }
@@ -85,7 +110,6 @@ export default {
   background-color: var(--bg-secondary);
   border-radius: 8px;
   box-shadow: 0 2px 4px var(--shadow-color);
-  margin-left: 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -99,11 +123,83 @@ export default {
 }
 
 .exercise-task {
-  margin-top: 20px;
-  padding: 10px;
+  padding: 20px;
   background-color: var(--bg-primary);
-  border-radius: 5px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
   color: var(--text-color);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.exercise-task h4 {
+  margin: 10px 0;
+  color: var(--accent-color);
+  font-size: 1.2em;
+}
+
+.exercise-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 10px;
+}
+
+.exercise-input {
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  border-radius: 5px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.exercise-input-button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.exercise-input-button:hover {
+  background-color: var(--hover-color);
+}
+
+.validation-message-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.validation-message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  align-self: center;
+}
+
+.success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.error {
+  background-color: var(--error-color);
+  color: white;
 }
 
 .mobile-message {
