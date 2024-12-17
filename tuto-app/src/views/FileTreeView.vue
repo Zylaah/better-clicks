@@ -91,6 +91,7 @@
             </div>
           </div>
         </div>
+        <component :is="currentExerciseComponent" :exercise="selectedExercise" v-if="selectedExercise" />
       </div>
     </div>
   </div>
@@ -99,9 +100,11 @@
 <script>
 import { defineComponent } from 'vue'
 import FileExplorer from '@/components/FileExplorer.vue'
+import ExerciseTypeA from '@/components/ExerciseTypeA.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faFolder, faFolderTree, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram, faDesktop, faCode, faStar } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import exercisesData from '@/data/exercises.json'
 
 library.add(faFolder, faFolderTree, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram, faDesktop, faCode, faStar)
 
@@ -114,6 +117,7 @@ export default defineComponent({
   data() {
     return {
       currentView: 'demo',
+      selectedExercise: null,
       fileTree: [
         {
           name: 'Documents',
@@ -132,49 +136,28 @@ export default defineComponent({
         },
         { name: 'logo.png', type: 'file', content: 'Contenu du logo' }
       ],
-      exercises: [
-        {
-          title: "Navigation de Base",
-          description: "Apprenez à naviguer dans une arborescence simple de fichiers",
-          difficulty: "Facile",
-          icon: "compass",
-        },
-        {
-          title: "Création de Structure",
-          description: "Créez une structure de fichiers selon un schéma donné",
-          difficulty: "Facile",
-          icon: "folder-plus",
-        },
-        {
-          title: "Réorganisation",
-          description: "Réorganisez une structure de fichiers désordonnée",
-          difficulty: "Moyen",
-          icon: "sort",
-        },
-        {
-          title: "Recherche de Fichiers",
-          description: "Retrouvez des fichiers spécifiques dans une structure complexe",
-          difficulty: "Moyen",
-          icon: "search",
-        },
-        {
-          title: "Gestion des Permissions",
-          description: "Gérez les droits d'accès des fichiers et dossiers",
-          difficulty: "Difficile",
-          icon: "lock",
-        },
-        {
-          title: "Structure Avancée",
-          description: "Créez une structure complexe avec des liens symboliques",
-          difficulty: "Difficile",
-          icon: "project-diagram",
-        }
-      ]
+      exercises: exercisesData.map(exercise => ({
+        ...exercise,
+        component: exercise.type === 'A' ? ExerciseTypeA : null
+      }))
+    }
+  },
+  computed: {
+    currentExerciseComponent() {
+      return this.selectedExercise ? ExerciseTypeA : null
+    }
+  },
+  created() {
+    if (this.$route.query.view === 'exercises') {
+      this.currentView = 'exercises'
     }
   },
   methods: {
     selectExercise(exercise) {
-      console.log('Exercice sélectionné:', exercise.title)
+      this.$router.push({
+        name: 'exercise',
+        params: { exercise: JSON.stringify(exercise) }
+      })
     }
   }
 })

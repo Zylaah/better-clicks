@@ -1,0 +1,34 @@
+[
+    {
+      "title": "Navigation de Base",
+      "description": "Apprenez à naviguer dans une arborescence simple de fichiers",
+      "difficulty": "Facile",
+      "icon": "compass",
+      "type": "A",
+      "task": "Naviguez jusqu'au dossier 'Documents'.",
+      "fileTree": [
+        {
+          "name": "Documents",
+          "type": "folder",
+          "children": [
+            { "name": "Attestation.pdf", "type": "file", "content": "Contenu de l'attestation de scolarité" },
+            { "name": "Repas du jour.pdf", "type": "file", "content": "Contenu du repas du jour" }
+          ]
+        },
+        { "name": "logo.png", "type": "file", "content": "Contenu du logo" }
+      ]
+    },
+
+    {
+      "title": "Navigation et création de fichiers",
+      "description": "Apprenez à naviguer dans une arborescence simple de fichiers et à créer un fichier.",
+      "difficulty": "Facile",
+      "icon": "compass",
+      "type": "A",
+      "task": "Créez un fichier 'Rapport.txt' dans le dossier 'Documents'.",
+      "fileTree": [
+        { "name": "Documents", "type": "folder", "children": [] }
+      ]
+    }
+
+  ]

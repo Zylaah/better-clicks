@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import FileTreeView from '../views/FileTreeView.vue'
+import ExerciseView from '../views/ExerciseView.vue'
+
 const routes = [
   {
     path: '/',
@@ -8,17 +10,15 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  },
-  {
     path: '/file-tree',
     name: 'file-tree',
     component: FileTreeView
+  },
+  {
+    path: '/exercise/:exercise',
+    name: 'exercise',
+    component: ExerciseView,
+    props: route => ({ exercise: JSON.parse(route.params.exercise) })
   }
 ]
 
