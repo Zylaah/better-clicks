@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import FileTreeView from '../views/FileTreeView.vue'
 import ExerciseView from '../views/ExerciseView.vue'
+import AboutView from '../views/AboutView.vue'
 
 const routes = [
   {
@@ -19,6 +20,11 @@ const routes = [
     name: 'exercise',
     component: ExerciseView,
     props: route => ({ exercise: JSON.parse(route.params.exercise) })
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: AboutView
   }
 ]
 

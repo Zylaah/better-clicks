@@ -153,6 +153,7 @@ export default {
   padding: 8px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-secondary);
+  color: var(--text-color);
   border-radius: 5px;
   width: 100%;
   max-width: 300px;

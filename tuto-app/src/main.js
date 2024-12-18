@@ -37,8 +37,19 @@ import {
     faEdit,
     faTrash,
     faChevronRight,
-    faChevronDown
+    faChevronDown,
+    faBullseye,
+    faUsers,
+    faEnvelope
 } from '@fortawesome/free-solid-svg-icons'
+
+import {
+    faTwitter,
+    faGithub,
+    faLinkedin,
+    faInstagram,
+    faYoutube
+} from '@fortawesome/free-brands-svg-icons'
 
 library.add(
     faHome,
@@ -74,7 +85,15 @@ library.add(
     faEdit,
     faTrash,
     faChevronRight,
-    faChevronDown
+    faChevronDown,
+    faBullseye,
+    faUsers,
+    faEnvelope,
+    faTwitter,
+    faGithub,
+    faLinkedin,
+    faInstagram,
+    faYoutube
 )
 
 const app = createApp(App)
