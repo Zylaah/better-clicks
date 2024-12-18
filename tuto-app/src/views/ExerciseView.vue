@@ -74,7 +74,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 150px;
 }
 
 .back-button {
@@ -99,75 +99,85 @@ export default {
 }
 
 .exercise-container {
-  width: 60vw;
-  height: 70vh;
+  width: 60%;
+  height: 60vh;
   position: relative;
-  margin-top: 15vh;
+  margin-top: 20px;
 }
 
 .exercise-instructions {
-  padding: 20px;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px var(--shadow-color);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  height: calc(70% - 60px);
+  overflow-y: auto;
+  background-color: var(--bg-primary);
 }
 
 .exercise-instructions h3 {
   color: var(--accent-color);
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  font-size: 1.8em;
+  text-align: center;
+  width: 100%;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.exercise-instructions h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: var(--accent-color);
+  border-radius: 2px;
 }
 
 .exercise-task {
-  padding: 20px;
-  background-color: var(--bg-primary);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px var(--shadow-color);
-  color: var(--text-color);
-  width: 100%;
-  max-width: 500px;
-  text-align: center;
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
   border: 1px solid var(--border-color);
 }
 
 .exercise-task h4 {
-  margin: 10px 0;
-  color: var(--accent-color);
-  font-size: 1.2em;
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+  font-size: 1.1em;
+}
+
+.exercise-task p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 .exercise-input-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
   gap: 10px;
+  padding: 15px;
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
 }
 
 .exercise-input {
-  margin-top: 10px;
+  flex: 1;
   padding: 8px;
   border: 1px solid var(--border-color);
-  background-color: var(--bg-secondary);
-  color: var(--text-color);
   border-radius: 5px;
-  width: 100%;
-  max-width: 300px;
+  background-color: var(--bg-primary);
+  color: var(--text-color);
 }
 
 .exercise-input-button {
-  margin-top: 10px;
-  padding: 8px 15px;
+  padding: 8px 16px;
   background-color: var(--accent-color);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .exercise-input-button:hover {
@@ -175,22 +185,14 @@ export default {
 }
 
 .validation-message-container {
-  margin-top: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  margin-top: 15px;
+  padding: 0 15px;
 }
 
 .validation-message {
-  margin-top: 10px;
   padding: 10px;
   border-radius: 5px;
-  font-weight: bold;
   text-align: center;
-  width: 100%;
-  max-width: 300px;
-  align-self: center;
 }
 
 .success {
@@ -201,6 +203,25 @@ export default {
 .error {
   background-color: var(--error-color);
   color: white;
+}
+
+/* Personnalisation de la scrollbar comme dans FileExplorer */
+.exercise-instructions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.exercise-instructions::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.exercise-instructions::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+  border-radius: 4px;
+}
+
+.exercise-instructions::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
 }
 
 .mobile-message {
