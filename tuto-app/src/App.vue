@@ -41,7 +41,7 @@
               </li>
               <hr>
               <li>
-                <a href="" class="nav-link-menu">
+                <a href="/le-clavier" class="nav-link-menu">
                   <font-awesome-icon icon="keyboard" />
                   <span>Le clavier</span>
                 </a>
@@ -75,11 +75,11 @@ export default {
     const route = useRoute();
 
     const isGuideActive = computed(() => {
-      return route.path === ''; // Ajustez selon vos routes
+      return route.path === '/le-clavier'; // Ajustez selon vos routes
     });
 
     const isExerciseActive = computed(() => {
-      return route.path === '/file-tree' || route.path === '/'; // Ajustez selon vos routes
+      return route.path === '/file-tree' || route.path === '/le-clavier'; // Ajustez selon vos routes
     });
 
     return {
