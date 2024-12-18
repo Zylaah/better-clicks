@@ -60,16 +60,25 @@
       :is-folder="isFolder"
       @action="handleContextMenuAction"
     />
+
+    <delete-confirmation-modal
+      :show="showDeleteModal"
+      :item-name="node.name"
+      @confirm="confirmDelete"
+      @cancel="cancelDelete"
+    />
   </li>
 </template>
 
 <script>
 import ContextMenu from './ContextMenu.vue'
+import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 
 export default {
   name: 'FileNode',
   components: {
-    ContextMenu
+    ContextMenu,
+    DeleteConfirmationModal
   },
   props: {
     node: Object,
@@ -96,7 +105,8 @@ export default {
       showContextMenu: false,
       isEditing: false,
       editedName: this.node.name,
-      contextMenuPosition: { x: 0, y: 0 }
+      contextMenuPosition: { x: 0, y: 0 },
+      showDeleteModal: false
     }
   },
   methods: {
@@ -171,12 +181,7 @@ export default {
           this.startRename()
           break
         case 'delete':
-          this.isEditing = false
-          this.editedName = ''
-          this.showContextMenu = false
-          this.$nextTick(() => {
-            this.$emit('delete-node', this.node)
-          })
+          this.showDeleteModal = true
           break
       }
       this.closeContextMenu()
@@ -233,6 +238,13 @@ export default {
         console.log('Pas de modification du nom ou nom invalide')
       }
       this.cancelRename()
+    },
+    confirmDelete() {
+      this.$emit('delete-node', this.node)
+      this.showDeleteModal = false
+    },
+    cancelDelete() {
+      this.showDeleteModal = false
     },
     cancelRename() {
       console.log('Annulation du mode édition')
