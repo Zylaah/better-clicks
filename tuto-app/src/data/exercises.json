@@ -5,7 +5,7 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Naviguez jusqu'au dossier 'Projets'.",
+      "task": "Naviguez jusqu'au dossier 'Projets'. Quel est le nom du deuxième fichier dans ce dossier ?",
       "fileTree": [
         {
           "name": "Documents",
@@ -21,7 +21,8 @@
         },
         { "name": "logo.png", "type": "file", "content": "Contenu du logo" }
       ],
-      "hasInput": false,
+      "hasInput": true,
+      "expectedAnswer": "Projet 2.txt",
       "hasHint": false
     },
 
@@ -64,9 +65,9 @@
         ] }
       ],
       "hasInput": true,
-      "expectedAnswer": "/Documents/Rapports/Rapport.txt",
+      "expectedAnswer": "C:/Documents/Rapports/Rapport.txt",
       "hasHint": true,
-      "hint": "(Format : '/NomDeDossier1 /NomDeDossier2 /NomDuFichier.txt')"
+      "hint": "(Format : 'C:/NomDeDossier1 /NomDeDossier2 /NomDuFichier.txt')"
     }
 
   ]

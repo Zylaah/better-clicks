@@ -8,19 +8,19 @@
         <div class="exercise-instructions">
           <h3>{{ exercise.title }}</h3>
           <div :class="{ 'exercise-instructions-container': true, 'vertical-layout': !exercise.hasInput }">
-            <div class="exercise-task">
+            <div :class="{ 'exercise-task': true, 'modified-width': !exercise.hasInput }">
               <h4>Consigne :</h4>
               <p>{{ exercise.task }}</p>
             </div>
-            <div v-if="exercise.hasHint" class="exercise-hint">
+            <div v-if="exercise.hasHint" :class="{ 'exercise-hint': true, 'modified-width': !exercise.hasInput }">
               <h4>Indice :</h4>
               <p>{{ exercise.hint }}</p>
             </div>
           </div>
-        </div>
-        <div v-if="exercise.hasInput" class="exercise-input-container">
-          <input v-model="userInput" type="text" placeholder="Entrez votre réponse ici" class="exercise-input"/>
-          <button class="exercise-input-button" @click="validateAnswer">Valider</button>
+          <div v-if="exercise.hasInput" class="exercise-input-container">
+            <input v-model="userInput" type="text" placeholder="Entrez votre réponse ici" class="exercise-input"/>
+            <button class="exercise-input-button" @click="validateAnswer">Valider</button>
+          </div>
         </div>
         <div class="validation-message-container">
           <p v-if="validationMessage" :class="['validation-message', validationClass]">{{ validationMessage }}</p>
@@ -67,8 +67,10 @@ export default {
     validateAnswer() {
       if (this.userInput === this.exercise.expectedAnswer) {
         this.validationMessage = 'Réponse correcte !';
+        this.userInput = '';
       } else {
         this.validationMessage = 'Réponse incorrecte. Veuillez réessayer.';
+        this.userInput = '';
       }
     }
   }
@@ -85,7 +87,7 @@ export default {
 
 .back-button {
   position: absolute;
-  top: 80px;
+  top: 90px;
   left: 20px;
   background-color: var(--accent-color);
   color: white;
@@ -236,6 +238,22 @@ export default {
   background-color: var(--hover-color);
 }
 
+.vertical-layout {
+  flex-direction: column;
+  align-items: center;
+}
+
+.exercise-task, .exercise-hint {
+  margin-bottom: 5px;
+  width: 100%;
+  margin: 20px;
+}
+
+.modified-width {
+  width: calc(100% - 60px);
+  margin: 10px;
+}
+
 .validation-message-container {
   margin-top: 15px;
   margin-left: 8px;
@@ -247,6 +265,7 @@ export default {
   padding: 10px;
   border-radius: 5px;
   text-align: center;
+  margin: 20px;
 }
 
 .success {
@@ -305,15 +324,5 @@ export default {
     align-items: center;
     justify-content: center;
   }
-}
-
-.vertical-layout {
-  flex-direction: column;
-  align-items: center;
-}
-
-.exercise-task, .exercise-hint {
-  margin-bottom: 5px;
-  width: 80%;
 }
 </style>
