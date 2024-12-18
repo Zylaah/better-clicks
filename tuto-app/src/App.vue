@@ -258,7 +258,7 @@ body, html{
 }
 
 .menu-content-exercise li {
-  padding: 0.5rem 0.8rem;
+  padding: 0.5rem 0.5rem;
   border-radius: 6px;
   transition: all 0.3s ease;
 }
@@ -286,7 +286,7 @@ body, html{
 }
 
 .menu-content-guide li {
-  padding: 0.5rem 0.8rem;
+  padding: 0.5rem 0.5rem;
   border-radius: 6px;
   transition: all 0.3s ease;
 }
