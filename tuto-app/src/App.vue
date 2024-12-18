@@ -28,7 +28,7 @@
         </div>
         <div class="menu-container" :class="{ 'active': isExerciseActive }">
           <div class="nav-link">
-            <font-awesome-icon icon="book" />
+            <font-awesome-icon icon="code" />
             <span>Les exercices</span>
           </div>
           <div class="menu-content-exercise">
