@@ -30,9 +30,18 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Créez un fichier 'Rapport.txt' dans le dossier 'Documents'.",
+      "task": "Naviguez dans l'arborescence à gauche. Créez un nouveau fichier dans le dossier 'PDF' et renommez-le 'Rapport.pdf'.",
       "fileTree": [
-        { "name": "Documents", "type": "folder", "children": [] }
+        { "name": "Documents", "type": "folder", "children": [
+          { "name": "Rapports", "type": "folder", "children": [
+            { "name": "Rapport.txt", "type": "file", "content": "Contenu du rapport" },
+            { "name": "PDF", "type": "folder" , "children": [] }
+          ] },
+          { "name": "Images", "type": "folder", "children": [
+            { "name": "logo.png", "type": "file", "content": "Contenu du logo" },
+            { "name": "photo.jpg", "type": "file", "content": "Contenu de la photo" }
+          ] }
+        ] }
       ],
       "hasInput": false
     },

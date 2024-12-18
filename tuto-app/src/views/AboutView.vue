@@ -81,7 +81,7 @@ export default {
 
 .about-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 125px;
 }
 
 .about-header h1 {
@@ -167,6 +167,9 @@ export default {
 .contact-section {
   text-align: center;
   margin: 60px 0;
+  background-color: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 15px;
 }
 
 .contact-section h2 {

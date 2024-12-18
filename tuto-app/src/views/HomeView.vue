@@ -103,7 +103,7 @@ export default {
 }
 
 .hero-section {
-  height: 80vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,6 +196,7 @@ export default {
 
 .features-section {
   padding: 4rem 2rem;
+  height: 40vh;
   background: var(--bg-secondary);
 }
 

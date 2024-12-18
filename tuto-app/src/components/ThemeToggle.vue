@@ -37,9 +37,23 @@
     padding: 0.5rem;
     border-radius: 50%;
     transition: all 0.3s ease;
+    width: 40px;
   }
-  
+
   .theme-toggle:hover {
     background: var(--hover-color);
+  }
+
+  .fa-sun {
+    color: var(--accent-color);
+  }
+
+  .svg-inline--fa {
+    margin-top: 3px;
+  }
+
+  .fa-moon {
+    margin-top: 3px;
+    color: var(--hover-color);
   }
   </style>
