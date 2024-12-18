@@ -7,7 +7,7 @@
         </h1>
         <p class="subtitle">Apprenez à utiliser votre ordinateur pas à pas, sans stress et à votre rythme</p>
         <div class="cta-buttons">
-          <router-link to="/tutorials" class="cta-button primary">
+          <router-link to="/file-tree" class="cta-button primary">
             <font-awesome-icon icon="graduation-cap" />
             Débuter l'apprentissage
           </router-link>
