@@ -198,7 +198,7 @@ export default defineComponent({
 <style scoped>
 .file-explorer {
   display: flex;
-  height: 60vh;
+  height: 70vh;
   width: 100%;
   background-color: var(--bg-primary);
   color: var(--text-color);

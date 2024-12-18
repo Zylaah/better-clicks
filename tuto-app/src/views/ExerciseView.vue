@@ -205,7 +205,7 @@ export default {
   display: flex;
   gap: 10px;
   padding: 15px;
-  margin: 20px;
+  margin-top: 20px;
   background-color: var(--bg-secondary);
   border-radius: 10px;
   border: 1px solid var(--border-color);
@@ -246,7 +246,6 @@ export default {
 .exercise-task, .exercise-hint {
   margin-bottom: 5px;
   width: 100%;
-  margin: 20px;
 }
 
 .modified-width {

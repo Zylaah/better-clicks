@@ -10,10 +10,10 @@
           <font-awesome-icon icon="home" />
           <span>Accueil</span>
         </router-link>
-        <div class="menu-container">
+        <div class="menu-container" :class="{ 'active': isGuideActive }">
           <div class="nav-link">
             <font-awesome-icon icon="book" />
-            <span>Les exercices</span>
+            <span>Les guides</span>
           </div>
           <div class="menu-content">
             <ul>
@@ -21,6 +21,29 @@
                 <router-link to="/file-tree" class="nav-link">
                   <font-awesome-icon icon="folder-tree" />
                   <span>Explorateur</span>
+                </router-link>
+              </li>
+            </ul> 
+          </div>
+        </div>
+        <div class="menu-container" :class="{ 'active': isExerciseActive }">
+          <div class="nav-link">
+            <font-awesome-icon icon="book" />
+            <span>Les exercices</span>
+          </div>
+          <div class="menu-content">
+            <ul>
+              <li>
+                <router-link to="/file-tree" class="nav-link-menu">
+                  <font-awesome-icon icon="folder-tree" />
+                  <span>Explorateur</span>
+                </router-link>
+              </li>
+              <hr>
+              <li>
+                <router-link to="/" class="nav-link-menu">
+                  <font-awesome-icon icon="home" />
+                  <span>Accueil</span>
                 </router-link>
               </li>
             </ul> 
@@ -40,11 +63,29 @@
 
 <script>
 import ThemeToggle from './components/ThemeToggle.vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'App',
   components: {
     ThemeToggle
+  },
+  setup() {
+    const route = useRoute();
+
+    const isGuideActive = computed(() => {
+      return route.path === '/file-tree'; // Ajustez selon vos routes
+    });
+
+    const isExerciseActive = computed(() => {
+      return route.path === '/file-tree' || route.path === '/'; // Ajustez selon vos routes
+    });
+
+    return {
+      isGuideActive,
+      isExerciseActive
+    };
   }
 }
 </script>
@@ -107,9 +148,30 @@ body, html{
   transition: all 0.3s ease;
 }
 
+.nav-link-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-link-menu:hover {
+  color: white;
+  background: rgba(66, 184, 131, 0.1);
+}
+
+.nav-link-menu.router-link-active {
+  color: #42b883;
+  background: rgba(66, 184, 131, 0.1);
+}
+
 .nav-link:hover {
   color: white;
-  background: var(--hover-color);
+  background: rgba(66, 184, 131, 0.1);
 }
 
 .nav-link.router-link-active {
@@ -158,16 +220,21 @@ body, html{
   cursor: pointer;
 }
 
+.menu-container.active .nav-link {
+  color: #42b883;
+  background: rgba(66, 184, 131, 0.1);
+}
+
 .menu-content {
   display: none;
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: #1a1a1a;
+  background: var(--navbar-bg);
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--accent-color);
+  border: 1px solid var(--hover-color);
 }
 
 .menu-content ul {
@@ -190,6 +257,12 @@ body, html{
 .menu-content li.router-link:hover {
   color: var(--text-color);
   background: var(--hover-color);
+}
+
+.menu-content hr {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--hover-color);
 }
 
 .menu-container:hover .menu-content {
@@ -221,6 +294,7 @@ body, html{
   --scrollbar-color: #d8d8d8;
   --selected-node-bg: #dadada;
   --switch-buttob-bg: #d8d8d8;
+  --menu-bg: #1e2a24;
 }
 
 [data-theme="dark"] {
@@ -247,6 +321,7 @@ body, html{
   --scrollbar-color: #131313;
   --selected-node-bg: #1a1a1a;
   --switch-buttob-bg: #1a1a1a;
+  --menu-bg: #1e2a24;
 }
 
 /* Personnalisation de la scrollbar pour Webkit (Chrome, Safari, Edge) */
