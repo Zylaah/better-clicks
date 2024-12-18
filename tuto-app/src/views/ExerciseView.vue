@@ -74,7 +74,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 150px;
+  padding: 20px;
 }
 
 .back-button {
@@ -102,7 +102,7 @@ export default {
   width: 60vw;
   height: 70vh;
   position: relative;
-  margin-top: 20px;
+  margin-top: 150px;
 }
 
 .exercise-instructions {
