@@ -4,8 +4,7 @@
     <router-view class="main-content"/>
       <nav class="navbar">
         <div class="nav-brand">
-          <font-awesome-icon icon="code" class="brand-icon" />
-          <span>Numérix</span>
+          <img src="@/assets/icon.png" alt="Logo Numérix" class="brand-icon" />
         </div>
         <div class="nav-links">
           <router-link to="/" class="nav-link">
@@ -148,6 +147,8 @@ body, html{
 
 .brand-icon {
   color: #42b883;
+  width: 40px;
+  height: 40px;
 }
 
 .nav-links {
@@ -328,6 +329,7 @@ body, html{
   --selected-node-bg: #dadada;
   --switch-buttob-bg: #d8d8d8;
   --menu-bg: #1e2a24;
+  --titlebar-bg: #f8fafc;
 }
 
 [data-theme="dark"] {
@@ -355,6 +357,7 @@ body, html{
   --selected-node-bg: #1a1a1a;
   --switch-buttob-bg: #1a1a1a;
   --menu-bg: #1e2a24;
+  --titlebar-bg: #131313;
 }
 
 /* Personnalisation de la scrollbar pour Webkit (Chrome, Safari, Edge) */

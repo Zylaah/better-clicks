@@ -1,6 +1,6 @@
 <template>
     <div class="titlebar">
-      <div class="title">Mon Application</div>
+      <div class="title">Numérix v1.0.0</div>
       <div class="titlebar-controls">
         <button class="titlebar-button minimize" @click="minimize">
           <span><font-awesome-icon icon="minus" /></span>
@@ -38,7 +38,7 @@
   .titlebar {
     -webkit-app-region: drag; /* Permet de déplacer la fenêtre */
     height: 30px;
-    background: var(--navbar-bg);
+    background: var(--titlebar-bg);
     user-select: none;
     display: flex;
     justify-content: space-between;
