@@ -28,6 +28,9 @@ module.exports = defineConfig({
           target: ["AppImage"]
         }
       }
+    },
+    electronBuilder: {
+      preload: 'src/preload.js',
     }
   }
 })

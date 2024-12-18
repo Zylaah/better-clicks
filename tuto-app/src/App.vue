@@ -1,62 +1,64 @@
 <template>
   <div class="app-container">
-    <nav class="navbar">
-      <div class="nav-brand">
-        <font-awesome-icon icon="code" class="brand-icon" />
-        <span>Numérix</span>
-      </div>
-      <div class="nav-links">
-        <router-link to="/" class="nav-link">
-          <font-awesome-icon icon="home" />
-          <span>Accueil</span>
-        </router-link>
-        <div class="menu-container" :class="{ 'active': isGuideActive }">
-          <div class="nav-link">
-            <font-awesome-icon icon="book" />
-            <span>Les guides</span>
-          </div>
-          <div class="menu-content-guide">
-            <ul>
-              <li>
-                <a href="" class="nav-link-menu">
-                  <font-awesome-icon icon="keyboard" />
-                  <span>Le clavier</span>
-                </a>
-              </li>
-            </ul> 
-          </div>
+    <TitleBar />
+    <router-view class="main-content"/>
+      <nav class="navbar">
+        <div class="nav-brand">
+          <font-awesome-icon icon="code" class="brand-icon" />
+          <span>Numérix</span>
         </div>
-        <div class="menu-container" :class="{ 'active': isExerciseActive }">
-          <div class="nav-link">
-            <font-awesome-icon icon="book" />
-            <span>Les exercices</span>
+        <div class="nav-links">
+          <router-link to="/" class="nav-link">
+            <font-awesome-icon icon="home" />
+            <span>Accueil</span>
+          </router-link>
+          <div class="menu-container" :class="{ 'active': isGuideActive }">
+            <div class="nav-link">
+              <font-awesome-icon icon="book" />
+              <span>Les guides</span>
+            </div>
+            <div class="menu-content-guide">
+              <ul>
+                <li>
+                  <a href="" class="nav-link-menu">
+                    <font-awesome-icon icon="keyboard" />
+                    <span>Le clavier</span>
+                  </a>
+                </li>
+              </ul> 
+            </div>
           </div>
-          <div class="menu-content-exercise">
-            <ul>
-              <li>
-                <router-link to="/file-tree" class="nav-link-menu">
-                  <font-awesome-icon icon="folder-tree" />
-                  <span>Explorateur</span>
-                </router-link>
-              </li>
-              <hr>
-              <li>
-                <a href="/le-clavier" class="nav-link-menu">
-                  <font-awesome-icon icon="keyboard" />
-                  <span>Le clavier</span>
-                </a>
-              </li>
-            </ul> 
+          <div class="menu-container" :class="{ 'active': isExerciseActive }">
+            <div class="nav-link">
+              <font-awesome-icon icon="book" />
+              <span>Les exercices</span>
+            </div>
+            <div class="menu-content-exercise">
+              <ul>
+                <li>
+                  <router-link to="/file-tree" class="nav-link-menu">
+                    <font-awesome-icon icon="folder-tree" />
+                    <span>Explorateur</span>
+                  </router-link>
+                </li>
+                <hr>
+                <li>
+                  <a href="/le-clavier" class="nav-link-menu">
+                    <font-awesome-icon icon="keyboard" />
+                    <span>Le clavier</span>
+                  </a>
+                </li>
+              </ul> 
+            </div>
           </div>
+          
+          <router-link to="/about" class="nav-link">
+            <font-awesome-icon icon="info-circle" />
+            <span>À propos</span>
+          </router-link>
+          <ThemeToggle />
         </div>
-        
-        <router-link to="/about" class="nav-link">
-          <font-awesome-icon icon="info-circle" />
-          <span>À propos</span>
-        </router-link>
-        <ThemeToggle />
-      </div>
-    </nav>
+      </nav>
     <router-view/>
   </div>
 </template>
@@ -65,11 +67,13 @@
 import ThemeToggle from './components/ThemeToggle.vue';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+import TitleBar from './views/TitleBar.vue';
 
 export default {
   name: 'App',
   components: {
-    ThemeToggle
+    ThemeToggle,
+    TitleBar
   },
   setup() {
     const route = useRoute();
@@ -97,6 +101,20 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.app-container{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.main-content{
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+}
+
 body, html{
   margin: 0 ;
   padding: 0;
@@ -113,7 +131,7 @@ body, html{
   justify-content: space-between;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: fixed;
-  top: 0;
+  top: 30px;
   left: 0;
   right: 0;
   z-index: 1000;
@@ -343,17 +361,19 @@ body, html{
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
+  z-index: 1;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--bg-secondary);
   border-radius: 4px;
+  z-index: 1;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-color);
   border-radius: 4px;
-  transition: background 0.2s ease;
+  z-index: 1;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -376,27 +396,36 @@ body, html{
   display: none; /* Pour Chrome, Safari et Opera */
 }
 
-/* Style pour une scrollbar plus fine et moderne */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: var(--text-secondary) transparent;
+/* Styles de scrollbar */
+.main-content::-webkit-scrollbar {
+  width: 8px;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+.main-content::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+.main-content::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+  border-radius: 4px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--text-secondary);
-  border-radius: 3px;
-  border: 2px solid transparent;
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent-color);
+/* Assurez-vous que les éléments qui doivent être au-dessus ont un z-index plus élevé */
+.titlebar {
+  z-index: 1000;
+}
+
+.navbar {
+  z-index: 999;
+}
+
+/* Pour les conteneurs avec scrollbar */
+.tree-container, .selected-content {
+  position: relative;
+  z-index: 1;
 }
 </style>

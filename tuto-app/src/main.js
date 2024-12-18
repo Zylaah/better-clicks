@@ -40,7 +40,13 @@ import {
     faChevronDown,
     faBullseye,
     faUsers,
-    faEnvelope
+    faEnvelope,
+    faMinus,
+    faExpand,
+    faTimes,
+    faWindowMinimize,
+    faWindowMaximize,
+    faWindowClose
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -89,11 +95,17 @@ library.add(
     faBullseye,
     faUsers,
     faEnvelope,
+    faMinus,
+    faExpand,
+    faTimes,
     faTwitter,
     faGithub,
     faLinkedin,
     faInstagram,
-    faYoutube
+    faYoutube,
+    faWindowMinimize,
+    faWindowMaximize,
+    faWindowClose
 )
 
 const app = createApp(App)

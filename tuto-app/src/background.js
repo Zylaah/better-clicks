@@ -1,8 +1,10 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
+import path from 'path'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -15,22 +17,31 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1720,
     height: 1080,
-    titleBarStyle: {
-      backgroundColor: '#000000',
-      color: '#94a3b8', 
-      height: 70
-    },
+    frame: false,
     autoHideMenuBar: true,
     webPreferences: {
       
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, process.env.WEBPACK_DEV_SERVER_URL ? '../src/preload.js' : 'preload.js')
     }
   })
 
-  win.maximize()
+  ipcMain.on('window-minimize', () => {
+    win.minimize()
+  })
+
+  ipcMain.on('window-maximize', () => {
+    if (win.isMaximized()) {
+      win.unmaximize()
+    } else {
+      win.maximize()
+    }
+  })
+
+  ipcMain.on('window-close', () => {
+    win.close()
+  })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
