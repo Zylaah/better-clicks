@@ -225,19 +225,7 @@ body, html{
   background: rgba(66, 184, 131, 0.1);
 }
 
-.menu-content-guide {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--navbar-bg);
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--hover-color);
-  width: 150px;
-}
-
+.menu-content-guide,
 .menu-content-exercise {
   display: none;
   position: absolute;
@@ -248,69 +236,50 @@ body, html{
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--hover-color);
+}
+
+.menu-content-guide {
+  width: 150px;
+}
+
+.menu-content-exercise {
   width: auto;
 }
 
+.menu-content-guide ul,
 .menu-content-exercise ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+.menu-content-guide li,
 .menu-content-exercise li {
   padding: 0.5rem 0.5rem;
   border-radius: 6px;
   transition: all 0.3s ease;
 }
 
+.menu-content-guide li.router-link,
 .menu-content-exercise li.router-link {
   color: var(--text-secondary);
   text-decoration: none;
 }
 
+.menu-content-guide li.router-link:hover,
 .menu-content-exercise li.router-link:hover {
   color: var(--text-color);
   background: var(--hover-color);
 }
 
+.menu-content-guide hr,
 .menu-content-exercise hr {
   margin: 0;
   border: none;
   border-top: 1px solid var(--hover-color);
 }
 
-.menu-content-guide ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-content-guide li {
-  padding: 0.5rem 0.5rem;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
-
-.menu-content-guide li.router-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.menu-content-guide li.router-link:hover {
-  color: var(--text-color);
-  background: var(--hover-color);
-}
-
-.menu-content-guide hr {
-  margin: 0;
-  border: none;
-  border-top: 1px solid var(--hover-color);
-}
-
-.menu-container:hover .menu-content-guide {
-  display: block;
-}
-
+.menu-container:hover .menu-content-guide,
 .menu-container:hover .menu-content-exercise {
   display: block;
 }

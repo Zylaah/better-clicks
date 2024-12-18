@@ -1,8 +1,10 @@
 <template>
   <div class="exercise-view">
-    <button class="back-button" @click="goBack">
-      <font-awesome-icon icon="arrow-left" /> Retour à l'explorateur
-    </button>
+    <div class="back-button-container">
+      <button class="back-button" @click="goBack">
+        <font-awesome-icon icon="arrow-left" /> Retour à l'explorateur
+      </button>
+    </div>
     <div class="exercise-container">
       <file-explorer :fileTree="exercise.fileTree">
         <div class="exercise-instructions">
@@ -85,37 +87,42 @@ export default {
   padding: 20px;
 }
 
+.back-button-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 11vh;
+  z-index: 100;
+  justify-content: center;
+  width: 100%;
+}
+
 .back-button {
-  position: absolute;
-  top: 90px;
-  left: 20px;
-  background-color: var(--accent-color);
-  color: white;
+  padding: 10px 20px;
   border: none;
-  padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1em;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
+  background-color: var(--accent-color);
+  color: var(--text-color);
 }
 
 .back-button:hover {
-  background-color: var(--hover-color);
+  transform: translateY(-2px);
 }
 
 .exercise-container {
   width: 60vw;
   height: 70vh;
   position: relative;
-  margin-top: 150px;
+  margin-top: 50px;
 }
 
 .exercise-instructions {
   padding: 20px;
   background-color: var(--bg-primary);
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .exercise-instructions-container {
