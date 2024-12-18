@@ -10,7 +10,10 @@ yarn-error.log*
 
 # Vue.js build output
 /dist
-/dist_electron
+#/dist_electron
+
+# Exception pour win-unpacked
+!/dist_electron/win-unpacked
 
 # Electron build output
 /build
