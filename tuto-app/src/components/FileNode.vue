@@ -153,32 +153,36 @@ export default {
         return
       }
       
+      let newNode = null;
+      
       switch(action) {
         case 'newFile':
           this.isOpen = true
+          newNode = { 
+            name: 'Nouveau fichier', 
+            type: 'file',
+            id: Date.now()
+          };
           this.$emit('add-node', {
             parent: this.node,
-            newNode: { 
-              name: 'Nouveau fichier', 
-              type: 'file',
-              id: Date.now()
-            }
-          })
+            newNode
+          });
           break
         case 'newFolder':
           this.isOpen = true
+          newNode = { 
+            name: 'Nouveau dossier', 
+            type: 'folder', 
+            children: [],
+            id: Date.now()
+          };
           this.$emit('add-node', {
             parent: this.node,
-            newNode: { 
-              name: 'Nouveau dossier', 
-              type: 'folder', 
-              children: [],
-              id: Date.now()
-            }
-          })
+            newNode
+          });
           break
         case 'rename':
-          this.startRename()
+          this.startRename(this.node)
           break
         case 'delete':
           this.showDeleteModal = true
@@ -203,7 +207,19 @@ export default {
           const input = this.$refs.nameInput
           if (input) {
             input.focus()
-            input.select()
+            const selectText = () => {
+              if(!this.isFolder) {
+                const lastDotIndex = this.node.name.lastIndexOf('.');
+                if (lastDotIndex > 0) {
+                  input.setSelectionRange(0, lastDotIndex);
+                } else {
+                  input.select()
+                }
+              } else {
+                input.select()
+              }
+            }
+            selectText()
           }
         })
       })

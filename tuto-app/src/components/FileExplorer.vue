@@ -30,7 +30,7 @@
       <div class="content-header">
         <div class="breadcrumb">
           <font-awesome-icon icon="home" /> 
-          <template v-if="currentPath">/ {{ currentPath }}</template>
+          <template v-if="currentPath">{{ currentPath }}</template>
         </div>
       </div>
       <div class="selected-content">
@@ -182,9 +182,10 @@ export default defineComponent({
     },
     
     handleSelect(payload) {
-      this.selectedFile = payload.node
-      this.currentPath = payload.path
-      this.$emit('select', payload)
+      this.selectedFile = payload.node;
+      const basePath = 'C:/';
+      this.currentPath = payload.path ? `${basePath}${payload.path}` : basePath;
+      this.$emit('select', payload);
     }
   },
   beforeUnmount() {

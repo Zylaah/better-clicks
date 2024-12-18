@@ -7,9 +7,15 @@
       <file-explorer :fileTree="exercise.fileTree">
         <div class="exercise-instructions">
           <h3>{{ exercise.title }}</h3>
-          <div class="exercise-task">
-            <h4>Tâche</h4>
-            <p>{{ exercise.task }}</p>
+          <div :class="{ 'exercise-instructions-container': true, 'vertical-layout': !exercise.hasInput }">
+            <div class="exercise-task">
+              <h4>Consigne :</h4>
+              <p>{{ exercise.task }}</p>
+            </div>
+            <div v-if="exercise.hasHint" class="exercise-hint">
+              <h4>Indice :</h4>
+              <p>{{ exercise.hint }}</p>
+            </div>
           </div>
         </div>
         <div v-if="exercise.hasInput" class="exercise-input-container">
@@ -110,9 +116,17 @@ export default {
   background-color: var(--bg-primary);
 }
 
+.exercise-instructions-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 50px;
+}
+
 .exercise-instructions h3 {
   color: var(--accent-color);
   margin-bottom: 30px;
+  margin-top: 10px;
   font-size: 1.8em;
   text-align: center;
   position: relative;
@@ -132,11 +146,18 @@ export default {
 }
 
 .exercise-task {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-tertiary);
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 20px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--accent-color);
+  width: 50%;
+  min-height: 100px;
+}
+
+.full-width {
+  width: 100%;
+  min-height: 80px;
 }
 
 .exercise-task h4 {
@@ -152,6 +173,31 @@ export default {
   flex-grow: 1;
   display: flex;
 }
+
+.exercise-hint {
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  width: 50%;
+}
+
+.exercise-hint h4 {
+  margin: 0 0 10px 0;
+  color: var(--text-color);
+  font-size: 1.1em;
+}
+
+.exercise-hint p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  flex-grow: 1;
+  display: flex;
+  word-wrap: break-word;
+}
+
 
 .exercise-input-container {
   display: flex;
@@ -259,5 +305,15 @@ export default {
     align-items: center;
     justify-content: center;
   }
+}
+
+.vertical-layout {
+  flex-direction: column;
+  align-items: center;
+}
+
+.exercise-task, .exercise-hint {
+  margin-bottom: 5px;
+  width: 80%;
 }
 </style>

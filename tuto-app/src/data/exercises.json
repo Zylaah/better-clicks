@@ -21,7 +21,8 @@
         },
         { "name": "logo.png", "type": "file", "content": "Contenu du logo" }
       ],
-      "hasInput": false
+      "hasInput": false,
+      "hasHint": false
     },
 
     {
@@ -43,7 +44,9 @@
           ] }
         ] }
       ],
-      "hasInput": false
+      "hasInput": false,
+      "hasHint": true,
+      "hint": "Pour créer un nouveau fichier, utilisez le menu contextuel en effectuant un clic droit sur le dossier 'PDF'."
     },
 
     {
@@ -52,7 +55,7 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Donnez le chemin d'accès au fichier 'Rapport.txt'. (Format : '/NomDeDossier1/NomDeDossier2/NomDuFichier.txt')",
+      "task": "Donnez le chemin d'accès au fichier 'Rapport.txt'.",
       "fileTree": [
         { "name": "Documents", "type": "folder", "children": [
             { "name": "Rapports", "type": "folder", "children": [
@@ -61,7 +64,9 @@
         ] }
       ],
       "hasInput": true,
-      "expectedAnswer": "/Documents/Rapports/Rapport.txt"
+      "expectedAnswer": "/Documents/Rapports/Rapport.txt",
+      "hasHint": true,
+      "hint": "(Format : '/NomDeDossier1 /NomDeDossier2 /NomDuFichier.txt')"
     }
 
   ]
