@@ -1,64 +1,65 @@
 <template>
   <div class="app-container">
     <TitleBar />
-    <router-view class="main-content"/>
-      <nav class="navbar">
-        <div class="nav-brand">
-          <img src="@/assets/icon.png" alt="Logo Numérix" class="brand-icon" />
-        </div>
-        <div class="nav-links">
-          <router-link to="/" class="nav-link">
-            <font-awesome-icon icon="home" />
-            <span>Accueil</span>
-          </router-link>
-          <div class="menu-container" :class="{ 'active': isGuideActive }">
-            <div class="nav-link">
-              <font-awesome-icon icon="book" />
-              <span>Les guides</span>
-            </div>
-            <div class="menu-content-guide">
-              <ul>
-                <li>
-                  <a href="" class="nav-link-menu">
-                    <font-awesome-icon icon="keyboard" />
-                    <span>Le clavier</span>
-                  </a>
-                </li>
-              </ul> 
-            </div>
+    <nav class="navbar">
+      <div class="nav-brand">
+        <img src="@/assets/icon.png" alt="Logo Numérix" class="brand-icon" />
+      </div>
+      <div class="nav-links">
+        <router-link to="/" class="nav-link">
+          <font-awesome-icon icon="home" />
+          <span>Accueil</span>
+        </router-link>
+        <div class="menu-container" :class="{ 'active': isGuideActive }">
+          <div class="nav-link">
+            <font-awesome-icon icon="book" />
+            <span>Les guides</span>
           </div>
-          <div class="menu-container" :class="{ 'active': isExerciseActive }">
-            <div class="nav-link">
-              <font-awesome-icon icon="book" />
-              <span>Les exercices</span>
-            </div>
-            <div class="menu-content-exercise">
-              <ul>
-                <li>
-                  <router-link to="/file-tree" class="nav-link-menu">
-                    <font-awesome-icon icon="folder-tree" />
-                    <span>Explorateur</span>
-                  </router-link>
-                </li>
-                <hr>
-                <li>
-                  <a href="/le-clavier" class="nav-link-menu">
-                    <font-awesome-icon icon="keyboard" />
-                    <span>Le clavier</span>
-                  </a>
-                </li>
-              </ul> 
-            </div>
+          <div class="menu-content-guide">
+            <ul>
+              <li>
+                <a href="" class="nav-link-menu">
+                  <font-awesome-icon icon="keyboard" />
+                  <span>Le clavier</span>
+                </a>
+              </li>
+            </ul> 
           </div>
-          
-          <router-link to="/about" class="nav-link">
-            <font-awesome-icon icon="info-circle" />
-            <span>À propos</span>
-          </router-link>
-          <ThemeToggle />
         </div>
-      </nav>
-    <router-view/>
+        <div class="menu-container" :class="{ 'active': isExerciseActive }">
+          <div class="nav-link">
+            <font-awesome-icon icon="book" />
+            <span>Les exercices</span>
+          </div>
+          <div class="menu-content-exercise">
+            <ul>
+              <li>
+                <router-link to="/file-tree" class="nav-link-menu">
+                  <font-awesome-icon icon="folder-tree" />
+                  <span>Explorateur</span>
+                </router-link>
+              </li>
+              <hr>
+              <li>
+                <a href="/le-clavier" class="nav-link-menu">
+                  <font-awesome-icon icon="keyboard" />
+                  <span>Le clavier</span>
+                </a>
+              </li>
+            </ul> 
+          </div>
+        </div>
+        
+        <router-link to="/about" class="nav-link">
+          <font-awesome-icon icon="info-circle" />
+          <span>À propos</span>
+        </router-link>
+        <ThemeToggle />
+      </div>
+    </nav>
+    <div class="router-view-container">
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -107,7 +108,7 @@ export default {
   overflow: hidden;
 }
 
-.main-content{
+.router-view-container{
   flex: 1;
   overflow-y: auto;
   position: relative;
