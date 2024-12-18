@@ -171,9 +171,12 @@ export default {
           this.startRename()
           break
         case 'delete':
-          if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
+          this.isEditing = false
+          this.editedName = ''
+          this.showContextMenu = false
+          this.$nextTick(() => {
             this.$emit('delete-node', this.node)
-          }
+          })
           break
       }
       this.closeContextMenu()
@@ -182,35 +185,35 @@ export default {
       event.stopPropagation()
     },
     startRename() {
-      if (!this.node) return;
-      this.isEditing = true;
-      this.editedName = this.node.name;
+      if (!this.node) return
+      
+      this.isEditing = false
+      this.editedName = ''
+      
       this.$nextTick(() => {
-        const input = this.$refs.nameInput;
-        if (input) {
-          input.focus();
-          const selectText = () => {
-            if (!this.isFolder) {
-              const lastDotIndex = this.node.name.lastIndexOf('.');
-              if (lastDotIndex > 0) {
-                input.setSelectionRange(0, lastDotIndex);
-              } else {
-                input.select();
-              }
-            } else {
-              input.select();
-            }
-          };
-          selectText();
-        }
-      });
+        this.isEditing = true
+        this.editedName = this.node.name
+        
+        this.$nextTick(() => {
+          const input = this.$refs.nameInput
+          if (input) {
+            input.focus()
+            input.select()
+          }
+        })
+      })
     },
     onBlur(event) {
       event.stopPropagation()
       this.confirmRename()
     },
     confirmRename() {
+      console.log('Confirmation du renommage...')
+      console.log('Nom édité:', this.editedName)
+      console.log('Nom actuel:', this.node.name)
+      
       if (this.editedName && this.editedName !== this.node.name) {
+        console.log('Le nom a été modifié, émission de l\'événement rename-node')
         this.$emit('rename-node', {
           node: this.node,
           newName: this.editedName
@@ -219,14 +222,20 @@ export default {
         const currentPath = this.parentPath 
           ? `${this.parentPath}/${this.editedName}`
           : this.editedName
+        console.log('Nouveau chemin calculé:', currentPath)
+        
+        console.log('Émission de l\'événement select avec le nouveau chemin')
         this.$emit('select', { 
           node: this.node, 
           path: currentPath 
         })
+      } else {
+        console.log('Pas de modification du nom ou nom invalide')
       }
       this.cancelRename()
     },
     cancelRename() {
+      console.log('Annulation du mode édition')
       this.isEditing = false
       this.editedName = ''
     }
@@ -329,6 +338,7 @@ export default {
   min-width: 100px;
   outline: none;
   border-radius: 2px;
+  z-index: 1000;
 }
 
 .name-input:focus {

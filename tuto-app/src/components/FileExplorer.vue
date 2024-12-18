@@ -94,23 +94,38 @@ export default defineComponent({
   },
     
     deleteNode(node) {
+      console.log('Début de la suppression du nœud:', node);
+      console.log('État initial de l\'arborescence:', JSON.stringify(this.localFileTree));
+
       const parent = this.findParent(node, this.localFileTree);
+      console.log('Parent trouvé:', parent);
+
       if (parent && parent.children) {
+        console.log('Suppression depuis le parent');
         const index = parent.children.indexOf(node);
+        console.log('Index du nœud dans les enfants:', index);
         if (index > -1) {
           parent.children.splice(index, 1);
+          console.log('Nœud supprimé des enfants du parent');
         }
       } else {
+        console.log('Suppression depuis la racine');
         const index = this.localFileTree.indexOf(node);
+        console.log('Index du nœud dans l\'arborescence racine:', index);
         if (index > -1) {
           this.localFileTree.splice(index, 1);
+          console.log('Nœud supprimé de la racine');
         }
       }
+
       if (this.selectedFile === node) {
+        console.log('Le nœud supprimé était sélectionné, réinitialisation de la sélection');
         this.selectedFile = null;
         this.currentPath = '';
       }
-      console.log("Arborescence après suppression:", this.localFileTree);
+
+      this.$forceUpdate();
+      console.log('État final de l\'arborescence:', JSON.stringify(this.localFileTree));
     },
     
     findParent(node, tree = this.localFileTree) {
