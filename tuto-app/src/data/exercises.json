@@ -43,7 +43,7 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Donnez le chemin d'accès au fichier 'Rapport.txt' avec le format suivant : '/NomDeDossier1/NomDeDossier2/NomDuFichier.txt'.",
+      "task": "Donnez le chemin d'accès au fichier 'Rapport.txt'. (Format : '/NomDeDossier1/NomDeDossier2/NomDuFichier.txt')",
       "fileTree": [
         { "name": "Documents", "type": "folder", "children": [
             { "name": "Rapports", "type": "folder", "children": [

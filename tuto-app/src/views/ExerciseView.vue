@@ -99,15 +99,14 @@ export default {
 }
 
 .exercise-container {
-  width: 60%;
-  height: 60vh;
+  width: 60vw;
+  height: 70vh;
   position: relative;
   margin-top: 20px;
 }
 
 .exercise-instructions {
-  height: calc(70% - 60px);
-  overflow-y: auto;
+  padding: 20px;
   background-color: var(--bg-primary);
 }
 
@@ -116,7 +115,6 @@ export default {
   margin-bottom: 30px;
   font-size: 1.8em;
   text-align: center;
-  width: 100%;
   position: relative;
   padding-bottom: 15px;
 }
@@ -150,13 +148,16 @@ export default {
 .exercise-task p {
   margin: 0;
   color: var(--text-secondary);
-  line-height: 1.5;
+  font-size: 0.9em;
+  flex-grow: 1;
+  display: flex;
 }
 
 .exercise-input-container {
   display: flex;
   gap: 10px;
   padding: 15px;
+  margin: 20px;
   background-color: var(--bg-secondary);
   border-radius: 10px;
   border: 1px solid var(--border-color);
@@ -169,6 +170,11 @@ export default {
   border-radius: 5px;
   background-color: var(--bg-primary);
   color: var(--text-color);
+}
+
+.exercise-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
 }
 
 .exercise-input-button {
@@ -186,6 +192,8 @@ export default {
 
 .validation-message-container {
   margin-top: 15px;
+  margin-left: 8px;
+  margin-right: 8px;
   padding: 0 15px;
 }
 
@@ -240,7 +248,7 @@ export default {
   max-width: 400px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1180px) {
   .exercise-container {
     display: none;
   }
