@@ -15,13 +15,13 @@
             <font-awesome-icon icon="book" />
             <span>Les guides</span>
           </div>
-          <div class="menu-content">
+          <div class="menu-content-guide">
             <ul>
               <li>
-                <router-link to="/file-tree" class="nav-link">
-                  <font-awesome-icon icon="folder-tree" />
-                  <span>Explorateur</span>
-                </router-link>
+                <a href="" class="nav-link-menu">
+                  <font-awesome-icon icon="keyboard" />
+                  <span>Le clavier</span>
+                </a>
               </li>
             </ul> 
           </div>
@@ -31,7 +31,7 @@
             <font-awesome-icon icon="book" />
             <span>Les exercices</span>
           </div>
-          <div class="menu-content">
+          <div class="menu-content-exercise">
             <ul>
               <li>
                 <router-link to="/file-tree" class="nav-link-menu">
@@ -41,10 +41,10 @@
               </li>
               <hr>
               <li>
-                <router-link to="/" class="nav-link-menu">
-                  <font-awesome-icon icon="home" />
-                  <span>Accueil</span>
-                </router-link>
+                <a href="" class="nav-link-menu">
+                  <font-awesome-icon icon="keyboard" />
+                  <span>Le clavier</span>
+                </a>
               </li>
             </ul> 
           </div>
@@ -75,7 +75,7 @@ export default {
     const route = useRoute();
 
     const isGuideActive = computed(() => {
-      return route.path === '/file-tree'; // Ajustez selon vos routes
+      return route.path === ''; // Ajustez selon vos routes
     });
 
     const isExerciseActive = computed(() => {
@@ -151,7 +151,7 @@ body, html{
 .nav-link-menu {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   color: var(--text-secondary);
   text-decoration: none;
   padding: 0.5rem 0.8rem;
@@ -225,7 +225,7 @@ body, html{
   background: rgba(66, 184, 131, 0.1);
 }
 
-.menu-content {
+.menu-content-guide {
   display: none;
   position: absolute;
   top: 100%;
@@ -235,37 +235,83 @@ body, html{
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--hover-color);
+  width: 150px;
 }
 
-.menu-content ul {
+.menu-content-exercise {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--navbar-bg);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--hover-color);
+  width: auto;
+}
+
+.menu-content-exercise ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.menu-content li {
+.menu-content-exercise li {
   padding: 0.5rem 0.8rem;
   border-radius: 6px;
   transition: all 0.3s ease;
 }
 
-.menu-content li.router-link {
+.menu-content-exercise li.router-link {
   color: var(--text-secondary);
   text-decoration: none;
 }
 
-.menu-content li.router-link:hover {
+.menu-content-exercise li.router-link:hover {
   color: var(--text-color);
   background: var(--hover-color);
 }
 
-.menu-content hr {
+.menu-content-exercise hr {
   margin: 0;
   border: none;
   border-top: 1px solid var(--hover-color);
 }
 
-.menu-container:hover .menu-content {
+.menu-content-guide ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-content-guide li {
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.menu-content-guide li.router-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.menu-content-guide li.router-link:hover {
+  color: var(--text-color);
+  background: var(--hover-color);
+}
+
+.menu-content-guide hr {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--hover-color);
+}
+
+.menu-container:hover .menu-content-guide {
+  display: block;
+}
+
+.menu-container:hover .menu-content-exercise {
   display: block;
 }
 
