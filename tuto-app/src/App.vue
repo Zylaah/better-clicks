@@ -10,10 +10,19 @@
           <font-awesome-icon icon="home" />
           <span>Accueil</span>
         </router-link>
-        <router-link to="/file-tree" class="nav-link">
-          <font-awesome-icon icon="folder-tree" />
-          <span>Explorateur</span>
-        </router-link>
+        <div class="dropdown">
+          <div class="nav-link">
+            <font-awesome-icon icon="book" />
+            <span>Les exercices</span>
+          </div>
+          <div class="dropdown-content">
+            <router-link to="/file-tree" class="nav-link">
+              <font-awesome-icon icon="folder-tree" />
+              <span>   Explorateur</span>
+            </router-link>
+          </div>
+        </div>
+        
         <router-link to="/about" class="nav-link">
           <font-awesome-icon icon="info-circle" />
           <span>À propos</span>
@@ -248,5 +257,71 @@ body, html{
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: var(--accent-color);
+}
+
+.dropdown {
+  display: flex;
+}
+
+
+.dropdown:hover {
+  cursor: pointer;
+}
+
+.dropbtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #a0a0a0;
+  text-decoration: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.dropbtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #1a1a1a;
+  min-width: 160px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  top: 54px;
+}
+
+.dropdown-content .nav-link {
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.3s ease;
+  gap: 0.5rem;
+}
+
+.dropdown-content .nav-link:hover {
+  background-color: var(--hover-color);
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 </style>

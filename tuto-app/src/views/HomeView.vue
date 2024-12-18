@@ -51,17 +51,17 @@
     <div class="latest-tutorials">
       <h2>Tutoriels Recommandés</h2>
       <div class="tutorials-grid">
-        <div class="tutorial-card">
+        <router-link to="/file-tree" class="tutorial-card">
           <div class="tutorial-badge">Débutant</div>
           <div class="tutorial-content">
             <h3>Premiers Pas avec Windows</h3>
-            <p>Apprenez à allumer votre PC, utiliser la souris et le clavier efficacement</p>
+            <p>Apprenez à naviguer dans une arborescence de fichiers</p>
             <div class="tutorial-meta">
               <span><font-awesome-icon icon="clock" /> 30 min</span>
               <span><font-awesome-icon icon="star" /> Pour débutants</span>
             </div>
           </div>
-        </div>
+        </router-link>
 
         <div class="tutorial-card">
           <div class="tutorial-content">
@@ -286,6 +286,7 @@ export default {
   border: 1px solid var(--border-color);
   box-shadow: 0 4px 6px var(--shadow-color);
   transition: transform 0.3s ease;
+  text-decoration: none;
 }
 
 .tutorial-card:hover {
