@@ -84,24 +84,24 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: clamp(1rem, 2vw, 2rem);
 }
 
 .back-button-container {
   display: flex;
   gap: 10px;
-  margin-top: 11vh;
+  margin-top: max(11vh, 4rem);
   z-index: 100;
   justify-content: center;
   width: 100%;
 }
 
 .back-button {
-  padding: 10px 20px;
+  padding: clamp(0.5rem, 1.5vw, 1rem) clamp(1rem, 2vw, 2rem);
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1em;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
   transition: all 0.2s ease;
   background-color: var(--accent-color);
   color: var(--text-color);
@@ -115,7 +115,7 @@ export default {
   width: 60vw;
   height: 70vh;
   position: relative;
-  margin-top: 50px;
+  margin-top: clamp(1rem, 3vw, 4rem);
 }
 
 .exercise-instructions {
