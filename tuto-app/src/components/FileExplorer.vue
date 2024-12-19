@@ -198,7 +198,7 @@ export default defineComponent({
 <style scoped>
 .file-explorer {
   display: flex;
-  height: 70vh;
+  height: min(70vh, 800px);
   width: 100%;
   background-color: var(--bg-primary);
   color: var(--text-color);
@@ -208,7 +208,7 @@ export default defineComponent({
 }
 
 .sidebar {
-  width: 200px;
+  width: clamp(200px, 25vw, 200px);
   max-width: 500px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
@@ -217,27 +217,27 @@ export default defineComponent({
 }
 
 .sidebar-header {
-  padding: 15px;
+  padding: clamp(0.8rem, 2vw, 1.2rem);
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
-  height: 30px;
+  height: clamp(30px, 5vh, 40px);
   display: flex;
   align-items: center;
 }
 
 .sidebar-header h2 {
   margin: 0;
-  font-size: 1.1em;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(0.5rem, 1vw, 0.8rem);
   color: var(--text-color);
 }
 
 .tree-container {
-  padding: 15px;
+  padding: clamp(0.8rem, 2vw, 1.2rem);
   overflow-y: auto;
-  height: calc(100% - 60px);
+  height: calc(100% - clamp(30px, 5vh, 40px));
 }
 
 .content-area {
@@ -247,10 +247,10 @@ export default defineComponent({
 }
 
 .content-header {
-  padding: 15px;
+  padding: clamp(0.8rem, 2vw, 1.2rem);
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
-  height: 30px;
+  height: clamp(30px, 5vh, 40px);
   display: flex;
   align-items: center;
 }
@@ -258,24 +258,18 @@ export default defineComponent({
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(0.5rem, 1vw, 0.8rem);
   color: var(--text-secondary);
-  font-size: 0.9em;
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 .selected-content {
-  padding: 15px;
+  padding: clamp(0.8rem, 2vw, 1.2rem);
   flex: 1;
   overflow-y: auto;
   background-color: var(--bg-primary);
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 .file-tree {
@@ -288,10 +282,10 @@ export default defineComponent({
 }
 
 .resizer {
-  width: 12px;
+  width: clamp(8px, 1vw, 12px);
   height: 100%;
   position: absolute;
-  right: -6px;
+  right: calc(clamp(8px, 1vw, 12px) / -2);
   top: 0;
   cursor: ew-resize;
   background: transparent;
@@ -318,17 +312,17 @@ export default defineComponent({
 @media (max-width: 768px) {
   .file-explorer {
     flex-direction: column;
-    height: calc(90vh - 140px);
+    height: calc(90vh - clamp(80px, 10vh, 140px));
   }
 
   .sidebar {
     width: 100% !important;
-    height: 250px;
+    height: clamp(200px, 30vh, 250px);
     overflow-y: hidden;
   }
 
   .content-area {
-    height: calc(100% - 250px);
+    height: calc(100% - clamp(200px, 30vh, 250px));
   }
 
   .resizer {
@@ -338,19 +332,19 @@ export default defineComponent({
 
 @media (max-width: 480px) {
   .file-explorer {
-    height: calc(90vh - 140px);
+    height: calc(90vh - clamp(80px, 10vh, 140px));
   }
 
   .sidebar {
-    height: 200px;
+    height: clamp(180px, 25vh, 200px);
   }
 
   .content-area {
-    height: calc(100% - 200px);
+    height: calc(100% - clamp(180px, 25vh, 200px));
   }
 
   .breadcrumb {
-    font-size: 0.8em;
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
   }
 }
 </style>
