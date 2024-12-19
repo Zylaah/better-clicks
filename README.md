@@ -23,8 +23,8 @@ Numérix est une application éducative interactive conçue pour faciliter l'app
 ## Installation
 
 - Télécharger le fichier disponible dans "Release"
-- Double clicker sur numerix Setup 0.x.x.exe
-- L'installation est terminée !
+- Extraire le contenu de win-numerix-v0.X.X.zip sur votre bureau
+- Double cliquer sur Numérix.exe !
 
 ## Plateformes supportées
 
