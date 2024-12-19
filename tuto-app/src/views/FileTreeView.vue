@@ -180,7 +180,7 @@ export default defineComponent({
 .navigation-buttons {
   display: flex;
   gap: clamp(0.5rem, 2vw, 1rem);
-  margin-top: max(11vh, 4rem);
+  margin-top: max(12vh, 6rem);
   z-index: 100;
   justify-content: center;
   width: 100%;
@@ -209,7 +209,7 @@ export default defineComponent({
 
 /* Demo Container */
 .demo-container {
-  width: min(95%, 60vw);
+  width: min(95%, 70vw);
   height: calc(70vh - clamp(2rem, 5vh, 4rem));
   position: relative;
   margin: clamp(2rem, 5vh, 4rem) auto 0;

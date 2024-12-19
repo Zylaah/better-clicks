@@ -89,8 +89,8 @@ export default {
 
 .back-button-container {
   display: flex;
-  gap: 10px;
-  margin-top: max(11vh, 4rem);
+  gap: clamp(0.5rem, 2vw, 1rem);
+  margin-top: max(12vh, 6rem);
   z-index: 100;
   justify-content: center;
   width: 100%;
@@ -112,10 +112,15 @@ export default {
 }
 
 .exercise-container {
-  width: 60vw;
-  height: 70vh;
+  width: min(95%, 70vw);
+  height: calc(70vh - clamp(2rem, 5vh, 4rem));
   position: relative;
-  margin-top: clamp(1rem, 3vw, 4rem);
+  margin: clamp(2rem, 5vh, 4rem) auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
 }
 
 .exercise-instructions {
