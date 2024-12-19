@@ -9,7 +9,6 @@ Numérix est une application éducative interactive conçue pour faciliter l'app
 - 📁 Simulation d'explorateur de fichiers
 - 💡 Exercices interactifs progressifs
 - 🌓 Mode sombre/clair
-- 🖥️ Application desktop multi-plateformes
 - 🎓 Tutoriels guidés
 
 ## Technologies utilisées
@@ -30,8 +29,8 @@ Numérix est une application éducative interactive conçue pour faciliter l'app
 ## Plateformes supportées
 
 - Windows (x64)
-- macOS
-- Linux
+- macOS (à venir)
+- Linux (à venir)
 
 ## Contribution
 
