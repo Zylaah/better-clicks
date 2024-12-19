@@ -223,16 +223,13 @@ export default defineComponent({
 /* File System Explanation */
 .file-system-explanation {
   color: var(--text-color);
-  padding: clamp(1rem, 2vw, 2rem);
-  width: 70%;
-  max-width: 1200px;
-  margin: 0 auto;
-  overflow-y: auto;
+  padding: clamp(.7rem, 2vw, 1rem);
 }
 
 .modern-title {
-  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  color: var(--accent-color);
   margin-bottom: clamp(1rem, 2vw, 2rem);
+  margin-top: 0;
 }
 
 .title-icon {
@@ -244,24 +241,28 @@ export default defineComponent({
   padding: clamp(1rem, 2vw, 2rem);
   border-radius: 8px;
   margin-bottom: clamp(1.5rem, 3vw, 3rem);
+  flex-shrink: 0;
 }
 
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: clamp(1rem, 2vw, 2rem);
+  padding-bottom: 1rem;
 }
 
 .feature-card {
+  min-height: fit-content;
+  height: auto;
   background-color: var(--bg-secondary);
-  padding: clamp(1rem, 2vw, 2rem);
   border-radius: 8px;
+  padding: clamp(0.5rem, 2vw, 1rem);
 }
 
 .feature-card h5 {
   color: var(--accent-color);
-  font-size: clamp(1rem, 1.5vw, 1.2rem);
   margin-bottom: clamp(0.75rem, 1.5vw, 1rem);
+  margin-top: 0;
 }
 
 .highlight {
@@ -369,7 +370,7 @@ export default defineComponent({
   }
 
   .feature-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .exercises-grid {
@@ -396,6 +397,10 @@ export default defineComponent({
 
 @media screen and (max-width: 768px) {
   .exercises-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-grid {
     grid-template-columns: 1fr;
   }
 }
