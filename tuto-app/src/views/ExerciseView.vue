@@ -84,28 +84,24 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(1rem, 2vw, 1.25rem);
-  min-height: 100vh;
-  max-height: 100vh;
-  overflow: hidden;
-  box-sizing: border-box;
+  padding: 20px;
 }
 
 .back-button-container {
   display: flex;
-  gap: clamp(0.5rem, 1vw, 0.625rem);
-  margin-top: max(11vh, 4rem);
+  gap: 10px;
+  margin-top: 11vh;
   z-index: 100;
   justify-content: center;
   width: 100%;
 }
 
 .back-button {
-  padding: clamp(0.5rem, 1.5vw, 0.625rem) clamp(1rem, 2vw, 1.25rem);
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  font-size: 1em;
   transition: all 0.2s ease;
   background-color: var(--accent-color);
   color: var(--text-color);
@@ -116,66 +112,73 @@ export default {
 }
 
 .exercise-container {
-  width: min(95%, 60vw);
-  height: calc(70vh - clamp(2rem, 5vh, 4rem));
+  width: 60vw;
+  height: 70vh;
   position: relative;
-  margin: clamp(2rem, 5vh, 3.125rem) auto 0;
-  display: flex;
-  flex-direction: column;
+  margin-top: 50px;
 }
 
 .exercise-instructions {
-  padding: clamp(1rem, 2vw, 1.25rem);
+  padding: 20px;
   background-color: var(--bg-primary);
   box-sizing: border-box;
   max-width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.exercise-instructions h3 {
-  color: var(--accent-color);
-  margin-bottom: clamp(1.5rem, 3vw, 1.875rem);
-  margin-top: clamp(0.5rem, 1vw, 0.625rem);
-  font-size: clamp(1.5rem, 2.5vw, 1.8rem);
-  text-align: center;
-  position: relative;
-  padding-bottom: 0.9375rem;
-  flex-shrink: 0;
 }
 
 .exercise-instructions-container {
   display: flex;
-  gap: clamp(1rem, 2vw, 1.25rem);
-  margin-top: clamp(1rem, 2vw, 1.25rem);
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 50px;
+}
+
+.exercise-instructions h3 {
+  color: var(--accent-color);
+  margin-bottom: 30px;
+  margin-top: 10px;
+  font-size: 1.8em;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.exercise-instructions h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: var(--accent-color);
+  border-radius: 2px;
 }
 
 .exercise-task {
   background-color: var(--bg-tertiary);
   border-radius: 10px;
-  padding: clamp(0.9375rem, 2vw, 1.25rem);
-  margin-bottom: clamp(1rem, 2vw, 1.25rem);
+  padding: 15px;
+  margin-bottom: 20px;
   border: 1px solid var(--accent-color);
+  width: 50%;
+  min-height: 100px;
+}
+
+.full-width {
   width: 100%;
-  height: calc(10vh - clamp(1rem, 2vw, 1.25rem));
-  overflow-y: auto;
+  min-height: 80px;
 }
 
 .exercise-task h4 {
-  margin: 0 0 clamp(0.5rem, 1vw, 0.625rem) 0;
+  margin: 0 0 10px 0;
   color: var(--text-color);
-  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  font-size: 1.1em;
 }
 
 .exercise-task p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: clamp(0.875rem, 1.2vw, 0.9rem);
+  font-size: 0.9em;
   flex-grow: 1;
   display: flex;
 }
@@ -183,49 +186,45 @@ export default {
 .exercise-hint {
   background-color: var(--bg-secondary);
   border-radius: 10px;
-  padding: clamp(0.9375rem, 2vw, 1.25rem);
-  margin-bottom: clamp(1rem, 2vw, 1.25rem);
+  padding: 15px;
+  margin-bottom: 20px;
   border: 1px solid var(--border-color);
-  width: 100%;
-  min-height: min-content;
-  max-height: 100%;
-  overflow-y: auto;
+  width: 50%;
 }
 
 .exercise-hint h4 {
-  margin: 0 0 clamp(0.5rem, 1vw, 0.625rem) 0;
+  margin: 0 0 10px 0;
   color: var(--text-color);
-  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  font-size: 1.1em;
 }
 
 .exercise-hint p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: clamp(0.875rem, 1.2vw, 0.9rem);
+  font-size: 0.9em;
   flex-grow: 1;
   display: flex;
   word-wrap: break-word;
 }
 
+
 .exercise-input-container {
   display: flex;
-  gap: clamp(0.5rem, 1vw, 0.625rem);
-  padding: clamp(0.9375rem, 2vw, 1.25rem);
-  margin-top: auto;
+  gap: 10px;
+  padding: 15px;
+  margin-top: 20px;
   background-color: var(--bg-secondary);
   border-radius: 10px;
   border: 1px solid var(--border-color);
-  flex-shrink: 0;
 }
 
 .exercise-input {
   flex: 1;
-  padding: clamp(0.5rem, 1vw, 0.625rem);
+  padding: 8px;
   border: 1px solid var(--border-color);
   border-radius: 5px;
   background-color: var(--bg-primary);
   color: var(--text-color);
-  font-size: clamp(0.875rem, 1.2vw, 1rem);
 }
 
 .exercise-input:focus {
@@ -234,39 +233,45 @@ export default {
 }
 
 .exercise-input-button {
-  padding: clamp(0.5rem, 1vw, 0.625rem) clamp(0.75rem, 1.5vw, 1rem);
+  padding: 8px 16px;
   background-color: var(--accent-color);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: clamp(0.875rem, 1.2vw, 1rem);
 }
 
+.exercise-input-button:hover {
+  background-color: var(--hover-color);
+}
 
 .vertical-layout {
   flex-direction: column;
   align-items: center;
 }
 
+.exercise-task, .exercise-hint {
+  margin-bottom: 5px;
+  width: 100%;
+}
+
 .modified-width {
-  width: calc(100% - clamp(2rem, 4vw, 3.75rem));
-  margin: clamp(0.5rem, 1vw, 0.625rem);
+  width: calc(100% - 60px);
+  margin: 10px;
 }
 
 .validation-message-container {
-  margin-top: clamp(0.9375rem, 2vw, 1.25rem);
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  padding: 0 clamp(0.9375rem, 2vw, 1.25rem);
+  margin-top: 15px;
+  margin-left: 8px;
+  margin-right: 8px;
+  padding: 0 15px;
 }
 
 .validation-message {
-  padding: clamp(0.625rem, 1.5vw, 0.9375rem);
+  padding: 10px;
   border-radius: 5px;
   text-align: center;
-  margin: clamp(1rem, 2vw, 1.25rem);
-  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  margin: 20px;
 }
 
 .success {
@@ -277,6 +282,25 @@ export default {
 .error {
   background-color: var(--error-color);
   color: white;
+}
+
+/* Personnalisation de la scrollbar comme dans FileExplorer */
+.exercise-instructions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.exercise-instructions::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.exercise-instructions::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+  border-radius: 4px;
+}
+
+.exercise-instructions::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
 }
 
 .mobile-message {
@@ -295,18 +319,7 @@ export default {
   max-width: 400px;
 }
 
-/* Media Queries */
-@media screen and (max-width: 1366px) {
-  .exercise-container {
-    width: min(100%, 80vw);
-  }
-
-  .exercise-instructions-container {
-    overflow-y: auto;
-  }
-}
-
-@media screen and (max-width: 1180px) {
+@media (max-width: 1180px) {
   .exercise-container {
     display: none;
   }
@@ -316,24 +329,6 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: clamp(1.5rem, 3vw, 1.875rem);
-    margin: clamp(1rem, 2vw, 1.25rem);
-    background: var(--bg-secondary);
-    border-radius: 10px;
-    box-shadow: 0 2px 4px var(--shadow-color);
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(80%, 400px);
-  }
-}
-
-/* Animation Optimizations */
-@media (prefers-reduced-motion: reduce) {
-  .back-button:hover {
-    transform: none;
   }
 }
 </style>
