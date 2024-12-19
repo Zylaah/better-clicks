@@ -1,6 +1,6 @@
 <template>
     <div class="titlebar">
-      <div class="title">Numérix v1.0.0</div>
+      <div class="title">Numérix v0.1.1</div>
       <div class="titlebar-controls">
         <button class="titlebar-button minimize" @click="minimize">
           <span><font-awesome-icon icon="minus" /></span>
@@ -71,7 +71,7 @@
     height: 30px;
     background: transparent;
     border: none;
-    color: white;
+    color: var(--accent-color);
     cursor: pointer;
     font-size: 16px;
   }

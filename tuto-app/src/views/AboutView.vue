@@ -60,7 +60,7 @@
     </div>
 
     <div class="version-info">
-      <p>Version 1.0.0</p>
+      <p>Version 0.1.1</p>
       <p>© 2024 Numérix. Tous droits réservés.</p>
     </div>
   </div>
