@@ -164,29 +164,34 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Styles pour le conteneur principal et la navigation */
+/* Base styles */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: clamp(1rem, 2vw, 2rem);
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
+/* Navigation buttons */
 .navigation-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 11vh;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  margin-top: max(11vh, 4rem);
   z-index: 100;
   justify-content: center;
   width: 100%;
 }
 
 .nav-button {
-  padding: 10px 20px;
+  padding: clamp(0.5rem, 1.5vw, 1rem) clamp(1rem, 2vw, 2rem);
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1em;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
   transition: all 0.3s ease;
   background-color: var(--switch-buttob-bg);
   color: var(--text-color);
@@ -202,35 +207,98 @@ export default defineComponent({
   box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-/* Styles pour la section des exercices */
-.exercises-container {
-  width: 60vw;
-  padding: 30px;
+/* Demo Container */
+.demo-container {
+  width: min(95%, 60vw);
+  height: calc(70vh - clamp(2rem, 5vh, 4rem));
+  position: relative;
+  margin: clamp(2rem, 5vh, 4rem) auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+/* File System Explanation */
+.file-system-explanation {
+  color: var(--text-color);
+  padding: clamp(1rem, 2vw, 2rem);
+  width: 70%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-y: auto;
+}
+
+.modern-title {
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  margin-bottom: clamp(1rem, 2vw, 2rem);
+}
+
+.title-icon {
+  margin-right: 10px;
+}
+
+.intro-card {
+  background-color: var(--bg-secondary);
+  padding: clamp(1rem, 2vw, 2rem);
+  border-radius: 8px;
+  margin-bottom: clamp(1.5rem, 3vw, 3rem);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.feature-card {
+  background-color: var(--bg-secondary);
+  padding: clamp(1rem, 2vw, 2rem);
+  border-radius: 8px;
+}
+
+.feature-card h5 {
+  color: var(--accent-color);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  margin-bottom: clamp(0.75rem, 1.5vw, 1rem);
+}
+
+.highlight {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+/* Exercises Container */
+.exercises-container {
+  width: min(95%, 60vw);
+  padding: clamp(1.5rem, 3vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
 }
 
 .exercises-title {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  margin-bottom: clamp(1.5rem, 3vw, 3rem);
   text-align: center;
-  color: var(--text-color);
-  margin: 0;
+  color: var(--accent-color);
 }
 
 .exercises-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, 2vw, 2rem);
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .exercise-card {
   background: var(--bg-secondary);
   border-radius: 8px;
-  padding: 20px;
+  padding: clamp(1rem, 2vw, 2rem);
   cursor: pointer;
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
@@ -240,7 +308,7 @@ export default defineComponent({
   align-items: center;
   gap: 10px;
   box-shadow: 0 2px 4px var(--shadow-color);
-  height: 250px;
+  height: clamp(200px, 30vh, 250px);
   text-align: center;
 }
 
@@ -277,57 +345,12 @@ export default defineComponent({
   align-self: center;
 }
 
-/* Styles pour l'explication du système de fichiers */
-.file-system-explanation {
-  color: var(--text-color);
-  padding: 20px;
-}
-
-.modern-title {
-  color: var(--accent-color);
-  margin-bottom: 20px;
-  margin-top: 0;
-}
-
-.title-icon {
-  margin-right: 10px;
-}
-
-.intro-card {
-  background-color: var(--bg-secondary);
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
-}
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.feature-card {
-  background-color: var(--bg-secondary);
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.feature-card h5 {
-  color: var(--accent-color);
-  margin-bottom: 15px;
-}
-
-.highlight {
-  color: var(--accent-color);
-  font-weight: bold;
-}
-
-/* Styles pour le message mobile */
+/* Mobile Message */
 .mobile-message {
   display: none;
   text-align: center;
-  padding: 30px;
-  margin: 20px;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  margin: clamp(1rem, 2vw, 2rem);
   background: var(--bg-secondary);
   border-radius: 10px;
   box-shadow: 0 2px 4px var(--shadow-color);
@@ -335,12 +358,26 @@ export default defineComponent({
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 400px;
+  width: min(90%, 400px);
 }
 
-/* Media queries */
-@media (max-width: 1024px) {
+/* Media Queries */
+@media screen and (max-width: 1366px) {
+  .demo-container {
+    width: min(95%, 80vw);
+    height: calc(70vh - clamp(2rem, 5vh, 4rem));
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  }
+
+  .exercises-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 1024px) {
   .desktop-content {
     display: none;
   }
@@ -350,27 +387,37 @@ export default defineComponent({
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
-/* Animations */
+@media screen and (max-width: 768px) {
+  .exercises-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animation */
 .fade {
   animation: fade 0.3s ease-in-out;
 }
 
 @keyframes fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.demo-container {
-  width: 60vw;
-  height: 70vh;
-  position: relative;
-  margin-top: 50px;
+/* Optimisation des performances */
+@media (prefers-reduced-motion: reduce) {
+  .fade {
+    animation: none;
+  }
+  
+  .nav-button {
+    transition: none;
+  }
 }
 </style>
