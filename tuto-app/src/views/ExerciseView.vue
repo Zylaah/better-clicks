@@ -119,7 +119,7 @@ export default {
 }
 
 .exercise-instructions {
-  padding: 20px;
+  padding: clamp(1rem, 2vw, 2rem);
   background-color: var(--bg-primary);
   box-sizing: border-box;
   max-width: 100%;
@@ -129,17 +129,17 @@ export default {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-top: 50px;
+  margin-top: clamp(1rem, 3vw, 4rem);
 }
 
 .exercise-instructions h3 {
   color: var(--accent-color);
-  margin-bottom: 30px;
-  margin-top: 10px;
-  font-size: 1.8em;
+  margin-bottom: clamp(1rem, 2vw, 2rem);
+  margin-top: clamp(0.5rem, 1vw, 1rem);
+  font-size: clamp(1.5rem, 2.5vw, 1.8em);
   text-align: center;
   position: relative;
-  padding-bottom: 15px;
+  padding-bottom: clamp(0.5rem, 1vw, 1rem);
 }
 
 .exercise-instructions h3::after {
@@ -157,8 +157,8 @@ export default {
 .exercise-task {
   background-color: var(--bg-tertiary);
   border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 20px;
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  margin-bottom: clamp(1rem, 2vw, 2rem);
   border: 1px solid var(--accent-color);
   width: 50%;
   min-height: 100px;
@@ -170,15 +170,15 @@ export default {
 }
 
 .exercise-task h4 {
-  margin: 0 0 10px 0;
+  margin: 0 0 clamp(0.5rem, 1vw, 1rem) 0;
   color: var(--text-color);
-  font-size: 1.1em;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
 }
 
 .exercise-task p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 0.9em;
+  font-size: clamp(0.8rem, 1.5vw, 0.9em);
   flex-grow: 1;
   display: flex;
 }
@@ -186,22 +186,22 @@ export default {
 .exercise-hint {
   background-color: var(--bg-secondary);
   border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 20px;
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  margin-bottom: clamp(1rem, 2vw, 2rem);
   border: 1px solid var(--border-color);
   width: 50%;
 }
 
 .exercise-hint h4 {
-  margin: 0 0 10px 0;
+  margin: 0 0 clamp(0.5rem, 1vw, 1rem) 0;
   color: var(--text-color);
-  font-size: 1.1em;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
 }
 
 .exercise-hint p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 0.9em;
+  font-size: clamp(0.8rem, 1.5vw, 0.9em);
   flex-grow: 1;
   display: flex;
   word-wrap: break-word;
@@ -211,8 +211,8 @@ export default {
 .exercise-input-container {
   display: flex;
   gap: 10px;
-  padding: 15px;
-  margin-top: 20px;
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(0.5rem, 1vw, 1rem);
+  margin-top: clamp(1rem, 2vw, 2rem);
   background-color: var(--bg-secondary);
   border-radius: 10px;
   border: 1px solid var(--border-color);
@@ -220,7 +220,7 @@ export default {
 
 .exercise-input {
   flex: 1;
-  padding: 8px;
+  padding: clamp(0.5rem, 0.5vw, 1rem) clamp(0.5rem, 0.5vw, 1rem);
   border: 1px solid var(--border-color);
   border-radius: 5px;
   background-color: var(--bg-primary);
@@ -233,7 +233,7 @@ export default {
 }
 
 .exercise-input-button {
-  padding: 8px 16px;
+  padding: 10px;
   background-color: var(--accent-color);
   color: white;
   border: none;
@@ -251,27 +251,27 @@ export default {
 }
 
 .exercise-task, .exercise-hint {
-  margin-bottom: 5px;
+  margin-bottom: clamp(0.5rem, 1vw, 1rem);
   width: 100%;
 }
 
 .modified-width {
   width: calc(100% - 60px);
-  margin: 10px;
+  margin: clamp(0.5rem, 1vw, 1rem);
 }
 
 .validation-message-container {
-  margin-top: 15px;
-  margin-left: 8px;
-  margin-right: 8px;
-  padding: 0 15px;
+  margin-top: clamp(0.5rem, 1vw, 1rem);
+  margin-left: clamp(0.5rem, 1vw, 1rem);
+  margin-right: clamp(0.5rem, 1vw, 1rem);
+  padding: 0 clamp(0.5rem, 1vw, 1rem);
 }
 
 .validation-message {
-  padding: 10px;
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
   border-radius: 5px;
   text-align: center;
-  margin: 20px;
+  margin: clamp(0.5rem, 1vw, 1rem);
 }
 
 .success {
@@ -286,7 +286,7 @@ export default {
 
 /* Personnalisation de la scrollbar comme dans FileExplorer */
 .exercise-instructions::-webkit-scrollbar {
-  width: 8px;
+  width: clamp(0.5rem, 1vw, 1rem);
 }
 
 .exercise-instructions::-webkit-scrollbar-track {
@@ -306,8 +306,8 @@ export default {
 .mobile-message {
   display: none;
   text-align: center;
-  padding: 30px;
-  margin: 20px;
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  margin: clamp(0.5rem, 1vw, 1rem);
   background: var(--bg-secondary);
   border-radius: 10px;
   box-shadow: 0 2px 4px var(--shadow-color);
