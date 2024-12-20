@@ -53,7 +53,7 @@
   }
   
   .title {
-    color: white;
+    color: var(--text-color);
     font-size: 12px;
   }
   
