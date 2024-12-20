@@ -3,6 +3,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   pluginOptions: {
     electronBuilder: {
+      preload: 'src/preload.js',
       builderOptions: {
         appId: "com.numerix.id",
         productName: "Numérix",
@@ -17,7 +18,7 @@ module.exports = defineConfig({
               arch: ["x64"]
             }
           ],
-          artifactName: "Numerix.${ext}"
+          artifactName: "Numérix.${ext}"
         },
         mac: {
           icon: "build/icon.icns",
@@ -28,9 +29,6 @@ module.exports = defineConfig({
           target: ["AppImage"]
         }
       }
-    },
-    electronBuilder: {
-      preload: 'src/preload.js',
     }
   }
 })

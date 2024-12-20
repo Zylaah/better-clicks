@@ -27,6 +27,8 @@ async function createWindow() {
     }
   })
 
+  win.maximize()
+
   ipcMain.on('window-minimize', () => {
     win.minimize()
   })
