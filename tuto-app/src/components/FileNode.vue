@@ -142,6 +142,7 @@ export default {
         y: event.clientY
       }
       this.showContextMenu = true
+      console.log('Context menu ouvert')
       this.select()
     },
     closeContextMenu() {
@@ -186,6 +187,7 @@ export default {
           break
         case 'delete':
           this.showDeleteModal = true
+          console.log('Delete modal ouvert')
           break
       }
       this.closeContextMenu()
