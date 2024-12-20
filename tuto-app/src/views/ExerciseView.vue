@@ -23,9 +23,9 @@
             <input v-model="userInput" type="text" placeholder="Entrez votre réponse ici" class="exercise-input"/>
             <button class="exercise-input-button" @click="validateAnswer">Valider</button>
           </div>
-        </div>
-        <div class="validation-message-container">
-          <p v-if="validationMessage" :class="['validation-message', validationClass]">{{ validationMessage }}</p>
+          <div class="validation-message-container">
+            <p v-if="validationMessage" :class="['validation-message', validationClass]">{{ validationMessage }}</p>
+          </div>
         </div>
       </file-explorer>
     </div>
@@ -124,23 +124,24 @@ export default {
 }
 
 .exercise-instructions {
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: 0;
   background-color: var(--bg-primary);
   box-sizing: border-box;
   max-width: 100%;
+  flex: 1;
 }
 
 .exercise-instructions-container {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-top: clamp(1rem, 3vw, 4rem);
+  margin-top: clamp(1rem, 2vw, 2rem);
+  flex-grow: 1;
 }
 
 .exercise-instructions h3 {
   color: var(--accent-color);
-  margin-bottom: clamp(1rem, 2vw, 2rem);
-  margin-top: clamp(0.5rem, 1vw, 1rem);
+  margin: 0;
   font-size: clamp(1.5rem, 2.5vw, 1.8em);
   text-align: center;
   position: relative;
@@ -215,9 +216,9 @@ export default {
 
 .exercise-input-container {
   display: flex;
-  gap: 10px;
+  gap: clamp(0.5rem, 1vw, 1rem);
   padding: clamp(0.5rem, 1vw, 1rem) clamp(0.5rem, 1vw, 1rem);
-  margin-top: clamp(1rem, 2vw, 2rem);
+  margin-top: auto;
   background-color: var(--bg-secondary);
   border-radius: 10px;
   border: 1px solid var(--border-color);
@@ -262,14 +263,15 @@ export default {
 
 .modified-width {
   width: calc(100% - 60px);
-  margin: clamp(0.5rem, 1vw, 1rem);
+  margin: 0;
 }
 
 .validation-message-container {
   margin-top: clamp(0.5rem, 1vw, 1rem);
-  margin-left: clamp(0.5rem, 1vw, 1rem);
-  margin-right: clamp(0.5rem, 1vw, 1rem);
-  padding: 0 clamp(0.5rem, 1vw, 1rem);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-grow: 1;
 }
 
 .validation-message {
