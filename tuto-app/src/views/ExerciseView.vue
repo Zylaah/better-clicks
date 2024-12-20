@@ -268,10 +268,6 @@ export default {
 
 .validation-message-container {
   margin-top: clamp(0.5rem, 1vw, 1rem);
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  flex-grow: 1;
 }
 
 .validation-message {
