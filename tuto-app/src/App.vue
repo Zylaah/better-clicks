@@ -146,23 +146,15 @@ body, html{
   color: #fff;
 }
 
-.nav-brand:hover {
-  animation: spinWheel 4s cubic-bezier(0.440, -0.205, 0.000, 1.130) forwards;
-}
-
-@keyframes spinWheel {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(1800deg);
-  }
-}
-
 .brand-icon {
   color: #42b883;
   width: 40px;
   height: 40px;
+  transition: all 0.8s ease;
+}
+
+.nav-brand:hover .brand-icon {
+  transform: scale(1.2) rotate(360deg);
 }
 
 .nav-links {
