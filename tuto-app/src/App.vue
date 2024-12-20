@@ -2,9 +2,9 @@
   <div class="app-container">
     <TitleBar />
     <nav class="navbar">
-      <div class="nav-brand">
+      <router-link to="/" class="nav-brand">
         <img src="@/assets/icon.png" alt="Logo Numérix" class="brand-icon" />
-      </div>
+      </router-link>
       <div class="nav-links">
         <router-link to="/" class="nav-link">
           <font-awesome-icon icon="home" />
@@ -144,6 +144,19 @@ body, html{
   font-size: 1.2rem;
   font-weight: 600;
   color: #fff;
+}
+
+.nav-brand:hover {
+  animation: spinWheel 4s cubic-bezier(0.440, -0.205, 0.000, 1.130) forwards;
+}
+
+@keyframes spinWheel {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(1800deg);
+  }
 }
 
 .brand-icon {

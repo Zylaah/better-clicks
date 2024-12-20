@@ -1,6 +1,6 @@
 <template>
     <div class="titlebar">
-      <div class="title">Numérix v0.1.1</div>
+      <div class="title"><i>v0.1.2</i></div>
       <div class="titlebar-controls">
         <button class="titlebar-button minimize" @click="minimize">
           <span><font-awesome-icon icon="minus" /></span>

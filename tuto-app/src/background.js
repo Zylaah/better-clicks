@@ -15,7 +15,7 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1720,
+    width: 1920,
     height: 1080,
     frame: false,
     autoHideMenuBar: true,
@@ -26,6 +26,8 @@ async function createWindow() {
       preload: path.join(__dirname, process.env.WEBPACK_DEV_SERVER_URL ? '../src/preload.js' : 'preload.js')
     }
   })
+
+  win.setMinimumSize(1725, 975)
 
   win.maximize()
 
