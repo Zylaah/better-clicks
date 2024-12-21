@@ -10,11 +10,11 @@
         <div class="exercise-instructions">
           <h3>{{ exercise.title }}</h3>
           <div :class="{ 'exercise-instructions-container': true, 'vertical-layout': !exercise.hasInput }">
-            <div :class="{ 'exercise-task': true, 'modified-width': !exercise.hasInput }">
+            <div class= "exercise-task">
               <h4>Consigne :</h4>
               <p>{{ exercise.task }}</p>
             </div>
-            <div v-if="exercise.hasHint" :class="{ 'exercise-hint': true, 'modified-width': !exercise.hasInput }">
+            <div v-if="exercise.hasHint" class="exercise-hint">
               <h4>Indice :</h4>
               <p>{{ exercise.hint }}</p>
             </div>
@@ -113,7 +113,7 @@ export default {
 
 .exercise-container {
   width: min(95%, 70vw);
-  height: calc(70vh - clamp(2rem, 5vh, 4rem));
+  height: calc(75vh - clamp(2rem, 5vh, 4rem));
   position: relative;
   margin: clamp(2rem, 5vh, 4rem) auto 0;
   display: flex;
@@ -129,14 +129,20 @@ export default {
   box-sizing: border-box;
   max-width: 100%;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(1rem, 2vw, 2rem);
 }
 
 .exercise-instructions-container {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-top: clamp(1rem, 2vw, 2rem);
+  margin-top: clamp(3rem, 4vw, 4rem);
   flex-grow: 1;
+  width: 100%;
 }
 
 .exercise-instructions h3 {
@@ -146,6 +152,7 @@ export default {
   text-align: center;
   position: relative;
   padding-bottom: clamp(0.5rem, 1vw, 1rem);
+  margin-top: clamp(1rem, 2vw, 2rem);
 }
 
 .exercise-instructions h3::after {
@@ -163,10 +170,10 @@ export default {
 .exercise-task {
   background-color: var(--bg-tertiary);
   border-radius: 10px;
-  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(0.5rem, 1vw, 1rem);
   margin-bottom: clamp(1rem, 2vw, 2rem);
   border: 1px solid var(--accent-color);
-  width: 50%;
+  width: 100%;
   min-height: 100px;
 }
 
@@ -222,6 +229,8 @@ export default {
   background-color: var(--bg-secondary);
   border-radius: 10px;
   border: 1px solid var(--border-color);
+  width: calc(100% - 2rem);
+  margin: 0 auto;
 }
 
 .exercise-input {
@@ -251,30 +260,18 @@ export default {
   background-color: var(--hover-color);
 }
 
-.vertical-layout {
-  flex-direction: column;
-  align-items: center;
-}
-
-.exercise-task, .exercise-hint {
-  margin-bottom: clamp(0.5rem, 1vw, 1rem);
-  width: 100%;
-}
-
-.modified-width {
-  width: calc(100% - 60px);
-  margin: 0;
-}
-
 .validation-message-container {
-  margin-top: clamp(0.5rem, 1vw, 1rem);
+  display: flex;
+  gap: clamp(0.5rem, 1vw, 1rem);
+  width: 100%;
+  margin: 0 auto;
 }
 
 .validation-message {
   padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
   border-radius: 5px;
   text-align: center;
-  margin: clamp(0.5rem, 1vw, 1rem);
+  width: 100%;
 }
 
 .success {

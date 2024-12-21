@@ -46,8 +46,7 @@
         ] }
       ],
       "hasInput": false,
-      "hasHint": true,
-      "hint": "Pour créer un nouveau fichier, utilisez le menu contextuel en effectuant un clic droit sur le dossier 'PDF'."
+      "hasHint": false
     },
 
     {
@@ -66,8 +65,7 @@
       ],
       "hasInput": true,
       "expectedAnswer": "C:/Documents/Rapports/Rapport.txt",
-      "hasHint": true,
-      "hint": "(Format : 'C:/NomDeDossier1 /NomDeDossier2 /NomDuFichier.txt')"
+      "hasHint": false
     }
 
   ]

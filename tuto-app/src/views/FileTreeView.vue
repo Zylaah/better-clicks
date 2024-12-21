@@ -210,7 +210,7 @@ export default defineComponent({
 /* Demo Container */
 .demo-container {
   width: min(95%, 70vw);
-  height: calc(70vh - clamp(2rem, 5vh, 4rem));
+  height: calc(75vh - clamp(2rem, 5vh, 4rem));
   position: relative;
   margin: clamp(2rem, 5vh, 4rem) auto 0;
   display: flex;
