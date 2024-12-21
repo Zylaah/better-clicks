@@ -1,5 +1,6 @@
 [
     {
+      "id": 1,
       "title": "Navigation de Base",
       "description": "Apprenez à naviguer dans une arborescence simple de fichiers",
       "difficulty": "Facile",
@@ -13,6 +14,7 @@
           "children": [
             { "name": "Attestation.pdf", "type": "file", "content": "Contenu de l'attestation de scolarité" },
             { "name": "Repas du jour.pdf", "type": "file", "content": "Contenu du repas du jour" },
+            { "name": "Corse_2020.jpg", "type": "file", "content": "Contenu de la photo de la Corse en 2020" },
             { "name": "Projets", "type": "folder", "children": [
                 { "name": "Projet 1.txt", "type": "file", "content": "Contenu du projet 1" },
                 { "name": "Projet 2.txt", "type": "file", "content": "Contenu du projet 2" }
@@ -25,12 +27,13 @@
       "expectedAnswer": "Projet 2.txt",
       "hasHint": true,
       "hints": [
-        "Le dossier 'Projets' contient deux fichiers.",
-        "Le deuxième fichier dans ce dossier est 'Projet 2.txt'."
+        "Vous pouvez commencer par déployer l'arborescence en cliquant sur un dossier.",
+        "Le dossier 'Projets' contient deux fichiers."
       ]
     },
 
     {
+      "id": 2,
       "title": "Navigation et création de fichiers",
       "description": "Apprenez à naviguer dans une arborescence simple de fichiers et à créer un fichier.",
       "difficulty": "Facile",
@@ -54,6 +57,7 @@
     },
 
     {
+      "id": 3,
       "title": "Navigation et chemin d'accès",
       "description": "Apprenez à naviguer dans une arborescence simple de fichiers et lire un chemin d'accès.",
       "difficulty": "Facile",

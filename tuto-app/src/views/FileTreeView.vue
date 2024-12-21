@@ -1,12 +1,5 @@
 <template>
   <div class="container">
-    <!-- Message pour mobile et tablette -->
-    <div class="mobile-message">
-      <font-awesome-icon icon="desktop" class="desktop-icon" />
-      <h2>Version Desktop uniquement</h2>
-      <p>Ce module n'est disponible que sur ordinateur pour une meilleure expérience d'apprentissage.</p>
-    </div>
-
     <!-- Contenu desktop -->
     <div class="desktop-content">
       <!-- Boutons de navigation -->
@@ -180,14 +173,14 @@ export default defineComponent({
 .navigation-buttons {
   display: flex;
   gap: clamp(0.5rem, 2vw, 1rem);
-  margin-top: max(12vh, 6rem);
+  margin-top: max(10vh, 5rem);
   z-index: 100;
   justify-content: center;
   width: 100%;
 }
 
 .nav-button {
-  padding: clamp(0.5rem, 1.5vw, 1rem) clamp(1rem, 2vw, 2rem);
+  padding: 1rem;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -212,7 +205,7 @@ export default defineComponent({
   width: min(95%, 70vw);
   height: calc(75vh - clamp(2rem, 5vh, 4rem));
   position: relative;
-  margin: clamp(2rem, 5vh, 4rem) auto 0;
+  margin: clamp(1rem, 5vh, 2rem) auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -346,52 +339,21 @@ export default defineComponent({
   align-self: center;
 }
 
-/* Mobile Message */
-.mobile-message {
-  display: none;
-  text-align: center;
-  padding: clamp(1.5rem, 3vw, 3rem);
-  margin: clamp(1rem, 2vw, 2rem);
-  background: var(--bg-secondary);
-  border-radius: 10px;
-  box-shadow: 0 2px 4px var(--shadow-color);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(90%, 400px);
+@media (max-width: 1180px) {
+  .desktop-content {
+    display: none;
+  }
 }
+
 
 /* Media Queries */
 @media screen and (max-width: 1366px) {
-  .demo-container {
-    width: min(95%, 80vw);
-    height: calc(70vh - clamp(2rem, 5vh, 4rem));
-  }
-
   .feature-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .exercises-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media screen and (max-width: 1024px) {
-  .desktop-content {
-    display: none;
-  }
-
-  .mobile-message {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 }
 

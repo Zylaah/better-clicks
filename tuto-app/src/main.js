@@ -46,7 +46,9 @@ import {
     faTimes,
     faWindowMinimize,
     faWindowMaximize,
-    faWindowClose
+    faWindowClose,
+    faCheck,
+    faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -105,7 +107,9 @@ library.add(
     faYoutube,
     faWindowMinimize,
     faWindowMaximize,
-    faWindowClose
+    faWindowClose,
+    faCheck,
+    faExclamationTriangle
 )
 
 const app = createApp(App)

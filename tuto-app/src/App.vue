@@ -60,6 +60,11 @@
     <div class="router-view-container">
       <router-view/>
     </div>
+    <div class="mobile-message">
+      <font-awesome-icon icon="desktop" class="desktop-icon" />
+      <h2>Mettez l'application <br> en plein écran !</h2>
+      <p>Ce module n'est disponible que sur ordinateur pour une meilleure expérience d'apprentissage.</p>
+    </div>
   </div>
 </template>
 
@@ -204,6 +209,41 @@ body, html{
   background: rgba(66, 184, 131, 0.1);
 }
 
+.mobile-message {
+  display: none;
+  text-align: center;
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  margin: clamp(0.5rem, 1vw, 1rem);
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 400px;
+}
+
+.mobile-message svg {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  color: var(--accent-color);
+}
+
+.mobile-message h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  color: var(--text-color);
+}
+
+.mobile-message p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
 /* Animation de transition entre les pages */
 .router-view-transition {
   transition: all 0.3s ease;
@@ -233,6 +273,15 @@ body, html{
 
   .nav-link {
     padding: 0.5rem;
+  }
+}
+
+@media (max-width: 1180px) {
+  .mobile-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 }
 
