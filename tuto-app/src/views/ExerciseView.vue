@@ -101,7 +101,7 @@ export default {
     })
 
     const validationIcon = computed(() => {
-      return validationMessage.value === 'Bien joué !' ? 'fa-check' : 'fa-exclamation-triangle'
+      return validationMessage.value === 'Bien joué !' ? 'fa-check' : 'fa-xmark'
     })
 
     return {
@@ -126,13 +126,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: 0;
 }
 
 .back-button-container {
   display: flex;
   gap: clamp(0.5rem, 2vw, 1rem);
-  margin-top: max(10vh, 5rem);
+  margin-top: max(12vh, 7rem);
   z-index: 100;
   justify-content: center;
   width: 100%;
@@ -194,7 +194,7 @@ export default {
   text-align: center;
   position: relative;
   padding-bottom: clamp(0.5rem, 1vw, 1rem);
-  margin-top: clamp(1rem, 2vw, 2rem);
+  margin-top: clamp(0.2rem, 1rem, 1rem);
 }
 
 .exercise-instructions h3::after {
@@ -407,7 +407,19 @@ export default {
   background: var(--accent-color);
 }
 
+@media (max-height: 735px) {
+  .exercise-instructions h3 {
+    margin-top: 0.2rem;
+  }
 
+  .exercise-instructions-container {
+    margin-top: 1rem;
+  }
+
+  .exercise-container {
+    margin-top: 1rem;
+  }
+}
 
 @media (max-width: 1180px) {
   .exercise-container {

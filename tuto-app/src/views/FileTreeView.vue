@@ -165,7 +165,7 @@ export default defineComponent({
   padding: clamp(1rem, 2vw, 2rem);
   min-height: 100vh;
   max-height: 100vh;
-  overflow: hidden;
+  overflow: auto;
   box-sizing: border-box;
 }
 

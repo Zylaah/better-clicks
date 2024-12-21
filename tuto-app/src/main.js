@@ -48,7 +48,7 @@ import {
     faWindowMaximize,
     faWindowClose,
     faCheck,
-    faExclamationTriangle,
+    faXmark,
     faTools,
     faHardHat
 } from '@fortawesome/free-solid-svg-icons'
@@ -111,7 +111,7 @@ library.add(
     faWindowMaximize,
     faWindowClose,
     faCheck,
-    faExclamationTriangle,
+    faXmark,
     faTools,
     faHardHat
 )
