@@ -74,6 +74,26 @@
       "hasInput": true,
       "expectedAnswer": "C:/Documents/Rapports/Rapport.txt",
       "hasHint": false
+    },
+
+    {
+      "id": 4,
+      "title": "Navigation et chemin d'accès",
+      "description": "Apprenez à naviguer dans une arborescence simple de fichiers et lire un chemin d'accès.",
+      "difficulty": "Facile",
+      "icon": "compass",
+      "type": "A",
+      "task": "1. Naviguez dans l'arborescence à gauche\n2. Identifiez le chemin d'accès au fichier 'Rapport.txt'",
+      "fileTree": [
+        { "name": "Documents", "type": "folder", "children": [
+            { "name": "Rapports", "type": "folder", "children": [
+                { "name": "Rapport.txt", "type": "file", "content": "Contenu du rapport" }
+            ] }
+        ] }
+      ],
+      "hasInput": true,
+      "expectedAnswer": "C:/Documents/Rapports/Rapport.txt",
+      "hasHint": false
     }
 
   ]

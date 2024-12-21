@@ -162,18 +162,15 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(1rem, 2vw, 2rem);
-  min-height: 100vh;
-  max-height: 100vh;
+  padding: 0;
   overflow: auto;
-  box-sizing: border-box;
 }
 
 /* Navigation buttons */
 .navigation-buttons {
   display: flex;
   gap: clamp(0.5rem, 2vw, 1rem);
-  margin-top: max(10vh, 5rem);
+  margin-top: max(12vh, 7rem);
   z-index: 100;
   justify-content: center;
   width: 100%;
@@ -266,7 +263,7 @@ export default defineComponent({
 /* Exercises Container */
 .exercises-container {
   width: min(95%, 60vw);
-  padding: clamp(1.5rem, 3vw, 3rem);
+  padding: 2rem 3rem 3rem 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -364,6 +361,21 @@ export default defineComponent({
 
   .feature-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-height: 735px) {
+  .demo-container {
+    margin-top: 1rem;
+  }
+
+  .exercises-container {
+    padding: 0 0 1rem 0;
+  }
+
+  .exercises-title {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
   }
 }
 
