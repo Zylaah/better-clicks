@@ -31,10 +31,10 @@
       <h1>Page en Construction</h1>
       <p>Cette fonctionnalité arrive bientôt !</p>
       
-      <!-- Barre de progression -->
+      <!-- Barre de progression 
       <div class="progress-bar">
         <div class="progress-fill"></div>
-      </div>
+      </div> -->
 
       <!-- Bouton de retour -->
       <button class="back-button" @click="$router.push('/')">
@@ -274,17 +274,6 @@ p {
 
 .back-button:hover {
   transform: translateY(-2px);
-}
-
-/* Animations */
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes rotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 @keyframes progress {

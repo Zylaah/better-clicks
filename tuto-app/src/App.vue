@@ -306,10 +306,9 @@ body, html{
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--navbar-bg);
+  background: #2c2c2c;
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--hover-color);
 }
 
 .menu-content-guide {
@@ -350,6 +349,8 @@ body, html{
 .menu-content-exercise hr {
   margin: 0;
   border: none;
+  width: 80%;
+  margin-left: 10%;
   border-top: 1px solid var(--hover-color);
 }
 
