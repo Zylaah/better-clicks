@@ -13,7 +13,7 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "clean:build": "powershell Remove-Item -Recurse -Force dist_electron; npm run electron:build",
-    "clean:full": "powershell Remove-Item -Recurse -Force dist_electron, node_modules; npm install; npm run electron:build"
+    "clean:full": "powershell Remove-Item -Recurse -Force dist_electron, node_modules, .cache; npm install; npm run electron:build"
   },
   "main": "background.js",
   "dependencies": {
