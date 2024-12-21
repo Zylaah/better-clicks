@@ -23,7 +23,11 @@
       ],
       "hasInput": true,
       "expectedAnswer": "Projet 2.txt",
-      "hasHint": false
+      "hasHint": true,
+      "hints": [
+        "Le dossier 'Projets' contient deux fichiers.",
+        "Le deuxième fichier dans ce dossier est 'Projet 2.txt'."
+      ]
     },
 
     {

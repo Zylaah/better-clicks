@@ -16,9 +16,10 @@
                 <li v-for="(step, index) in exercise.task.split('\n')" :key="index">{{ step }}</li>
               </ul>
             </div>
-            <div v-if="exercise.hasHint" class="exercise-hint">
+            <div v-if="exercise.hasHint && showHints" class="exercise-hint">
               <h4>Indice :</h4>
-              <p>{{ exercise.hint }}</p>
+              <p>{{ currentHint }}</p>
+              <button @click="nextHint">Indice suivant</button>
             </div>
           </div>
           <div v-if="exercise.hasInput" class="exercise-input-container">
@@ -41,6 +42,8 @@
 
 <script>
 import FileExplorer from '@/components/FileExplorer.vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'ExerciseView',
@@ -53,29 +56,55 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      userInput: '',
-      validationMessage: ''
-    }
-  },
-  computed: {
-    validationClass() {
-      return this.validationMessage === 'Réponse correcte !' ? 'success' : 'error';
-    }
-  },
-  methods: {
-    goBack() {
-      this.$router.push({ name: 'file-tree', query: { view: 'exercises' } })
-    },
-    validateAnswer() {
-      if (this.userInput === this.exercise.expectedAnswer) {
-        this.validationMessage = 'Réponse correcte !';
-        this.userInput = '';
-      } else {
-        this.validationMessage = 'Réponse incorrecte. Veuillez réessayer.';
-        this.userInput = '';
+  setup(props) {
+    const router = useRouter()
+    const userInput = ref('')
+    const validationMessage = ref('')
+    const hintIndex = ref(0)
+    const showHints = ref(true)
+
+    const currentHint = computed(() => {
+      if (!props.exercise.hints || hintIndex.value >= props.exercise.hints.length) {
+        return ''
       }
+      return props.exercise.hints[hintIndex.value]
+    })
+
+    const nextHint = () => {
+      hintIndex.value++
+      if (hintIndex.value >= props.exercise.hints.length) {
+        showHints.value = false
+      }
+    }
+
+    const validateAnswer = () => {
+      if (userInput.value === props.exercise.expectedAnswer) {
+        validationMessage.value = 'Réponse correcte !'
+        userInput.value = ''
+      } else {
+        validationMessage.value = 'Réponse incorrecte. Veuillez réessayer.'
+        userInput.value = ''
+      }
+    }
+
+    const goBack = () => {
+      router.push({ name: 'file-tree', query: { view: 'exercises' } })
+    }
+
+    const validationClass = computed(() => {
+      return validationMessage.value === 'Réponse correcte !' ? 'success' : 'error'
+    })
+
+    return {
+      userInput,
+      validationMessage,
+      validationClass,
+      goBack,
+      hintIndex,
+      currentHint,
+      showHints,
+      nextHint,
+      validateAnswer
     }
   }
 }
@@ -217,29 +246,49 @@ export default {
 }
 
 .exercise-hint {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-tertiary);
   border-radius: 10px;
-  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(0.5rem, 1vw, 1rem);
   margin-bottom: clamp(1rem, 2vw, 2rem);
-  border: 1px solid var(--border-color);
+  border: 1px solid #c58736;
   width: 50%;
+  min-height: min(10vh, 100px);
 }
 
-.exercise-hint h4 {
-  margin: 0 0 clamp(0.5rem, 1vw, 1rem) 0;
-  color: var(--text-color);
+.exercise-hint button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
   font-size: clamp(0.9rem, 1.5vw, 1rem);
+  transition: all 0.2s ease;
+  background-color: black;
+  color: white;
 }
 
-.exercise-hint p {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: clamp(0.8rem, 1.5vw, 0.9em);
-  flex-grow: 1;
-  display: flex;
-  word-wrap: break-word;
+.exercise-hint button:hover {
+  background-color: #c58736;
 }
 
+.validation-message-container {
+  margin-top: 1rem;
+}
+
+.validation-message {
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.validation-message.success {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+.validation-message.error {
+  background-color: #f44336;
+  color: #ffffff;
+}
 
 .exercise-input-container {
   display: flex;
@@ -278,30 +327,6 @@ export default {
 
 .exercise-input-button:hover {
   background-color: var(--hover-color);
-}
-
-.validation-message-container {
-  display: flex;
-  gap: clamp(0.5rem, 1vw, 1rem);
-  width: 100%;
-  margin: 0 auto;
-}
-
-.validation-message {
-  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
-  border-radius: 5px;
-  text-align: center;
-  width: 100%;
-}
-
-.success {
-  background-color: var(--success-color);
-  color: white;
-}
-
-.error {
-  background-color: var(--error-color);
-  color: white;
 }
 
 /* Personnalisation de la scrollbar comme dans FileExplorer */
