@@ -11,7 +11,7 @@
             <font-awesome-icon icon="graduation-cap" />
             Débuter l'apprentissage
           </router-link>
-          <router-link to="/basics" class="cta-button secondary">
+          <router-link to="/construction" class="cta-button secondary">
             <font-awesome-icon icon="book" />
             Guide du débutant
           </router-link>

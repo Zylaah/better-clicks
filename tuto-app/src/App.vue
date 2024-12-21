@@ -18,10 +18,10 @@
           <div class="menu-content-guide">
             <ul>
               <li>
-                <a href="" class="nav-link-menu">
+                <router-link to="/construction" class="nav-link-menu">
                   <font-awesome-icon icon="keyboard" />
                   <span>Le clavier</span>
-                </a>
+                </router-link>
               </li>
             </ul> 
           </div>
@@ -41,10 +41,10 @@
               </li>
               <hr>
               <li>
-                <a href="/le-clavier" class="nav-link-menu">
+                <router-link to="/construction" class="nav-link-menu">
                   <font-awesome-icon icon="keyboard" />
                   <span>Le clavier</span>
-                </a>
+                </router-link>
               </li>
             </ul> 
           </div>

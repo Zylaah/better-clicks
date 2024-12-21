@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import FileTreeView from '../views/FileTreeView.vue'
 import ExerciseView from '../views/ExerciseView.vue'
 import AboutView from '../views/AboutView.vue'
+import UnderConstructionView from '../views/UnderConstructionView.vue'
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
     path: '/about',
     name: 'about',
     component: AboutView
+  },
+  {
+    path: '/construction',
+    name: 'construction',
+    component: UnderConstructionView
   }
 ]
 

@@ -48,7 +48,9 @@ import {
     faWindowMaximize,
     faWindowClose,
     faCheck,
-    faExclamationTriangle
+    faExclamationTriangle,
+    faTools,
+    faHardHat
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -109,7 +111,9 @@ library.add(
     faWindowMaximize,
     faWindowClose,
     faCheck,
-    faExclamationTriangle
+    faExclamationTriangle,
+    faTools,
+    faHardHat
 )
 
 const app = createApp(App)
