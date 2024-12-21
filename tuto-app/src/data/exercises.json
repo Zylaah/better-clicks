@@ -5,7 +5,7 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Naviguez jusqu'au dossier 'Projets'. Quel est le nom du deuxième fichier dans ce dossier ?",
+      "task": "1. Observez l'arborescence de fichiers située à gauche\n2. Naviguez jusqu'au dossier 'Projets'\n3. Identifiez le nom du deuxième fichier dans ce dossier",
       "fileTree": [
         {
           "name": "Documents",
@@ -32,7 +32,7 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Naviguez dans l'arborescence à gauche. Créez un nouveau fichier dans le dossier 'PDF' et renommez-le 'Rapport.pdf'.",
+      "task": "1. Naviguez dans l'arborescence à gauche\n2. Créez un nouveau fichier dans le dossier 'PDF'\n3. Renommez-le 'Rapport.pdf'",
       "fileTree": [
         { "name": "Documents", "type": "folder", "children": [
           { "name": "Rapports", "type": "folder", "children": [
@@ -55,7 +55,7 @@
       "difficulty": "Facile",
       "icon": "compass",
       "type": "A",
-      "task": "Donnez le chemin d'accès au fichier 'Rapport.txt'.",
+      "task": "1. Naviguez dans l'arborescence à gauche\n2. Identifiez le chemin d'accès au fichier 'Rapport.txt'",
       "fileTree": [
         { "name": "Documents", "type": "folder", "children": [
             { "name": "Rapports", "type": "folder", "children": [

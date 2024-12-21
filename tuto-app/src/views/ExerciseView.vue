@@ -12,7 +12,9 @@
           <div :class="{ 'exercise-instructions-container': true, 'vertical-layout': !exercise.hasInput }">
             <div class= "exercise-task">
               <h4>Consigne :</h4>
-              <p>{{ exercise.task }}</p>
+              <ul class="task-list">
+                <li v-for="(step, index) in exercise.task.split('\n')" :key="index">{{ step }}</li>
+              </ul>
             </div>
             <div v-if="exercise.hasHint" class="exercise-hint">
               <h4>Indice :</h4>
@@ -177,11 +179,6 @@ export default {
   min-height: 100px;
 }
 
-.full-width {
-  width: 100%;
-  min-height: 80px;
-}
-
 .exercise-task h4 {
   margin: 0 0 clamp(0.5rem, 1vw, 1rem) 0;
   color: var(--text-color);
@@ -194,6 +191,29 @@ export default {
   font-size: clamp(0.8rem, 1.5vw, 0.9em);
   flex-grow: 1;
   display: flex;
+}
+
+.task-list {
+ list-style-type: none;
+ padding-left: 0;
+ margin: 0;
+}
+
+.task-list li {
+ padding: 0.5rem 0;
+ color: var(--text-secondary);
+ font-size: clamp(0.8rem, 1.5vw, 0.9em);
+ display: flex;
+ align-items: flex-start;
+ position: relative;
+ padding-left: 1.5rem;
+}
+
+.task-list li::before {
+ content: "•";
+ position: absolute;
+ left: 0.5rem;
+ color: var(--accent-color);
 }
 
 .exercise-hint {
