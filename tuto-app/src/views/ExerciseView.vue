@@ -163,6 +163,7 @@ export default {
   align-items: center;
   justify-content: center;
   overflow: auto;
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .exercise-instructions {

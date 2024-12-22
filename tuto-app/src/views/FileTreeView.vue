@@ -73,9 +73,6 @@
             class="card"
             @click="selectExercise(exercise)"
           >
-            <div class="card-icon">
-              <font-awesome-icon :icon="exercise.icon" />
-            </div>
             <strong>{{ exercise.title }}</strong>
             <div class="card_body">
               <p>{{ exercise.difficulty }}</p>
@@ -207,6 +204,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   overflow: auto;
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 /* File System Explanation */
@@ -279,8 +277,8 @@ export default defineComponent({
 
 .exercises-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -291,8 +289,8 @@ export default defineComponent({
   --hover-bg: #ebfde9;
   --hover-text: var(--accent-color);
   background: var(--bg-secondary);
-  max-width: 30ch;
-  max-height: 25ch;
+  min-width: 30ch;
+  height: 25ch;
   text-align: center;
   padding: 1.5em;
   padding-block: 1.8em;
@@ -302,7 +300,7 @@ export default defineComponent({
   transition: .3s cubic-bezier(.6,.4,0,1),transform .15s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   box-shadow: 0 2px 4px var(--shadow-color);
   align-items: center;
   gap: 1rem;
@@ -397,7 +395,20 @@ export default defineComponent({
   }
 }
 
-@media (max-height: 768px) {
+
+@media (max-height: 835px) {
+  .container {
+    scale: 0.9;
+  }
+
+  .card > strong {
+    font-size: 1.2rem;
+  }
+
+  .card {
+    min-height: 20ch;
+  }
+
   .demo-container {
     margin-top: 1rem;
   }
@@ -410,15 +421,9 @@ export default defineComponent({
     margin-top: 2rem;
     margin-bottom: 1rem;
   }
-}
 
-@media (max-height: 835px) {
-  .container {
-    scale: 0.9;
-  }
-
-  .exercises-container {
-    padding-bottom: 0;
+  .navigation-buttons {
+    margin-top: max(10vh, 5rem);
   }
 }
 
