@@ -4,6 +4,7 @@ import FileTreeView from '../views/FileTreeView.vue'
 import ExerciseView from '../views/ExerciseView.vue'
 import AboutView from '../views/AboutView.vue'
 import UnderConstructionView from '../views/UnderConstructionView.vue'
+import GuideExplorerView from '../views/GuideExplorerView.vue'
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
     path: '/construction',
     name: 'construction',
     component: UnderConstructionView
+  },
+  {
+    path: '/guide-explorer',
+    name: 'guide-explorer',
+    component: GuideExplorerView
   }
 ]
 

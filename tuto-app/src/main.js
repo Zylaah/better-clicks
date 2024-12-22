@@ -50,7 +50,12 @@ import {
     faCheck,
     faXmark,
     faTools,
-    faHardHat
+    faHardHat,
+    faFileWord,
+    faMusic,
+    faImage,
+    faFilm,
+    faHandshakeAngle
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -113,7 +118,12 @@ library.add(
     faCheck,
     faXmark,
     faTools,
-    faHardHat
+    faHardHat,
+    faFileWord,
+    faMusic,
+    faImage,
+    faFilm,
+    faHandshakeAngle
 )
 
 const app = createApp(App)

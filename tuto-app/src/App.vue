@@ -18,9 +18,9 @@
           <div class="menu-content-guide">
             <ul>
               <li>
-                <router-link to="/construction" class="nav-link-menu">
-                  <font-awesome-icon icon="keyboard" />
-                  <span>Le clavier</span>
+                <router-link to="/guide-explorer" class="nav-link-menu">
+                  <font-awesome-icon icon="folder-tree" />
+                  <span>Explorateur</span>
                 </router-link>
               </li>
             </ul> 
@@ -386,6 +386,7 @@ body, html{
   --switch-buttob-bg: #d8d8d8;
   --menu-bg: #1e2a24;
   --titlebar-bg: #f8fafc;
+  --sidebar-bg: #fafafa;
 }
 
 [data-theme="dark"] {
@@ -414,6 +415,7 @@ body, html{
   --switch-buttob-bg: #1a1a1a;
   --menu-bg: #1e2a24;
   --titlebar-bg: #131313;
+  --sidebar-bg: #1a1a1a;
 }
 
 /* Personnalisation de la scrollbar pour Webkit (Chrome, Safari, Edge) */
