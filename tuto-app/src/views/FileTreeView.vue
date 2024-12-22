@@ -290,7 +290,7 @@ export default defineComponent({
 .exercise-card {
   background: var(--bg-secondary);
   border-radius: 8px;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: clamp(0.5rem, 2vw, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
@@ -300,7 +300,7 @@ export default defineComponent({
   align-items: center;
   gap: 10px;
   box-shadow: 0 2px 4px var(--shadow-color);
-  height: clamp(150px, 30vh, 200px);
+  height: clamp(200px, 30vh, 250px);
   text-align: center;
   scale: 0.9;
 }
@@ -319,7 +319,7 @@ export default defineComponent({
 
 .exercise-card p {
   color: var(--text-color);
-  margin: 0;
+  margin-bottom: 1rem;
   font-size: 0.9em;
   flex-grow: 1;
   display: flex;
@@ -328,8 +328,17 @@ export default defineComponent({
 }
 
 .difficulty {
-  font-size: 0.8em;
+  font-size: 1em;
   color: var(--text-secondary);
+}
+
+.difficulty span {
+  background: var(--accent-color);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .card-icon {

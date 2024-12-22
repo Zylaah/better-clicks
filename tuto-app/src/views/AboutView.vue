@@ -73,8 +73,23 @@
 
 <script>
 export default {
-  name: 'AboutView'
+  name: 'AboutView',
+
+  mounted() {
+    const mobileMessage = document.querySelector('.mobile-message');
+    if (mobileMessage) {
+      mobileMessage.style.display = 'none';
+    }
+  },
+  beforeUnmount() {
+    const mobileMessage = document.querySelector('.mobile-message');
+    if (mobileMessage) {
+      mobileMessage.style.display = '';
+    }
+  }
 }
+
+ 
 </script>
 
 <style scoped>
