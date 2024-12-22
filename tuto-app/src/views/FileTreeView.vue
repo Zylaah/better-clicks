@@ -263,7 +263,7 @@ export default defineComponent({
 /* Exercises Container */
 .exercises-container {
   width: min(95%, 60vw);
-  padding: 2rem 3rem 3rem 3rem;
+  padding: clamp(1rem, 4vh, 2rem) clamp(1rem, 3vw, 3rem) clamp(2rem, 4vw, 4rem) clamp(1rem, 3vw, 3rem);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -272,7 +272,7 @@ export default defineComponent({
 
 .exercises-title {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
-  margin-bottom: clamp(1.5rem, 3vw, 3rem);
+  margin-bottom: clamp(0.2rem, 3vw, 1rem);
   margin-top: 0;
   text-align: center;
   color: var(--accent-color);
@@ -281,7 +281,7 @@ export default defineComponent({
 .exercises-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(1rem, 2vw, 2rem);
+  gap: 0.1rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -300,8 +300,9 @@ export default defineComponent({
   align-items: center;
   gap: 10px;
   box-shadow: 0 2px 4px var(--shadow-color);
-  height: clamp(200px, 30vh, 250px);
+  height: clamp(150px, 30vh, 200px);
   text-align: center;
+  scale: 0.9;
 }
 
 .exercise-card:hover {
@@ -365,7 +366,7 @@ export default defineComponent({
   }
 }
 
-@media (max-height: 735px) {
+@media (max-height: 768px) {
   .demo-container {
     margin-top: 1rem;
   }
@@ -377,6 +378,20 @@ export default defineComponent({
   .exercises-title {
     margin-top: 2rem;
     margin-bottom: 1rem;
+  }
+
+  .navigation-buttons {
+    margin-top: max(9vh, 5rem);
+  }
+}
+
+@media (max-height: 835px) {
+  .container {
+    scale: 0.9;
+  }
+
+  .exercises-container {
+    padding-bottom: 0;
   }
 }
 

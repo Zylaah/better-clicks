@@ -115,9 +115,10 @@ export default {
 
 .router-view-container{
   flex: 1;
-  overflow-y: auto;
   position: relative;
   z-index: 1;
+  padding: 0;
+  overflow-y: auto;
 }
 
 body, html{
