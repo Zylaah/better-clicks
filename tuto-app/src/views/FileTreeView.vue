@@ -70,18 +70,17 @@
           <div 
             v-for="(exercise, index) in exercises" 
             :key="index"
-            class="exercise-card"
+            class="card"
             @click="selectExercise(exercise)"
           >
             <div class="card-icon">
               <font-awesome-icon :icon="exercise.icon" />
             </div>
-            <h3>{{ exercise.title }}</h3>
-            <p>{{ exercise.description }}</p>
-            <div class="difficulty">
-              Difficulté: 
-              <span :class="exercise.difficulty">{{ exercise.difficulty }}</span>
+            <strong>{{ exercise.title }}</strong>
+            <div class="card_body">
+              <p>{{ exercise.difficulty }}</p>
             </div>
+            <span>Commencer</span>
           </div>
         </div>
         <component :is="currentExerciseComponent" :exercise="selectedExercise" v-if="selectedExercise" />
@@ -280,65 +279,88 @@ export default defineComponent({
 
 .exercises-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.exercise-card {
+.card {
+  --bg: #f7f7f8;
+  --hover-bg: #ebfde9;
+  --hover-text: var(--accent-color);
   background: var(--bg-secondary);
-  border-radius: 8px;
-  padding: clamp(0.5rem, 2vw, 1rem);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
+  max-width: 30ch;
+  max-height: 25ch;
+  text-align: center;
+  padding: 1.5em;
+  padding-block: 1.8em;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  transition: .3s cubic-bezier(.6,.4,0,1),transform .15s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  gap: 10px;
   box-shadow: 0 2px 4px var(--shadow-color);
-  height: clamp(200px, 30vh, 250px);
-  text-align: center;
-  scale: 0.9;
-}
-
-.exercise-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px var(--shadow-color);
-  border-color: var(--accent-color);
-}
-
-.exercise-card h3 {
-  color: var(--accent-color);
-  margin: 0;
-  font-size: 1.2em;
-}
-
-.exercise-card p {
-  color: var(--text-color);
-  margin-bottom: 1rem;
-  font-size: 0.9em;
-  flex-grow: 1;
-  display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 1rem;
 }
 
-.difficulty {
+.card_body {
+  color: #464853;
+  line-height: 1.5em;
   font-size: 1em;
-  color: var(--text-secondary);
 }
 
-.difficulty span {
+.card_body p {
   background: var(--accent-color);
   color: white;
   padding: 0.2rem 0.5rem;
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: 600;
+}
+
+.card > :not(span) {
+  transition: .3s cubic-bezier(.6,.4,0,1);
+}
+
+.card > strong {
+  display: block;
+  font-size: 1.4rem;
+  letter-spacing: -.035em;
+  color: var(--text-color);
+}
+
+.card span {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--hover-text);
+  border-radius: 5px;
+  font-weight: bold;
+  top: 100%;
+  transition: all .3s cubic-bezier(.6,.4,0,1);
+}
+
+.card:hover span {
+  top: 0;
+  font-size: 1.2em;
+}
+
+.card:hover {
+  background: var(--hover-bg);
+  cursor: pointer;
+}
+
+.card:hover>div,.card:hover>strong {
+  opacity: 0;
 }
 
 .card-icon {

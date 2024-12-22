@@ -77,7 +77,7 @@ export default {
 
 .sidebar {
   width: 20vw;
-  background: var(--sidebar-bg);
+  background: var(--navbar-bg);
   padding: 0 2rem 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: min(8vh, 5rem);

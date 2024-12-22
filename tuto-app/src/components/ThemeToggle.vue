@@ -54,6 +54,6 @@
 
   .fa-moon {
     margin-top: 3px;
-    color: var(--hover-color);
+    color: #226144;
   }
   </style>

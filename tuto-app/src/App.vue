@@ -130,7 +130,7 @@ body, html{
 }
 
 .navbar {
-  background: #1a1a1a;
+  background: var(--navbar-bg);
   padding: 0.8rem 2rem;
   display: flex;
   align-items: center;
@@ -191,7 +191,7 @@ body, html{
 }
 
 .nav-link-menu:hover {
-  color: white;
+  color: #42b883;
   background: rgba(66, 184, 131, 0.1);
 }
 
@@ -201,7 +201,7 @@ body, html{
 }
 
 .nav-link:hover {
-  color: white;
+  color: #42b883;
   background: rgba(66, 184, 131, 0.1);
 }
 
@@ -307,7 +307,7 @@ body, html{
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: #2c2c2c;
+  background: var(--navbar-bg);
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -371,7 +371,7 @@ body, html{
   --border-color: #e2e8f0;
   --hover-color: rgba(66, 184, 131, 0.1);
   --card-bg: #ffffff;
-  --navbar-bg: #1a1a1a;
+  --navbar-bg: #eff3f7;
   --shadow-color: rgba(0, 0, 0, 0.1);
   --input-bg: #f8fafc;
   --input-border: #e2e8f0;
@@ -387,7 +387,7 @@ body, html{
   --switch-buttob-bg: #d8d8d8;
   --menu-bg: #1e2a24;
   --titlebar-bg: #f8fafc;
-  --sidebar-bg: #fafafa;
+  --sidebar-bg: #eff3f7;
 }
 
 [data-theme="dark"] {
