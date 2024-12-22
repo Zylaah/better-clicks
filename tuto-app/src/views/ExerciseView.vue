@@ -407,7 +407,7 @@ export default {
   background: var(--accent-color);
 }
 
-@media (max-height: 735px) {
+@media (max-height: 768px) {
   .exercise-instructions h3 {
     margin-top: 0.2rem;
   }
@@ -418,6 +418,10 @@ export default {
 
   .exercise-container {
     margin-top: 1rem;
+  }
+
+  .exercise-view {
+    scale: 0.9;
   }
 }
 
