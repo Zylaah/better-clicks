@@ -3,9 +3,21 @@
     <div class="hero-section">
       <div class="hero-content">
         <h1>
-          <span class="line-1 anim-typewriter">Découvrez l'Informatique !</span>
+          <div class="title-container">
+            <span class="static-text">L'informatique</span>
+            <div class="words-wrapper">
+              <div class="words">
+                <span>simple</span>
+                <span>sécurisé</span>
+                <span>pédago</span>
+              </div>
+            </div>
+          </div>
         </h1>
-        <p class="subtitle">Apprenez à utiliser votre ordinateur pas à pas, sans stress et à votre rythme</p>
+        
+
+
+        <p class="subtitle">Apprenez à utiliser votre ordinateur pas à pas, sans stress et à votre rythme.</p>
         <div class="cta-buttons">
           <router-link to="/file-tree" class="cta-button primary">
             <font-awesome-icon icon="graduation-cap" />
@@ -87,6 +99,7 @@
       </div>
     </div>
   </div>
+  
 </template>
 
 <script>
@@ -117,32 +130,6 @@ export default {
 .hero-content {
   max-width: min(90%, 800px);
   margin: 0 auto;
-}
-
-.typewriter {
-  overflow: hidden;
-  border-right: 0.15em solid var(--accent-color);
-  white-space: nowrap;
-  margin: 0 auto;
-  letter-spacing: 0.15em;
-  animation: typing 4s steps(40, end), blink-caret 0.75s step-end infinite;
-}
-
-@keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
-}
-
-@keyframes blink-caret {
-  from, to { border-color: transparent }
-  50% { border-color: var(--accent-color) }
-}
-
-@media (max-width: 768px) {
-  .typewriter {
-    font-size: 1.8rem;
-    letter-spacing: .1em;
-  }
 }
 
 h1 {
@@ -401,52 +388,59 @@ h1 {
   }
 }
 
-/* Animation Typewriter */
-.line-1 {
-  position: relative;
-  width: 100%;
+/* Animation du texte rotatif */
+.title-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.3rem;
   margin: 0 auto;
-  border-right: 2px solid var(--accent-color);
-  text-align: center;
+  width: fit-content;
+}
+
+.static-text {
+  font-size: clamp(2rem, 5vw, 3.5rem);
   white-space: nowrap;
-  overflow: hidden;
 }
 
-.anim-typewriter {
-  animation: 
-    typewriter 2s steps(20) 1s 1 normal both,
-    blinkCursor 500ms steps(20) infinite normal;
+.words-wrapper {
   display: inline-block;
-  width: 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  height: 5rem;
+  overflow: hidden;
+  text-align: left;
 }
 
-@keyframes typewriter {
-  from { 
-    width: 0; 
+.words {
+  display: inline-block;
+  color: var(--text-color);
+  animation: slide 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  text-align: left;
+  position: relative;
+}
+
+.words span {
+  display: block;
+  height: 4rem;
+  padding: 1rem 0 1rem 0.5rem;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+@keyframes slide {
+  0%, 30% {
+    transform: translateY(-3%);
   }
-  to { 
-    width: 100%; 
+  33%, 63% {
+    transform: translateY(-36.5%);
+  }
+  66%, 96% {
+    transform: translateY(-70%);
+  }
+  99%, 100% {
+    transform: translateY(-3%);
   }
 }
 
-@keyframes blinkCursor {
-  from, to { 
-    border-right-color: transparent; 
-  }
-  50% { 
-    border-right-color: var(--accent-color); 
-  }
-}
-
-/* Ajustement pour les petits écrans */
-@media (max-width: 768px) {
-  .line-1 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    white-space: pre-wrap;
-  }
-  
-  .anim-typewriter {
-    animation-duration: 3s; /* Animation plus rapide sur mobile */
-  }
-}
 </style>
