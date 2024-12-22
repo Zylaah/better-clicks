@@ -84,7 +84,7 @@ export default {
     const route = useRoute();
 
     const isGuideActive = computed(() => {
-      return route.path === '/le-clavier'; // Ajustez selon vos routes
+      return route.path === '/guide-explorer'; // Ajustez selon vos routes
     });
 
     const isExerciseActive = computed(() => {

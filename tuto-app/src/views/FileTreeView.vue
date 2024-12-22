@@ -273,6 +273,7 @@ export default defineComponent({
 .exercises-title {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   margin-bottom: clamp(1.5rem, 3vw, 3rem);
+  margin-top: 0;
   text-align: center;
   color: var(--accent-color);
 }
