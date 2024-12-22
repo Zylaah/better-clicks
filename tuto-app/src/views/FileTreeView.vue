@@ -379,10 +379,6 @@ export default defineComponent({
     margin-top: 2rem;
     margin-bottom: 1rem;
   }
-
-  .navigation-buttons {
-    margin-top: max(9vh, 5rem);
-  }
 }
 
 @media (max-height: 835px) {
