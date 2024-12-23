@@ -277,94 +277,138 @@ export default defineComponent({
 
 .exercises-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
 }
 
 .card {
-  --bg: #f7f7f8;
-  --hover-bg: #ebfde9;
-  --hover-text: var(--accent-color);
-  background: var(--bg-secondary);
-  min-width: 30ch;
-  height: 25ch;
-  text-align: center;
-  padding: 1.5em;
-  padding-block: 1.8em;
-  border-radius: 5px;
   position: relative;
-  overflow: hidden;
-  transition: .3s cubic-bezier(.6,.4,0,1),transform .15s ease;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 220px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  box-shadow: 0 2px 4px var(--shadow-color);
-  align-items: center;
-  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(var(--accent-color-rgb), 0.1) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card strong {
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.8rem;
+  position: relative;
+  z-index: 1;
 }
 
 .card_body {
-  color: #464853;
-  line-height: 1.5em;
-  font-size: 1em;
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 2;
 }
 
 .card_body p {
+  display: inline-block;
   background: var(--accent-color);
   color: white;
-  padding: 0.2rem 0.5rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.card > :not(span) {
-  transition: .3s cubic-bezier(.6,.4,0,1);
-}
-
-.card > strong {
-  display: block;
-  font-size: 1.4rem;
-  letter-spacing: -.035em;
-  color: var(--text-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
 }
 
 .card span {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--hover-text);
-  border-radius: 5px;
-  font-weight: bold;
-  top: 100%;
-  transition: all .3s cubic-bezier(.6,.4,0,1);
+  bottom: 1.5rem;
+  left: 1.5rem;
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 2;
 }
 
 .card:hover span {
-  top: 0;
-  font-size: 1.2em;
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.card:hover {
-  background: var(--hover-bg);
-  cursor: pointer;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    min-height: 200px;
+    padding: 1.2rem;
+  }
+
+  .card_body {
+    bottom: 1.2rem;
+    right: 1.2rem;
+  }
+
+  .card span {
+    bottom: 1.2rem;
+    left: 1.2rem;
+  }
 }
 
-.card:hover>div,.card:hover>strong {
-  opacity: 0;
+@media (min-width: 769px) and (max-width: 1024px) {
+  .exercises-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.card-icon {
-  font-size: 2em;
-  color: var(--accent-color);
-  align-self: center;
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+  .card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .card:hover {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .card_body p {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 }
 
 @media (max-width: 1180px) {
@@ -406,7 +450,7 @@ export default defineComponent({
   }
 
   .card {
-    min-height: 20ch;
+    min-height: 180px;
   }
 
   .demo-container {
