@@ -14,7 +14,7 @@
     <div class="mission-section">
       <div class="mission-content">
         <h2>Notre Mission</h2>
-        <p>Faciliter l'apprentissage de la gestion de fichiers et de dossiers de manière interactive et ludique, rendant accessible à tous les concepts fondamentaux de l'organisation numérique.</p>
+        <p>Faciliter l'apprentissage de l'informatique de manière interactive et ludique, rendant accessible à tous les concepts fondamentaux du numérique.</p>
       </div>
     </div>
 
@@ -24,7 +24,7 @@
           <font-awesome-icon icon="graduation-cap" class="card-icon" />
           <h3>Apprentissage Progressif</h3>
         </div>
-        <p>Une approche étape par étape pour maîtriser l'organisation de vos fichiers numériques.</p>
+        <p>Une approche étape par étape pour maîtriser l'informatique et le numérique.</p>
         <ul class="feature-list">
           <li>Exercices pratiques</li>
           <li>Progression personnalisée</li>
@@ -187,19 +187,57 @@ export default {
 }
 
 .mission-section {
-  text-align: center;
+  text-align: left;
   max-width: 800px;
   margin: 0 auto;
-  padding: 2.5rem;
+  padding: 0 2rem 2rem 2rem;
   background: var(--bg-secondary);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.mission-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-color-transparent) 0%, transparent 100%);
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.mission-content {
+  position: relative;
+  z-index: 1;
 }
 
 .mission-section h2 {
   color: var(--accent-color);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  margin-bottom: 1rem;
+  font-size: clamp(1.8rem, 3vw, 2.2rem);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mission-section h2::before {
+  content: '✨';
+  font-size: 1.8rem;
+}
+
+.mission-section p {
+  color: var(--text-color);
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  line-height: 1.6;
+  margin: 0;
+  position: relative;
+  padding-left: 1.5rem;
+  border-left: 3px solid var(--accent-color);
 }
 
 .features-grid {
