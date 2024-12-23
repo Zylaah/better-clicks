@@ -5,7 +5,7 @@
         <h1>À propos de <span class="accent">Numérix</span></h1>
         <p class="subtitle">Une nouvelle approche de l'apprentissage numérique</p>
         <div class="header-badges">
-          <span class="version-badge">Version 0.1.1</span>
+          <span class="version-badge">Version 0.1.5</span>
           <span class="status-badge">Beta</span>
         </div>
       </div>
@@ -85,7 +85,7 @@
             <font-awesome-icon icon="envelope" />
             <span>conseil.numerique@cotedor.fr</span>
           </a>
-          <a href="https://github.com/numerix" target="_blank" class="contact-link github">
+          <a href="https://github.com/Zylaah/better-clicks" target="_blank" class="contact-link github">
             <font-awesome-icon :icon="['fab', 'github']" />
             <span>GitHub</span>
           </a>
