@@ -89,7 +89,7 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: min(8vh, 5rem);
   position: fixed;
-  height: calc(100vh - 6rem);
+  height: 100%;
   z-index: 1000;
   outline: 1px solid var(--accent-color);
 }
