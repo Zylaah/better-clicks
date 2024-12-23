@@ -55,7 +55,10 @@ import {
     faMusic,
     faImage,
     faFilm,
-    faHandshakeAngle
+    faHandshakeAngle,
+    faBroom,
+    faImages,
+    faLayerGroup
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -123,7 +126,10 @@ library.add(
     faMusic,
     faImage,
     faFilm,
-    faHandshakeAngle
+    faHandshakeAngle,
+    faBroom,
+    faImages,
+    faLayerGroup
 )
 
 const app = createApp(App)

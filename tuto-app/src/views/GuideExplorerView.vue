@@ -30,11 +30,13 @@
 
 <script>
 import ExplorerChapterOne from '@/components/explorer-chapters/Chapter1.vue'
+import ExplorerChapterTwo from '@/components/explorer-chapters/Chapter2.vue'
 
 export default {
   name: 'GuideView',
   components: {
     ExplorerChapterOne,
+    ExplorerChapterTwo
   },
   data() {
     return {
@@ -44,6 +46,11 @@ export default {
           title: "Introduction aux fichiers",
           component: 'ExplorerChapterOne',
           // données spécifiques au chapitre 1
+        },
+        {
+          title: "Gestion des fichiers",
+          component: 'ExplorerChapterTwo',
+          // données spécifiques au chapitre 2
         }
       ]
     }
