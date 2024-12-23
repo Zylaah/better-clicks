@@ -437,10 +437,7 @@ export default defineComponent({
 }
 
 
-@media (max-height: 835px) {
-  .container {
-    scale: 0.9;
-  }
+@media (max-height: 768px) {
 
   .card > strong {
     font-size: 1.2rem;
@@ -461,10 +458,6 @@ export default defineComponent({
   .exercises-title {
     margin-top: 2rem;
     margin-bottom: 1rem;
-  }
-
-  .navigation-buttons {
-    margin-top: max(10vh, 5rem);
   }
 }
 
