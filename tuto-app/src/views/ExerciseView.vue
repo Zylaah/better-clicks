@@ -156,6 +156,7 @@ export default {
 .exercise-container {
   width: min(95%, 70vw);
   height: calc(75vh - clamp(2rem, 5vh, 4rem));
+  border-radius: 10px;
   position: relative;
   margin: clamp(1rem, 5vh, 2rem) auto 0;
   display: flex;

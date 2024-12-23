@@ -1,87 +1,84 @@
 <template>
   <div class="container">
-    <!-- Contenu desktop -->
-    <div class="desktop-content">
-      <!-- Boutons de navigation -->
-      <div class="navigation-buttons">
-        <button 
-          :class="['nav-button', { active: currentView === 'demo' }]"
-          @click="currentView = 'demo'"
-        >
-          Démonstration
-        </button>
-        <button 
-          :class="['nav-button', { active: currentView === 'exercises' }]"
-          @click="currentView = 'exercises'"
-        >
-          Les exercices
-        </button>
-      </div>
+    <!-- Boutons de navigation -->
+    <div class="navigation-buttons">
+      <button 
+        :class="['nav-button', { active: currentView === 'demo' }]"
+        @click="currentView = 'demo'"
+      >
+        Démonstration
+      </button>
+      <button 
+        :class="['nav-button', { active: currentView === 'exercises' }]"
+        @click="currentView = 'exercises'"
+      >
+        Les exercices
+      </button>
+    </div>
 
-      <!-- Vue Démonstration -->
-      <div v-if="currentView === 'demo'" class="demo-container fade">
-        <file-explorer :fileTree="fileTree">
-          <div class="file-system-explanation">
-            <h4 class="modern-title">
-              <font-awesome-icon icon="folder-tree" class="title-icon" />
-              Découvrez l'Arborescence des Fichiers
-            </h4>
+    <!-- Vue Démonstration -->
+    <div v-if="currentView === 'demo'" class="demo-container fade">
+      <file-explorer :fileTree="fileTree">
+        <div class="file-system-explanation">
+          <h4 class="modern-title">
+            <font-awesome-icon icon="folder-tree" class="title-icon" />
+            Découvrez l'Arborescence des Fichiers
+          </h4>
 
-            <div class="intro-card">
-              <p>Imaginez votre ordinateur comme une bibliothèque parfaitement organisée. L'arborescence des fichiers est votre guide numérique pour tout retrouver facilement ! 🚀</p>
-            </div>
-
-            <div class="feature-grid">
-              <div class="feature-card">
-                <h5><font-awesome-icon icon="folder" /> Structure de Base</h5>
-                <ul>
-                  <li><span class="highlight">Dossiers racines</span> - Vos points de départ ("Documents", "Images")</li>
-                  <li><span class="highlight">Sous-dossiers</span> - Créez des catégories selon vos besoins</li>
-                  <li><span class="highlight">Fichiers</span> - Vos documents, photos et autres contenus</li>
-                </ul>
-              </div>
-
-              <div class="feature-card">
-                <h5><font-awesome-icon icon="code" /> Navigation Intuitive</h5>
-                <ul>
-                  <li>💡 Un clic pour explorer les dossiers</li>
-                  <li>↕️ Flèches pour développer/réduire</li>
-                  <li>🧭 Suivez votre chemin en haut</li>
-                </ul>
-              </div>
-
-              <div class="feature-card">
-                <h5><font-awesome-icon icon="star" /> Avantages Clés</h5>
-                <ul>
-                  <li>🎯 Retrouvez vos fichiers en quelques clics</li>
-                  <li>✨ Une organisation claire et efficace</li>
-                  <li>🎨 Une structure adaptée à vos besoins</li>
-                </ul>
-              </div>
-            </div>
+          <div class="intro-card">
+            <p>Imaginez votre ordinateur comme une bibliothèque parfaitement organisée. L'arborescence des fichiers est votre guide numérique pour tout retrouver facilement ! 🚀</p>
           </div>
-        </file-explorer>
-      </div>
 
-      <!-- Vue Exercices -->
-      <div v-else class="exercises-container fade">
-        <h2 class="exercises-title">Exercices sur l'arborescence des fichiers</h2>
-        <div class="exercises-grid">
-          <div 
-            v-for="(exercise, index) in exercises" 
-            :key="index"
-            class="card"
-            @click="selectExercise(exercise)"
-          >
-            <strong>{{ exercise.title }}</strong>
-            <div class="card_body">
-              <p>{{ exercise.difficulty }}</p>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h5><font-awesome-icon icon="folder" /> Structure de Base</h5>
+              <ul>
+                <li><span class="highlight">Dossiers racines</span> - Vos points de départ ("Documents", "Images")</li>
+                <li><span class="highlight">Sous-dossiers</span> - Créez des catégories selon vos besoins</li>
+                <li><span class="highlight">Fichiers</span> - Vos documents, photos et autres contenus</li>
+              </ul>
             </div>
-            <span>Commencer</span>
+
+            <div class="feature-card">
+              <h5><font-awesome-icon icon="code" /> Navigation Intuitive</h5>
+              <ul>
+                <li>💡 Un clic pour explorer les dossiers</li>
+                <li>↕️ Flèches pour développer/réduire</li>
+                <li>🧭 Suivez votre chemin en haut</li>
+              </ul>
+            </div>
+
+            <div class="feature-card">
+              <h5><font-awesome-icon icon="star" /> Avantages Clés</h5>
+              <ul>
+                <li>🎯 Retrouvez vos fichiers en quelques clics</li>
+                <li>✨ Une organisation claire et efficace</li>
+                <li>🎨 Une structure adaptée à vos besoins</li>
+              </ul>
+            </div>
           </div>
         </div>
-        <component :is="currentExerciseComponent" :exercise="selectedExercise" v-if="selectedExercise" />
+      </file-explorer>
+    </div>
+
+    <!-- Vue Exercices -->
+    <div v-else class="exercises-container fade">
+      <h2 class="exercises-title">Exercices sur l'arborescence des fichiers</h2>
+      <div class="exercises-grid">
+        <div 
+          v-for="(exercise, index) in exercises" 
+          :key="index"
+          class="card"
+          @click="selectExercise(exercise)"
+        >
+          <strong>{{ exercise.title }}</strong>
+          <div class="card_body">
+            <p>{{ exercise.difficulty }}</p>
+          </div>
+          <span>Commencer</span>
+        </div>
       </div>
+      <component :is="currentExerciseComponent" :exercise="selectedExercise" v-if="selectedExercise" />
     </div>
   </div>
 </template>
@@ -159,7 +156,6 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   padding: 0;
-  overflow: auto;
 }
 
 /* Navigation buttons */
@@ -197,6 +193,7 @@ export default defineComponent({
 .demo-container {
   width: min(95%, 70vw);
   height: calc(75vh - clamp(2rem, 5vh, 4rem));
+  border-radius: 10px;
   position: relative;
   margin: clamp(1rem, 5vh, 2rem) auto 0;
   display: flex;
