@@ -436,10 +436,13 @@ export default {
 
 <style scoped>
 .keyboard {
-  padding: 0;
+  margin: clamp(6rem, 5vh, 4rem) auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  overflow: auto;
+  scale: 0.9;
 }
 
 h1 {
@@ -511,6 +514,15 @@ h1 {
 
 .log-entry:last-child {
   margin-bottom: 0;
+}
+
+@media (max-height: 816px) {
+  .keyboard {
+    margin-top: 1rem;
+  }
+  .keyboard {
+    scale: 0.8;
+  }
 }
 
 @media (max-width: 768px) {
