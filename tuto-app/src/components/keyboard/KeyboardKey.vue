@@ -79,6 +79,18 @@ export default {
         key: this.label,
         timestamp: Date.now()
       })
+
+      // Réinitialiser la touche Win après l'avoir pressée
+      if (this.label === 'Win') {
+        setTimeout(() => {
+          this.isPressed = false
+          this.isKeyPressed = false
+          this.$emit('key-release', {
+            key: this.label,
+            timestamp: Date.now()
+          })
+        }, 100) // Petit délai pour voir l'effet visuel
+      }
     },
 
     handleRelease() {
@@ -98,6 +110,18 @@ export default {
           key: this.label,
           timestamp: Date.now()
         })
+
+        // Réinitialiser la touche Win après l'avoir pressée
+        if (this.label === 'Win') {
+          setTimeout(() => {
+            this.isPressed = false
+            this.isKeyPressed = false
+            this.$emit('key-release', {
+              key: this.label,
+              timestamp: Date.now()
+            })
+          }, 100) // Petit délai pour voir l'effet visuel
+        }
       }
     },
 
@@ -112,13 +136,18 @@ export default {
     },
 
     matchesKey(event) {
+      // Ignorer l'événement Ctrl si c'est en fait un AltGr
+      if (event.altKey && event.ctrlKey && this.label === 'Ctrl') {
+        return false
+      }
+
       // Gestion des touches spéciales
       if (this.isSpecialKey) {
         switch (this.label) {
           case 'Shift': return event.code === 'ShiftLeft' || event.code === 'ShiftRight'
           case 'Ctrl': return event.code === 'ControlLeft' || event.code === 'ControlRight'
           case 'Alt': return event.code === 'AltLeft'
-          case 'Alt Gr': return event.code === 'AltRight'
+          case 'Alt Gr': return event.code === 'AltRight' || (event.altKey && event.ctrlKey)
           case 'Space': return event.code === 'Space'
           case 'Enter': return event.code === 'Enter'
           case 'Tab': return event.code === 'Tab'
