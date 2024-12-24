@@ -79,7 +79,7 @@
           @key-release="logKeyRelease"
         />
         <KeyboardKey 
-          label="Enter"
+          label="Entrée"
           :width="2"
           :is-special="true"
           key-code="Enter"
@@ -147,7 +147,7 @@
           @key-release="logKeyRelease"
         />
         <KeyboardKey 
-          label="Space"
+          label="Espace"
           :width="6.25"
           :is-special="true"
           key-code="Space"

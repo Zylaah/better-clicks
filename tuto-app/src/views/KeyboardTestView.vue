@@ -10,37 +10,38 @@
       @debug-toggle="handleDebugToggle"
       @debug-key-info="handleDebugKeyInfo"
     />
-    
-    <div class="example-phrases">
-      <h3>Phrase à recopier :</h3>
-      <div class="phrases-container">
-        <div class="phrase-item current">
-          {{ phrasesExemple[currentPhraseIndex] }}
-        </div>
-        <div class="progress-info">
-          <span>Phrase {{ currentPhraseIndex + 1 }} sur {{ phrasesExemple.length }}</span>
-          <div class="progress-bar">
-            <div 
-              class="progress-fill"
-              :style="{ width: `${(currentPhraseIndex / phrasesExemple.length) * 100}%` }"
-            ></div>
+    <div class="example-phrase-container">
+      <div class="example-phrases">
+        <h3>Phrase à recopier :</h3>
+        <div class="phrases-container">
+          <div class="phrase-item current">
+            {{ phrasesExemple[currentPhraseIndex] }}
+          </div>
+          <div class="progress-info">
+            <span>Phrase {{ currentPhraseIndex + 1 }} sur {{ phrasesExemple.length }}</span>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill"
+                :style="{ width: `${(currentPhraseIndex / phrasesExemple.length) * 100}%` }"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="textarea-container">
-      <textarea 
-        v-model="textContent"
-        class="modern-textarea"
-        :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
-        placeholder="Recopiez la phrase ici..."
-        rows="5"
-        @input="checkPhrase"
-        @keydown.enter.prevent
-      ></textarea>
-      <div class="validation-message" v-if="validationMessage">
-          {{ validationMessage }}
+      <div class="textarea-container">
+        <textarea 
+          v-model="textContent"
+          class="modern-textarea"
+          :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
+          placeholder="Recopiez la phrase ici..."
+          rows="5"
+          @input="checkPhrase"
+          @keydown.enter.prevent
+        ></textarea>
+        <div class="validation-message" v-if="validationMessage">
+            {{ validationMessage }}
+        </div>
       </div>
     </div>
   </div>
@@ -150,11 +151,14 @@ h1 {
 }
 
 .textarea-container {
-  margin-top: 2rem;
+  display: flex;
+  padding: 1rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 750px;
+  margin: 0 auto;
 }
 
 .modern-textarea {
@@ -178,6 +182,13 @@ h1 {
 
 .modern-textarea::placeholder {
   color: rgba(var(--text-color-rgb), 0.5);
+}
+
+.example-phrase-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .example-phrases {
@@ -267,11 +278,6 @@ h1 {
 @media (max-height: 816px) {
   .keyboard-test {
     scale: 0.8;
-  }
-
-  .example-phrases {
-    padding: 0;
-    display: block;
   }
 }
 
