@@ -58,7 +58,8 @@ export default {
   data() {
     return {
       isPressed: false,
-      isKeyPressed: false
+      isKeyPressed: false,
+      isCapsLocked: false
     }
   },
 
@@ -75,6 +76,12 @@ export default {
   methods: {
     handlePress() {
       this.isPressed = true
+      
+      if (this.label === 'Caps Lock') {
+        this.isCapsLocked = !this.isCapsLocked
+        this.isPressed = this.isCapsLocked
+      }
+      
       this.$emit('key-press', {
         key: this.label,
         timestamp: Date.now()
@@ -89,12 +96,12 @@ export default {
             key: this.label,
             timestamp: Date.now()
           })
-        }, 100) // Petit délai pour voir l'effet visuel
+        }, 100)
       }
     },
 
     handleRelease() {
-      if (this.isPressed) {
+      if (this.isPressed && this.label !== 'Caps Lock') {
         this.isPressed = false
         this.$emit('key-release', {
           key: this.label,
@@ -106,6 +113,12 @@ export default {
     handleKeyDown(event) {
       if (this.matchesKey(event)) {
         this.isKeyPressed = true
+        
+        if (this.label === 'Caps Lock') {
+          this.isCapsLocked = !this.isCapsLocked
+          this.isKeyPressed = this.isCapsLocked
+        }
+        
         this.$emit('key-press', {
           key: this.label,
           timestamp: Date.now()
@@ -120,13 +133,13 @@ export default {
               key: this.label,
               timestamp: Date.now()
             })
-          }, 100) // Petit délai pour voir l'effet visuel
+          }, 100)
         }
       }
     },
 
     handleKeyUp(event) {
-      if (this.matchesKey(event)) {
+      if (this.matchesKey(event) && this.label !== 'Caps Lock') {
         this.isKeyPressed = false
         this.$emit('key-release', {
           key: this.label,
