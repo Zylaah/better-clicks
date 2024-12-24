@@ -65,10 +65,16 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       phrasesExemple: [
-        "Le vif zéphyr jubile sur les kumquats du clown gracieux.",
-        "Portez ce vieux whisky au juge blond qui fume.",
-        "Dès Noël où un zéphyr haï me vêt de glaçons würmiens je dîne d'exquis rôtis de bœuf au kir à l'aÿ d'âge mûr & cætera.",
-        "Les naïfs ægithales hâtifs pondant à Noël où il gèle sont sûrs d'être déçus en voyant leurs œufs abîmés."
+        "L'été, mon frère aîné va à l'école à vélo.",
+        "Les élèves étudient le français et les mathématiques.",
+        "Où est-ce que tu as mis le gâteau au chocolat ?", 
+        "Mon père m'a offert un cadeau spécial pour Noël !",
+        "J'aime beaucoup me promener dans les jardins publics.",
+        "Ma soeur préfère écouter de la musique classique.",
+        "Nous allons souvent au cinéma le week-end.",
+        "Le petit chat noir dort sur le canapé.",
+        "Il fait très beau aujourd'hui, allons à la plage !",
+        "Les oiseaux chantent dans les arbres au printemps."
       ]
     }
   },
