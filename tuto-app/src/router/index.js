@@ -5,6 +5,7 @@ import ExerciseView from '../views/ExerciseView.vue'
 import AboutView from '../views/AboutView.vue'
 import UnderConstructionView from '../views/UnderConstructionView.vue'
 import GuideExplorerView from '../views/GuideExplorerView.vue'
+import KeyboardTestView from '../views/KeyboardTestView.vue'
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: '/guide-explorer',
     name: 'guide-explorer',
     component: GuideExplorerView
+  },
+  {
+    path: '/keyboard',
+    name: 'keyboard',
+    component: KeyboardTestView
   }
 ]
 
