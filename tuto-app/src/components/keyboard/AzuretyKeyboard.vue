@@ -441,8 +441,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: auto;
-  scale: 0.9;
+  scale: 0.8;
 }
 
 h1 {
@@ -519,9 +518,6 @@ h1 {
 @media (max-height: 816px) {
   .keyboard {
     margin-top: 1rem;
-  }
-  .keyboard {
-    scale: 0.8;
   }
 }
 

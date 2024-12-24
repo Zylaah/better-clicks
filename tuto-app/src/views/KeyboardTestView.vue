@@ -175,7 +175,7 @@ h1 {
 }
 
 .example-phrases {
-  padding: 2rem;
+  padding: clamp(1rem, 2vh, 2rem);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -183,7 +183,7 @@ h1 {
 
 .example-phrases h3 {
   color: var(--accent-color);
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.5rem, 1vh, 1rem);
   font-size: 1.2rem;
 }
 
@@ -196,7 +196,7 @@ h1 {
 }
 
 .phrase-item {
-  padding: 0.8rem;
+  padding: clamp(0.5rem, 1vh, 0.8rem);
   border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.05);
   cursor: pointer;
@@ -221,13 +221,13 @@ h1 {
 }
 
 .progress-info {
-  margin-top: 1rem;
+  margin-top: clamp(0.5rem, 1vh, 1rem);
   text-align: center;
   color: var(--text-color);
 }
 
 .progress-bar {
-  margin-top: 0.5rem;
+  margin-top: clamp(0.25rem, 0.5vh, 0.5rem);
   width: 100%;
   height: 6px;
   background-color: rgba(255, 255, 255, 0.1);
@@ -242,7 +242,7 @@ h1 {
 }
 
 .validation-message {
-  margin-top: 0.5rem;
+  margin-top: clamp(0.25rem, 0.5vh, 0.5rem);
   text-align: center;
   color: var(--accent-color);
   font-size: 0.9rem;
@@ -260,7 +260,7 @@ h1 {
 
 @media (max-height: 816px) {
   .keyboard-test {
-    margin-top: max(7vh, 4rem);
+    scale: 0.8;
   }
 
   .example-phrases {
