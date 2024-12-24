@@ -35,7 +35,7 @@
       <div class="key-row">
         <KeyboardKey 
           label="Tab"
-          :width="1.5"
+          :width="2"
           :is-special="true"
           key-code="Tab"
           @key-press="logKeyPress"
@@ -52,10 +52,9 @@
           @key-release="logKeyRelease"
         />
         <KeyboardKey 
-          label="Enter"
-          :width="1.5"
-          :is-special="true"
-          key-code="Enter"
+          label="µ"
+          :sub-label="'*'"
+          :key-code="keyCodes['*']"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -81,15 +80,24 @@
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
+        <KeyboardKey 
+          label="Enter"
+          :width="2"
+          :is-special="true"
+          key-code="Enter"
+          @key-press="logKeyPress"
+          @key-release="logKeyRelease"
+        />
       </div>
 
       <!-- Quatrième rangée -->
       <div class="key-row">
         <KeyboardKey 
           label="Shift"
-          :width="2.5"
+          :width="2"
           :is-special="true"
           key-code="ShiftLeft"
+          data-key="ShiftLeft"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -105,9 +113,10 @@
         />
         <KeyboardKey 
           label="Shift"
-          :width="2.5"
+          :width="2"
           :is-special="true"
           key-code="ShiftRight"
+          data-key="ShiftRight"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -141,7 +150,7 @@
         />
         <KeyboardKey 
           label="Space"
-          :width="15"
+          :width="6.25"
           :is-special="true"
           key-code="Space"
           data-key="Space"
@@ -264,8 +273,7 @@ export default {
           { main: 'K', normal: 'k', alt: '' },
           { main: 'L', normal: 'l', alt: '' },
           { main: 'M', normal: 'm', alt: '' },
-          { main: '%', normal: 'ù', alt: '' },
-          { main: 'µ', normal: '*', alt: '' }
+          { main: '%', normal: 'ù', alt: '' }
         ],
         // Quatrième rangée
         [
@@ -347,6 +355,16 @@ export default {
     if (this.debugMode) {
       window.addEventListener('keydown', this.handleDebugKeyDown)
     }
+    const mobileMessage = document.querySelector('.mobile-message');
+    if (mobileMessage) {
+      mobileMessage.style.display = 'none';
+    }
+  },
+  beforeUnmount() {
+    const mobileMessage = document.querySelector('.mobile-message');
+    if (mobileMessage) {
+      mobileMessage.style.display = '';
+    }
   },
 
   unmounted() {
@@ -398,9 +416,10 @@ export default {
 
 <style scoped>
 .keyboard-test {
+  width: 100%;
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: clamp(1rem, 2vw, 2rem);
 }
 
 h1 {
@@ -412,26 +431,28 @@ h1 {
 
 .keyboard-container {
   background: var(--bg-secondary);
-  padding: 2rem;
-  border-radius: 16px;
+  padding: clamp(1rem, 2vw, 2rem);
+  border-radius: clamp(0.5rem, 1vw, 1rem);
   box-shadow: 
     -8px -8px 20px -6px rgba(255, 255, 255, 0.05),
     8px 8px 20px -6px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  width: fit-content;
+  width: 100%;
   margin: 0 auto;
-  min-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .key-row {
   display: flex;
   flex-wrap: nowrap;
-  gap: 0.4rem;
+  gap: clamp(0.125rem, 0.25vw, 0.25rem);
   align-items: center;
-  margin-bottom: 0.4rem;
+  margin-bottom: clamp(0.125rem, 0.25vw, 0.25rem);
   justify-content: center;
-  min-width: max-content;
-  padding: 0 1rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .event-log {
@@ -474,32 +495,35 @@ h1 {
 
 @media (max-width: 768px) {
   .keyboard-test {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .keyboard-container {
-    padding: 1rem;
+    padding: 0.5rem;
+  }
+
+  .key-row {
+    gap: 0.125rem;
+    margin-bottom: 0.125rem;
   }
 
   h1 {
     font-size: 1.5rem;
   }
-
-  .key-row {
-    gap: 0.2rem;
-  }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 480px) {
+  .keyboard-test {
+    padding: 0.25rem;
+  }
+
   .keyboard-container {
-    min-width: unset;
-    width: 100%;
-    padding: 1rem;
-    overflow-x: auto;
+    padding: 0.25rem;
   }
 
   .key-row {
-    padding: 0 0.5rem;
+    gap: 0.0625rem;
+    margin-bottom: 0.0625rem;
   }
 }
 

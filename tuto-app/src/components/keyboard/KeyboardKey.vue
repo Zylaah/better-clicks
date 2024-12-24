@@ -145,11 +145,11 @@ export default {
 <style scoped>
 .keyboard-key {
   position: relative;
-  min-width: 40px;
-  height: 60px;
-  margin: 4px;
+  width: clamp(3rem, 5vw, 3.75rem);
+  height: clamp(3rem, 5vw, 3.75rem);
+  margin: clamp(0.125rem, 0.25vw, 0.25rem);
   background: linear-gradient(145deg, var(--bg-secondary), var(--bg-primary));
-  border-radius: 8px;
+  border-radius: clamp(0.25rem, 0.5vw, 0.5rem);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease-in-out;
@@ -190,9 +190,9 @@ export default {
   align-items: center;
   z-index: 1;
   color: var(--text-color);
-  padding: 4px 6px;
+  padding: clamp(0.25rem, 0.5vw, 0.375rem) clamp(0.375rem, 0.75vw, 0.5rem);
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-  gap: 2px;
+  gap: clamp(0.125rem, 0.25vw, 0.25rem);
 }
 
 .key-shadow {
@@ -217,7 +217,7 @@ export default {
 }
 
 .key-label {
-  font-size: 1.1rem;
+  font-size: clamp(0.75rem, 1.5vw, 1.1rem);
   font-weight: 600;
   letter-spacing: 0.5px;
   line-height: 1;
@@ -233,13 +233,13 @@ export default {
 }
 
 .key-sublabel {
-  font-size: 0.75rem;
+  font-size: clamp(0.5rem, 1vw, 0.75rem);
   opacity: 0.8;
   line-height: 1;
 }
 
 .key-third-label {
-  font-size: 0.75rem;
+  font-size: clamp(0.5rem, 1vw, 0.75rem);
   opacity: 0.8;
   color: var(--accent-color);
   line-height: 1;
@@ -254,25 +254,104 @@ export default {
 }
 
 /* Largeurs différentes */
-.keyboard-key.width-1 { width: 40px; }
-.keyboard-key.width-1-5 { width: 60px; }
-.keyboard-key.width-1-8 { width: 72px; }
-.keyboard-key.width-2 { width: 80px; }
-.keyboard-key.width-2-5 { width: 100px; }
-.keyboard-key.width-6-25, 
-.keyboard-key[data-key="Space"] { 
-  width: 300px !important; /* Force la largeur pour la barre d'espace */
+.keyboard-key.width-1 { 
+  width: clamp(3rem, 5vw, 3.75rem);
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key.width-1-5 { 
+  width: clamp(4.5rem, 7.5vw, 5.625rem);
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key.width-1-8 { 
+  width: clamp(5.4rem, 9vw, 6.75rem);
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key.width-2 { 
+  width: clamp(6rem, 10vw, 7.5rem);
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key.width-2-5 { 
+  width: clamp(7.5rem, 12.5vw, 9.375rem);
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key.width-6-25,
+.keyboard-key[data-key="Space"] {
+  width: clamp(18.75rem, 31.25vw, 23.4375rem) !important;
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key[data-key="Caps Lock"] {
+  width: clamp(5.745rem, 10.7vw, 6.745rem) !important;
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key[data-key="Shift"] {
+  width: clamp(8rem, 13.5vw, 10rem) !important;
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+.keyboard-key[data-key="Enter"] {
+  width: clamp(7rem, 12vw, 9rem) !important;
+  height: clamp(3rem, 5vw, 3.75rem);
+}
+
+.keyboard-key[data-key="ShiftLeft"] {
+  width: clamp(7rem, 11.5vw, 8.5rem) !important;
+  height: clamp(3rem, 5vw, 3.75rem);
+  background: linear-gradient(145deg, var(--bg-secondary), var(--bg-primary));
+}
+
+.keyboard-key[data-key="ShiftRight"] {
+  width: clamp(6rem, 10vw, 7.5rem) !important;
+  height: clamp(3rem, 5vw, 3.75rem);
+  background: linear-gradient(145deg, var(--bg-secondary), var(--bg-primary));
+}
+
+.keyboard-key[data-key="ShiftLeft"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    -6px -6px 12px -3px rgba(255, 255, 255, 0.07),
+    6px 6px 12px -3px rgba(0, 0, 0, 0.25),
+    inset -2px -2px 5px -2px rgba(0, 0, 0, 0.1),
+    inset 2px 2px 5px -2px rgba(255, 255, 255, 0.1);
+}
+
+.keyboard-key[data-key="ShiftRight"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    -6px -6px 12px -3px rgba(255, 255, 255, 0.07),
+    6px 6px 12px -3px rgba(0, 0, 0, 0.25),
+    inset -2px -2px 5px -2px rgba(0, 0, 0, 0.1),
+    inset 2px 2px 5px -2px rgba(255, 255, 255, 0.1);
+}
+
+.keyboard-key[data-key="ShiftLeft"].is-pressed {
+  transform: translateY(2px);
+  background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
+  box-shadow: 
+    -2px -2px 5px -3px rgba(255, 255, 255, 0.05),
+    2px 2px 5px -3px rgba(0, 0, 0, 0.2),
+    inset -4px -4px 8px -3px rgba(0, 0, 0, 0.15),
+    inset 4px 4px 8px -3px rgba(255, 255, 255, 0.05);
+}
+
+.keyboard-key[data-key="ShiftRight"].is-pressed {
+  transform: translateY(2px);
+  background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
+  box-shadow: 
+    -2px -2px 5px -3px rgba(255, 255, 255, 0.05),
+    2px 2px 5px -3px rgba(0, 0, 0, 0.2),
+    inset -4px -4px 8px -3px rgba(0, 0, 0, 0.15),
+    inset 4px 4px 8px -3px rgba(255, 255, 255, 0.05);
 }
 
 @media (max-width: 768px) {
   .keyboard-key {
-    min-width: 32px;
-    height: 45px;
+    width: clamp(2.5rem, 4vw, 3rem);
+    height: clamp(2.5rem, 4vw, 3rem);
   }
   
   .keyboard-key.width-6-25,
   .keyboard-key[data-key="Space"] {
-    width: 400px !important;
+    width: clamp(15rem, 25vw, 18.75rem) !important;
+    height: clamp(2.5rem, 4vw, 3rem);
   }
 
   .key-label {
@@ -281,6 +360,16 @@ export default {
 
   .key-sublabel {
     font-size: 0.6rem;
+  }
+
+  .keyboard-key[data-key="ShiftLeft"] {
+    width: clamp(5.5rem, 9vw, 7rem) !important;
+    height: clamp(2.5rem, 4vw, 3rem);
+  }
+  
+  .keyboard-key[data-key="ShiftRight"] {
+    width: clamp(4.5rem, 7.5vw, 6rem) !important;
+    height: clamp(2.5rem, 4vw, 3rem);
   }
 }
 </style> 

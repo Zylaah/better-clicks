@@ -41,7 +41,7 @@
               </li>
               <hr>
               <li>
-                <router-link to="/construction" class="nav-link-menu">
+                <router-link to="/keyboard" class="nav-link-menu">
                   <font-awesome-icon icon="keyboard" />
                   <span>Le clavier</span>
                 </router-link>
