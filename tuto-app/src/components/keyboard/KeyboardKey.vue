@@ -14,10 +14,10 @@
     @touchend.prevent="handleRelease"
   >
     <div class="key-content">
-      <span class="key-label">{{ label }}</span>
+      <span class="key-label" :class="{ 'accent-color': shouldHighlightMain }">{{ label }}</span>
       <div class="key-sublabels">
-        <span v-if="subLabel" class="key-sublabel">{{ subLabel }}</span>
-        <span v-if="thirdLabel" class="key-third-label">{{ thirdLabel }}</span>
+        <span v-if="subLabel" class="key-sublabel" :class="{ 'accent-color': shouldHighlightNormal }">{{ subLabel }}</span>
+        <span v-if="thirdLabel" class="key-third-label" :class="{ 'accent-color': shouldHighlightAlt }">{{ thirdLabel }}</span>
       </div>
     </div>
     <div class="key-shadow"></div>
@@ -59,18 +59,46 @@ export default {
     return {
       isPressed: false,
       isKeyPressed: false,
-      isCapsLocked: false
+      isCapsLocked: false,
+      isShiftPressed: false,
+      isAltPressed: false
+    }
+  },
+
+  computed: {
+    isSpecialKeyCheck() {
+      const specialKeys = [
+        'Shift', 'Ctrl', 'Alt', 'Alt Gr', 'Space', 'Enter', 
+        'Tab', '←', 'Caps Lock', 'Win', 'Menu'
+      ];
+      return specialKeys.includes(this.label);
+    },
+
+    shouldHighlightMain() {
+      return this.isShiftPressed && !this.isSpecialKeyCheck;
+    },
+
+    shouldHighlightNormal() {
+      return (!this.isShiftPressed && !this.isAltPressed) && !this.isSpecialKeyCheck;
+    },
+
+    shouldHighlightAlt() {
+      return this.isAltPressed && !this.isSpecialKeyCheck;
     }
   },
 
   mounted() {
     window.addEventListener('keydown', this.handleKeyDown)
     window.addEventListener('keyup', this.handleKeyUp)
+    window.addEventListener('keydown', this.handleModifierKeys)
+    window.addEventListener('keyup', this.handleModifierKeys)
   },
 
   unmounted() {
     window.removeEventListener('keydown', this.handleKeyDown)
     window.removeEventListener('keyup', this.handleKeyUp)
+    window.removeEventListener('keydown', this.handleModifierKeys)
+    window.removeEventListener('keyup', this.handleModifierKeys)
   },
 
   methods: {
@@ -179,6 +207,24 @@ export default {
 
       // Si pas de keyCode, on compare la touche elle-même
       return event.key === this.subLabel
+    },
+
+    handleModifierKeys(event) {
+      if (event.type === 'keydown') {
+        if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+          this.isShiftPressed = true
+        }
+        if (event.code === 'AltRight' || (event.altKey && event.ctrlKey)) {
+          this.isAltPressed = true
+        }
+      } else if (event.type === 'keyup') {
+        if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+          this.isShiftPressed = false
+        }
+        if (event.code === 'AltRight' || (!event.altKey && !event.ctrlKey)) {
+          this.isAltPressed = false
+        }
+      }
     }
   }
 }
@@ -283,7 +329,6 @@ export default {
 .key-third-label {
   font-size: clamp(0.5rem, 1vw, 0.75rem);
   opacity: 0.8;
-  color: var(--accent-color);
   line-height: 1;
 }
 
@@ -403,5 +448,9 @@ export default {
     width: clamp(4.5rem, 7.5vw, 6rem) !important;
     height: clamp(2.5rem, 4vw, 3rem);
   }
+}
+
+.accent-color {
+  color: var(--accent-color) !important;
 }
 </style> 
