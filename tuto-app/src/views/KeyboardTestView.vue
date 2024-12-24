@@ -64,7 +64,7 @@
       <div class="key-row">
         <KeyboardKey 
           label="Caps Lock"
-          :width="1.8"
+          :width="2-5"
           :is-special="true"
           key-code="CapsLock"
           @key-press="logKeyPress"
@@ -416,10 +416,10 @@ export default {
 
 <style scoped>
 .keyboard-test {
-  width: 100%;
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -431,13 +431,13 @@ h1 {
 
 .keyboard-container {
   background: var(--bg-secondary);
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: 0;
   border-radius: clamp(0.5rem, 1vw, 1rem);
   box-shadow: 
     -8px -8px 20px -6px rgba(255, 255, 255, 0.05),
     8px 8px 20px -6px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;

@@ -305,32 +305,22 @@ export default {
 }
 .keyboard-key.width-6-25,
 .keyboard-key[data-key="Space"] {
-  width: clamp(18.75rem, 31.25vw, 23.4375rem) !important;
-  height: clamp(3rem, 5vw, 3.75rem);
+  flex-grow: 1;
 }
 .keyboard-key[data-key="Caps Lock"] {
-  width: clamp(5.745rem, 10.7vw, 6.745rem) !important;
-  height: clamp(3rem, 5vw, 3.75rem);
+  flex-grow: 1;
 }
 .keyboard-key[data-key="Shift"] {
   width: clamp(8rem, 13.5vw, 10rem) !important;
   height: clamp(3rem, 5vw, 3.75rem);
 }
-.keyboard-key[data-key="Enter"] {
-  width: clamp(7rem, 12vw, 9rem) !important;
-  height: clamp(3rem, 5vw, 3.75rem);
-}
 
 .keyboard-key[data-key="ShiftLeft"] {
-  width: clamp(7rem, 11.5vw, 8.5rem) !important;
-  height: clamp(3rem, 5vw, 3.75rem);
-  background: linear-gradient(145deg, var(--bg-secondary), var(--bg-primary));
+  flex-grow: 1;
 }
 
 .keyboard-key[data-key="ShiftRight"] {
-  width: clamp(6rem, 10vw, 7.5rem) !important;
-  height: clamp(3rem, 5vw, 3.75rem);
-  background: linear-gradient(145deg, var(--bg-secondary), var(--bg-primary));
+  flex-grow: 1;
 }
 
 .keyboard-key[data-key="ShiftLeft"]:hover {
