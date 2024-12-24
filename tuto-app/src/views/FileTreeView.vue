@@ -158,6 +158,10 @@ export default defineComponent({
   padding: 0;
 }
 
+.file-explorer {
+  height: 100%;
+}
+
 /* Navigation buttons */
 .navigation-buttons {
   display: flex;

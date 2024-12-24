@@ -129,6 +129,10 @@ export default {
   padding: 0;
 }
 
+.file-explorer {
+  height: 100%;
+}
+
 .back-button-container {
   display: flex;
   gap: clamp(0.5rem, 2vw, 1rem);
