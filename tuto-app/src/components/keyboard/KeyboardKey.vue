@@ -195,7 +195,7 @@ export default {
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease-in-out;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--hover-color);
   box-shadow: 
     -4px -4px 10px -3px rgba(255, 255, 255, 0.05),
     4px 4px 10px -3px rgba(0, 0, 0, 0.2),

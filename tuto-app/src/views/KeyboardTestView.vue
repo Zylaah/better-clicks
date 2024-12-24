@@ -434,9 +434,9 @@ h1 {
   padding: 0;
   border-radius: clamp(0.5rem, 1vw, 1rem);
   box-shadow: 
-    0px -8px 20px -6px rgba(255, 255, 255, 0.05),
-    0px 8px 20px -6px var(--accent-color);
-  border: 1px solid var(--accent-color);
+    0px -4px 10px -3px rgba(255, 255, 255, 0.05),
+    0px 4px 10px -3px var(--accent-color);
+  border: 1px solid var(--hover-color);
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
