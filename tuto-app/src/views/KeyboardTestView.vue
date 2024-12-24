@@ -46,6 +46,7 @@ export default {
 
 <style scoped>
 .keyboard-test {
+  margin-top: max(9vh, 5rem);
   padding: 2rem;
 }
 
@@ -54,5 +55,18 @@ h1 {
   margin-bottom: 2rem;
   font-size: 2rem;
   text-align: center;
+}
+
+@media (max-height: 816px) {
+  .keyboard-test {
+    scale: 0.9;
+    margin-top: max(7vh, 4rem);
+  }
+}
+
+@media (max-width: 1180px) {
+  .keyboard-test {
+    display: none;
+  }
 }
 </style>

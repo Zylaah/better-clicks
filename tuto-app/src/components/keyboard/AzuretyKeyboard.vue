@@ -1,10 +1,10 @@
 <template>
   <div class="keyboard">
-    <div v-if="showDebugControls" class="debug-controls">
+    <!-- <div v-if="showDebugControls" class="debug-controls">
       <button @click="toggleDebug" class="debug-button">
         {{ debugMode ? 'Désactiver' : 'Activer' }} le mode débogage
       </button>
-    </div>
+    </div> -->
 
     <div class="keyboard-container">
       <!-- Première rangée - Chiffres -->
@@ -182,7 +182,35 @@
       </div>
     </div>
 
-    
+    <!-- Journal des événements -->
+    <!-- <div v-if="showEventLog" class="event-log">
+      <h3>Journal des Événements</h3>
+      <div class="log-container">
+        <div v-for="(log, index) in eventLogs" :key="index" class="log-entry">
+          {{ log }}
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Mode débogage -->
+    <!-- <div v-if="debugMode" class="debug-log">
+      <h3>Mode Débogage</h3>
+      <div class="debug-info">
+        <p>Appuyez sur une touche pour voir son code</p>
+        <div v-if="lastKeyInfo" class="debug-key-info">
+          <p>Dernière touche pressée :</p>
+          <ul>
+            <li>Key: {{ lastKeyInfo.key }}</li>
+            <li>Code: {{ lastKeyInfo.code }}</li>
+            <li>KeyCode: {{ lastKeyInfo.keyCode }}</li>
+            <li>Shift: {{ lastKeyInfo.shift }}</li>
+            <li>Alt: {{ lastKeyInfo.alt }}</li>
+            <li>AltGr: {{ lastKeyInfo.altGr }}</li>
+            <li>Ctrl: {{ lastKeyInfo.ctrl }}</li>
+          </ul>
+        </div>
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -350,16 +378,6 @@ export default {
   mounted() {
     if (this.debugMode) {
       window.addEventListener('keydown', this.handleDebugKeyDown)
-    }
-    const mobileMessage = document.querySelector('.mobile-message');
-    if (mobileMessage) {
-      mobileMessage.style.display = 'none';
-    }
-  },
-  beforeUnmount() {
-    const mobileMessage = document.querySelector('.mobile-message');
-    if (mobileMessage) {
-      mobileMessage.style.display = '';
     }
   },
 
