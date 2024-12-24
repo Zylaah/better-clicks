@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+
     <div class="exercises-container fade">
       <h2 class="exercises-title">Exercices de frappe au clavier</h2>
       <div class="exercises-grid">
@@ -67,6 +68,11 @@ export default {
   padding: 0;
 }
 
+h2 {
+  font-size: 2rem;
+  margin-top: 2rem;
+}
+
 .exercises-container {
   width: min(95%, 60vw);
   padding: clamp(1rem, 4vh, 2rem) clamp(1rem, 3vw, 3rem);
@@ -79,7 +85,7 @@ export default {
 .exercises-title {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   margin-bottom: clamp(0.2rem, 3vw, 1rem);
-  margin-top: 0;
+  margin-top: 5rem;
   text-align: center;
   color: var(--accent-color);
 }
@@ -202,9 +208,18 @@ export default {
   }
 }
 
-@media (max-height: 800px) {
-  .exercises-container {
-    padding: clamp(0.5rem, 2vh, 1rem);
+@media (max-height: 816px) {
+  .container {
+    scale: 0.8;
+  }
+  .exercises-title {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 1180px) {
+  .container {
+    display: none;
   }
 }
 </style>

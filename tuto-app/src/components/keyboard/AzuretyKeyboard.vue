@@ -436,7 +436,7 @@ export default {
 
 <style scoped>
 .keyboard {
-  margin: clamp(6rem, 5vh, 4rem) auto 0;
+  margin: clamp(1rem, 1vh, 2rem) auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -515,45 +515,7 @@ h1 {
   margin-bottom: 0;
 }
 
-@media (max-height: 816px) {
-  .keyboard {
-    margin-top: 1rem;
-  }
-}
 
-@media (max-width: 768px) {
-  .keyboard {
-    padding: 0.5rem;
-  }
-
-  .keyboard-container {
-    padding: 0.5rem;
-  }
-
-  .key-row {
-    gap: 0.125rem;
-    margin-bottom: 0.125rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .keyboard {
-    padding: 0.25rem;
-  }
-
-  .keyboard-container {
-    padding: 0.25rem;
-  }
-
-  .key-row {
-    gap: 0.0625rem;
-    margin-bottom: 0.0625rem;
-  }
-}
 
 .debug-controls {
   margin-bottom: 1rem;
@@ -605,5 +567,45 @@ h1 {
 
 .debug-key-info li {
   padding: 0.25rem 0;
+}
+
+@media (max-height: 816px) {
+  .keyboard {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .keyboard {
+    padding: 0.5rem;
+  }
+
+  .keyboard-container {
+    padding: 0.5rem;
+  }
+
+  .key-row {
+    gap: 0.125rem;
+    margin-bottom: 0.125rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .keyboard {
+    padding: 0.25rem;
+  }
+
+  .keyboard-container {
+    padding: 0.25rem;
+  }
+
+  .key-row {
+    gap: 0.0625rem;
+    margin-bottom: 0.0625rem;
+  }
 }
 </style> 

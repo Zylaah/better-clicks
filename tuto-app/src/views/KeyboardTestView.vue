@@ -1,5 +1,10 @@
 <template>
   <div class="keyboard-test">
+    <div class="back-button-container">
+      <button class="back-button" @click="goBack">
+        <font-awesome-icon icon="arrow-left" /> Retour à l'explorateur
+      </button>
+    </div>
     
     <AzuretyKeyboard
       :show-debug-controls="true"
@@ -68,7 +73,7 @@ export default {
       phrasesExemple: [
         "L'été, mon frère aîné va à l'école à vélo.",
         "Les élèves étudient le français et les mathématiques.",
-        "Où est-ce que tu as mis le gâteau au chocolat ?", 
+        "Où est-ce que tu as mis le gâteau au chocolat ?",
         "Mon père m'a offert un cadeau spécial pour Noël !",
         "J'aime beaucoup me promener dans les jardins publics.",
         "Ma soeur préfère écouter de la musique classique.",
@@ -87,7 +92,13 @@ export default {
       if (this.textContent === currentPhrase) {
         this.isCorrect = true;
         this.isIncorrect = false;
-        this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la phrase suivante.';
+        if (this.currentPhraseIndex === this.phrasesExemple.length - 1) {
+          this.validationMessage = 'Parfait ! Vous avez terminé toutes les phrases !';
+          document.querySelector('textarea').disabled = true;
+          document.querySelector('textarea').placeholder = 'Vous avez terminé !';
+        } else {
+          this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la phrase suivante.';
+        }
         document.addEventListener('keydown', this.handleEnterKey);
       } else {
         this.isCorrect = false;
@@ -130,6 +141,9 @@ export default {
 
     selectPhrase(index) {
       this.currentPhraseIndex = index;
+    },
+    goBack() {
+      this.$router.push({ name: 'keyboard-menu' })
     }
   }
 }
@@ -275,9 +289,36 @@ h1 {
   background-color: rgba(244, 67, 54, 0.05);
 }
 
+.back-button-container {
+  display: flex;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  margin-top: max(12vh, 7rem);
+  z-index: 100;
+  justify-content: center;
+  width: 100%;
+}
+
+.back-button {
+  padding: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
+  transition: all 0.2s ease;
+  background-color: var(--accent-color);
+  color: var(--text-color);
+}
+
+.back-button:hover {
+  transform: translateY(-2px);
+}
+
 @media (max-height: 816px) {
   .keyboard-test {
     scale: 0.8;
+  }
+  .back-button-container {
+    margin-top: 2rem;
   }
 }
 
