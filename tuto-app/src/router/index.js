@@ -5,8 +5,9 @@ import ExerciseView from '../views/ExerciseView.vue'
 import AboutView from '../views/AboutView.vue'
 import UnderConstructionView from '../views/UnderConstructionView.vue'
 import GuideExplorerView from '../views/GuideExplorerView.vue'
-import KeyboardTestView from '../views/KeyboardTestView.vue'
+import KeyboardPhraseView from '../views/KeyboardPhraseView.vue'
 import KeyboardExerciseMenu from '../views/KeyboardExerciseMenu.vue'
+import KeyboardLettreView from '../views/KeyboardLettreView.vue'
 
 const routes = [
   {
@@ -48,7 +49,12 @@ const routes = [
   {
     path: '/keyboard',
     name: 'keyboard-phrase',
-    component: KeyboardTestView
+    component: KeyboardPhraseView
+  },
+  {
+    path: '/keyboard',
+    name: 'keyboard-lettre',
+    component: KeyboardLettreView
   }
 ]
 

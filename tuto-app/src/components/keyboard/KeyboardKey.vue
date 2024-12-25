@@ -61,7 +61,9 @@ export default {
       isKeyPressed: false,
       isCapsLocked: false,
       isShiftPressed: false,
-      isAltPressed: false
+      isAltPressed: false,
+      pressedKeys: new Set(),
+      keyPressTimeout: null
     }
   },
 
@@ -104,6 +106,7 @@ export default {
   methods: {
     handlePress() {
       this.isPressed = true
+      this.pressedKeys.add('mouse')
       
       if (this.label === 'Caps Lock') {
         this.isCapsLocked = !this.isCapsLocked
@@ -114,21 +117,10 @@ export default {
         key: this.label,
         timestamp: Date.now()
       })
-
-      // Réinitialiser la touche Win après l'avoir pressée
-      if (this.label === 'Win') {
-        setTimeout(() => {
-          this.isPressed = false
-          this.isKeyPressed = false
-          this.$emit('key-release', {
-            key: this.label,
-            timestamp: Date.now()
-          })
-        }, 100)
-      }
     },
 
     handleRelease() {
+      this.pressedKeys.delete('mouse')
       if (this.isPressed && this.label !== 'Caps Lock') {
         this.isPressed = false
         this.$emit('key-release', {
@@ -140,6 +132,11 @@ export default {
 
     handleKeyDown(event) {
       if (this.matchesKey(event)) {
+        if (this.keyPressTimeout) {
+          clearTimeout(this.keyPressTimeout)
+        }
+
+        this.pressedKeys.add(event.code)
         this.isKeyPressed = true
         
         if (this.label === 'Caps Lock') {
@@ -152,27 +149,28 @@ export default {
           timestamp: Date.now()
         })
 
-        // Réinitialiser la touche Win après l'avoir pressée
-        if (this.label === 'Win') {
-          setTimeout(() => {
-            this.isPressed = false
-            this.isKeyPressed = false
-            this.$emit('key-release', {
-              key: this.label,
-              timestamp: Date.now()
-            })
-          }, 100)
-        }
+        this.keyPressTimeout = setTimeout(() => {
+          this.forceKeyRelease()
+        }, 100)
       }
     },
 
     handleKeyUp(event) {
-      if (this.matchesKey(event) && this.label !== 'Caps Lock') {
-        this.isKeyPressed = false
-        this.$emit('key-release', {
-          key: this.label,
-          timestamp: Date.now()
-        })
+      if (this.matchesKey(event)) {
+        if (this.keyPressTimeout) {
+          clearTimeout(this.keyPressTimeout)
+        }
+
+        this.pressedKeys.delete(event.code)
+        if (this.pressedKeys.size === 0) {
+          this.isKeyPressed = false
+          if (this.label !== 'Caps Lock') {
+            this.$emit('key-release', {
+              key: this.label,
+              timestamp: Date.now()
+            })
+          }
+        }
       }
     },
 
@@ -225,6 +223,30 @@ export default {
           this.isAltPressed = false
         }
       }
+    },
+
+    forceKeyRelease() {
+      if (this.keyPressTimeout) {
+        clearTimeout(this.keyPressTimeout)
+      }
+      
+      if (this.isKeyPressed && this.label !== 'Caps Lock') {
+        this.isKeyPressed = false
+        this.pressedKeys.clear()
+        this.$emit('key-release', {
+          key: this.label,
+          timestamp: Date.now()
+        })
+      }
+    }
+  },
+
+  beforeUnmount() {
+    if (this.keyPressTimeout) {
+      clearTimeout(this.keyPressTimeout)
+    }
+    if (this.isKeyPressed || this.isPressed) {
+      this.forceKeyRelease()
     }
   }
 }

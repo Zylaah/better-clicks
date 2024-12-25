@@ -29,24 +29,24 @@ export default {
     return {
       exercises: [
         {
-          title: "Taper des phrases",
+          title: "Découvrir les touches",
           difficulty: "Débutant",
-          route: "keyboard-phrase"
+          route: "keyboard-lettre"
         },
         {
-          title: "Lettres de base",
+          title: "Taper des mots",
           difficulty: "Débutant",
-          route: "keyboard-basic"
+          route: "keyboard-mots"
         },
         {
-          title: "Chiffres et symboles",
+          title: "symboles, chiffres et accents",
           difficulty: "Intermédiaire",
-          route: "keyboard-symbols"
+          route: "keyboard-symboles"
         },
         {
-          title: "Phrases complètes",
+          title: "Taper des phrases",
           difficulty: "Avancé",
-          route: "keyboard-sentences"
+          route: "keyboard-phrase"
         }
       ]
     }
