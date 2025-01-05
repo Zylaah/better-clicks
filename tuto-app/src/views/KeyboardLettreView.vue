@@ -29,15 +29,26 @@
       </div>
 
       <div class="textarea-container">
-        <textarea 
-          v-model="userInput"
-          class="modern-textarea"
-          :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
-          placeholder="Tapez la lettre ici..."
-          rows="5"
-          @input="checkLetter"
-          @keydown.enter.prevent
-        ></textarea>
+        <template v-if="isExerciseComplete">
+          <button 
+            class="restart-button"
+            @click="restartExercise"
+          >
+            <font-awesome-icon icon="rotate-right" />
+            Recommencer l'exercice
+          </button>
+        </template>
+        <template v-else>
+          <textarea 
+            v-model="userInput"
+            class="modern-textarea"
+            :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
+            placeholder="Tapez la lettre ici..."
+            rows="5"
+            @input="checkLetter"
+            @keydown.enter.prevent
+          ></textarea>
+        </template>
         <div class="validation-message" v-if="validationMessage">
           {{ validationMessage }}
         </div>
@@ -63,7 +74,8 @@ export default {
       isCorrect: false,
       isIncorrect: false,
       validationMessage: '',
-      letters: this.generateRandomLetters()
+      letters: this.generateRandomLetters(),
+      isExerciseComplete: false
     }
   },
 
@@ -111,7 +123,6 @@ export default {
     },
 
     checkLetter() {
-      // Ne vérifie que le premier caractère si l'utilisateur en tape plusieurs
       const input = this.userInput.charAt(0)
       
       if (input === this.currentLetter.char) {
@@ -119,9 +130,8 @@ export default {
         this.isIncorrect = false
         
         if (this.currentIndex === this.letters.length - 1) {
+          this.isExerciseComplete = true
           this.validationMessage = 'Parfait ! Vous avez terminé toutes les lettres !'
-          document.querySelector('textarea').disabled = true
-          document.querySelector('textarea').placeholder = 'Vous avez terminé !'
         } else {
           this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la lettre suivante.'
           document.addEventListener('keydown', this.handleEnterKey)
@@ -159,6 +169,16 @@ export default {
 
     goBack() {
       this.$router.push({ name: 'keyboard-menu' })
+    },
+
+    restartExercise() {
+      this.letters = this.generateRandomLetters()
+      this.currentIndex = 0
+      this.isExerciseComplete = false
+      this.isCorrect = false
+      this.isIncorrect = false
+      this.userInput = ''
+      this.validationMessage = ''
     }
   },
 
@@ -325,5 +345,30 @@ h1 {
   .keyboard-test {
     display: none;
   }
+}
+
+.restart-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.restart-button:hover {
+  transform: translateY(-2px);
+  background-color: var(--accent-color-hover, #357b5e);
+}
+
+.restart-button:active {
+  transform: translateY(0);
 }
 </style>

@@ -30,15 +30,26 @@
       </div>
 
       <div class="textarea-container">
-        <textarea 
-          v-model="textContent"
-          class="modern-textarea"
-          :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
-          placeholder="Recopiez la phrase ici..."
-          rows="5"
-          @input="checkPhrase"
-          @keydown.enter.prevent
-        ></textarea>
+        <template v-if="isExerciseComplete">
+          <button 
+            class="restart-button"
+            @click="restartExercise"
+          >
+            <font-awesome-icon icon="rotate-right" />
+            Recommencer l'exercice
+          </button>
+        </template>
+        <template v-else>
+          <textarea 
+            v-model="textContent"
+            class="modern-textarea"
+            :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
+            placeholder="Recopiez la phrase ici..."
+            rows="5"
+            @input="checkPhrase"
+            @keydown.enter.prevent
+          ></textarea>
+        </template>
         <div class="validation-message" v-if="validationMessage">
             {{ validationMessage }}
         </div>
@@ -50,6 +61,7 @@
 
 <script>
 import AzuretyKeyboard from '@/components/keyboard/AzuretyKeyboard.vue'
+import phrases from '@/data/phrases.json'
 
 export default {
   name: 'KeyboardTestView',
@@ -65,22 +77,24 @@ export default {
       isCorrect: false,
       isIncorrect: false,
       validationMessage: '',
-      phrasesExemple: [
-        "L'été, mon frère aîné va à l'école à vélo.",
-        "Les élèves étudient le français et les mathématiques.",
-        "Où est-ce que tu as mis le gâteau au chocolat ?",
-        "Mon père m'a offert un cadeau spécial pour Noël !",
-        "J'aime beaucoup me promener dans les jardins publics.",
-        "Ma soeur préfère écouter de la musique classique.",
-        "Nous allons souvent au cinéma le week-end.",
-        "Le petit chat noir dort sur le canapé.",
-        "Il fait très beau aujourd'hui, allons à la plage !",
-        "Les oiseaux chantent dans les arbres au printemps."
-      ]
+      isExerciseComplete: false,
+      phrasesExemple: this.getRandomPhrases(phrases.phrases, 15)
     }
   },
 
   methods: {
+    getRandomPhrases(phrases, count) {
+      return this.shuffleArray([...phrases]).slice(0, count);
+    },
+
+    shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    },
+
     checkPhrase() {
       const currentPhrase = this.phrasesExemple[this.currentPhraseIndex];
       
@@ -88,13 +102,12 @@ export default {
         this.isCorrect = true;
         this.isIncorrect = false;
         if (this.currentPhraseIndex === this.phrasesExemple.length - 1) {
+          this.isExerciseComplete = true;
           this.validationMessage = 'Parfait ! Vous avez terminé toutes les phrases !';
-          document.querySelector('textarea').disabled = true;
-          document.querySelector('textarea').placeholder = 'Vous avez terminé !';
         } else {
           this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la phrase suivante.';
+          document.addEventListener('keydown', this.handleEnterKey);
         }
-        document.addEventListener('keydown', this.handleEnterKey);
       } else {
         this.isCorrect = false;
         const isPartiallyCorrect = currentPhrase.startsWith(this.textContent);
@@ -103,14 +116,23 @@ export default {
       }
     },
 
+    restartExercise() {
+      const allPhrases = this.phrasesExemple.concat(/* ... copier toutes les phrases ici ... */);
+      this.phrasesExemple = this.getRandomPhrases(allPhrases, 10);
+      this.currentPhraseIndex = 0;
+      this.isExerciseComplete = false;
+      this.isCorrect = false;
+      this.isIncorrect = false;
+      this.textContent = '';
+      this.validationMessage = '';
+    },
+
     handleEnterKey(event) {
       if (event.key === 'Enter') {
         if (this.isCorrect && this.currentPhraseIndex < this.phrasesExemple.length - 1) {
           this.currentPhraseIndex++;
           this.isCorrect = false;
           this.validationMessage = '';
-        } else if (this.isCorrect) {
-          this.validationMessage = 'Félicitations ! Vous avez terminé toutes les phrases !';
         }
         this.textContent = '';
         this.isIncorrect = false;
@@ -300,5 +322,30 @@ h1 {
   .keyboard-test {
     display: none;
   }
+}
+
+.restart-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.restart-button:hover {
+  transform: translateY(-2px);
+  background-color: var(--accent-color-hover, #357b5e);
+}
+
+.restart-button:active {
+  transform: translateY(0);
 }
 </style>
