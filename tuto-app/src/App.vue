@@ -2,9 +2,19 @@
   <div class="app-container">
     <TitleBar />
     <nav class="navbar">
-      <router-link to="/" class="nav-brand">
-        <img src="@/assets/icon.png" alt="Logo Numérix" class="brand-icon" />
-      </router-link>
+      <div class="nav-left">
+        <router-link to="/" class="nav-brand">
+          <img src="@/assets/icon.png" alt="Logo Numérix" class="brand-icon" />
+        </router-link>
+        <router-link 
+          v-if="showBackButton" 
+          to="/keyboard" 
+          class="nav-link back-nav-button"
+        >
+          <font-awesome-icon icon="arrow-left" />
+          <span>Retour</span>
+        </router-link>
+      </div>
       <div class="nav-links">
         <router-link to="/" class="nav-link">
           <font-awesome-icon icon="home" />
@@ -91,9 +101,15 @@ export default {
       return route.path === '/file-tree' || route.path === '/le-clavier' || route.path.startsWith('/exercise/'); // Ajustez selon vos routes
     });
 
+    const showBackButton = computed(() => {
+      return route.name === 'keyboard-lettre' || 
+             route.name === 'keyboard-phrase';
+    });
+
     return {
       isGuideActive,
-      isExerciseActive
+      isExerciseActive,
+      showBackButton
     };
   }
 }
@@ -243,6 +259,40 @@ body, html{
 .mobile-message p {
   font-size: 1rem;
   color: var(--text-secondary);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-nav-button {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.back-nav-button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* Ajuster le style responsive si nécessaire */
+@media (max-width: 768px) {
+  .nav-left {
+    width: auto;
+  }
+  
+  .back-nav-button span {
+    display: none;
+  }
+  
+  .back-nav-button {
+    padding: 0.5rem;
+  }
 }
 
 /* Animation de transition entre les pages */

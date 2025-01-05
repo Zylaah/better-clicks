@@ -1,10 +1,5 @@
 <template>
   <div class="keyboard-test">
-    <div class="back-button-container">
-      <button class="back-button" @click="goBack">
-        <font-awesome-icon icon="arrow-left" /> Retour au menu
-      </button>
-    </div>
     
     <AzuretyKeyboard
       :show-debug-controls="true"
@@ -145,9 +140,12 @@ export default {
 
 <style scoped>
 .keyboard-test {
+  margin-top: clamp(4rem, 6rem, 8rem);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: min(100dvh, 80vh);
   padding: 0;
 }
 
@@ -281,30 +279,6 @@ h1 {
 .modern-textarea.incorrect {
   border-color: #f44336;
   background-color: rgba(244, 67, 54, 0.05);
-}
-
-.back-button-container {
-  display: flex;
-  gap: clamp(0.5rem, 2vw, 1rem);
-  margin-top: max(12vh, 7rem);
-  z-index: 100;
-  justify-content: center;
-  width: 100%;
-}
-
-.back-button {
-  padding: 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: clamp(0.9rem, 1.5vw, 1rem);
-  transition: all 0.2s ease;
-  background-color: var(--accent-color);
-  color: var(--text-color);
-}
-
-.back-button:hover {
-  transform: translateY(-2px);
 }
 
 @media (max-height: 816px) {
