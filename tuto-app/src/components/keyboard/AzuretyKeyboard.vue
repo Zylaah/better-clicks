@@ -238,14 +238,35 @@ export default {
     maxLogEntries: {
       type: Number,
       default: 10
+    },
+    isDisabled: {
+      type: Boolean,
+      default: false
+    },
+    theme: {
+      type: String,
+      default: 'default',
+      validator: (value) => ['default', 'modern', 'minimal'].includes(value)
+    },
+    size: {
+      type: String,
+      default: 'normal',
+      validator: (value) => ['small', 'normal', 'large'].includes(value)
+    },
+    hapticFeedback: {
+      type: Boolean,
+      default: true
     }
   },
 
   emits: [
     'key-press',
     'key-release',
+    'key-repeat',
+    'long-press',
     'debug-toggle',
-    'debug-key-info'
+    'debug-key-info',
+    'modifier-change'
   ],
 
   data() {
@@ -253,6 +274,12 @@ export default {
       eventLogs: [],
       debugMode: false,
       lastKeyInfo: null,
+      activeModifiers: new Set(),
+      isCapsLocked: false,
+      isNumLocked: false,
+      lastKeyPressTime: 0,
+      keyPressCount: 0,
+      typingSpeed: 0,
       keyboardLayout: [
         // Première rangée
         [
@@ -375,6 +402,48 @@ export default {
     }
   },
 
+  computed: {
+    keyboardClasses() {
+      return [
+        'keyboard',
+        `theme-${this.theme}`,
+        `size-${this.size}`,
+        {
+          'is-disabled': this.isDisabled,
+          'caps-locked': this.isCapsLocked,
+          'num-locked': this.isNumLocked
+        }
+      ]
+    },
+
+    isShiftActive() {
+      return this.activeModifiers.has('ShiftLeft') || this.activeModifiers.has('ShiftRight')
+    },
+
+    isAltActive() {
+      return this.activeModifiers.has('AltLeft') || this.activeModifiers.has('AltRight')
+    },
+
+    isCtrlActive() {
+      return this.activeModifiers.has('ControlLeft') || this.activeModifiers.has('ControlRight')
+    }
+  },
+
+  watch: {
+    activeModifiers: {
+      handler() {
+        this.$emit('modifier-change', {
+          shift: this.isShiftActive,
+          alt: this.isAltActive,
+          ctrl: this.isCtrlActive,
+          caps: this.isCapsLocked,
+          num: this.isNumLocked
+        })
+      },
+      deep: true
+    }
+  },
+
   mounted() {
     if (this.debugMode) {
       window.addEventListener('keydown', this.handleDebugKeyDown)
@@ -413,7 +482,31 @@ export default {
     },
 
     logKeyPress(event) {
-      this.$emit('key-press', event)
+      // Calcul de la vitesse de frappe
+      const now = Date.now()
+      if (now - this.lastKeyPressTime < 5000) { // 5 secondes pour le calcul
+        this.keyPressCount++
+        this.typingSpeed = Math.round((this.keyPressCount / 5) * 60) // WPM approximatif
+      } else {
+        this.keyPressCount = 1
+      }
+      this.lastKeyPressTime = now
+
+      // Retour haptique si activé
+      if (this.hapticFeedback && navigator.vibrate) {
+        navigator.vibrate(10)
+      }
+
+      this.$emit('key-press', {
+        ...event,
+        typingSpeed: this.typingSpeed,
+        modifiers: {
+          shift: this.isShiftActive,
+          alt: this.isAltActive,
+          ctrl: this.isCtrlActive,
+          caps: this.isCapsLocked
+        }
+      })
       this.addLog(`Touche pressée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`)
     },
 
@@ -429,6 +522,14 @@ export default {
           this.eventLogs.pop()
         }
       }
+    },
+
+    handleModifierChange(key, isActive) {
+      if (isActive) {
+        this.activeModifiers.add(key)
+      } else {
+        this.activeModifiers.delete(key)
+      }
     }
   }
 }
@@ -441,19 +542,19 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  scale: 0.8;
+  transform-origin: top center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-h1 {
-  color: var(--accent-color);
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  text-align: center;
+.keyboard.is-disabled {
+  opacity: 0.7;
+  pointer-events: none;
+  filter: grayscale(0.5);
 }
 
 .keyboard-container {
   background: var(--bg-secondary);
-  padding: 0;
+  padding: clamp(0.5rem, 1vw, 1rem);
   border-radius: clamp(0.5rem, 1vw, 1rem);
   box-shadow: 
     0px -4px 10px -3px rgba(255, 255, 255, 0.05),
@@ -464,6 +565,35 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: clamp(0.25rem, 0.5vw, 0.5rem);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Thèmes */
+.theme-modern .keyboard-container {
+  background: rgba(var(--bg-secondary-rgb), 0.8);
+  border: none;
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.3),
+    0 -10px 30px -10px rgba(255, 255, 255, 0.1);
+}
+
+.theme-minimal .keyboard-container {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Tailles */
+.size-small {
+  transform: scale(0.8);
+}
+
+.size-large {
+  transform: scale(1.2);
 }
 
 .key-row {
@@ -471,141 +601,130 @@ h1 {
   flex-wrap: nowrap;
   gap: clamp(0.125rem, 0.25vw, 0.25rem);
   align-items: center;
-  margin-bottom: clamp(0.125rem, 0.25vw, 0.25rem);
   justify-content: center;
   width: 100%;
   max-width: 100%;
+  transition: transform 0.3s ease;
 }
 
-.event-log {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: var(--bg-secondary);
-  border-radius: 16px;
-  box-shadow: 
-    -8px -8px 20px -6px rgba(255, 255, 255, 0.05),
-    8px 8px 20px -6px rgba(0, 0, 0, 0.15);
+/* Animation des rangées lors de la frappe */
+.key-row:has(.keyboard-key.is-pressed) {
+  transform: translateY(1px);
 }
 
-.log-container {
-  margin-top: 1.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 1.5rem;
-  background: var(--bg-primary);
-  border-radius: 12px;
-  box-shadow: 
-    inset 2px 2px 5px rgba(0, 0, 0, 0.1),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+/* Support des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard,
+  .key-row {
+    transition: none;
+  }
+  
+  .key-row:has(.keyboard-key.is-pressed) {
+    transform: none;
+  }
 }
 
-.log-entry {
-  padding: 0.8rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
-  background: var(--bg-secondary);
-  color: var(--text-color);
-  font-family: monospace;
-  box-shadow: 
-    2px 2px 5px rgba(0, 0, 0, 0.1),
-    -2px -2px 5px rgba(255, 255, 255, 0.05);
-}
-
-.log-entry:last-child {
-  margin-bottom: 0;
-}
-
-
-
-.debug-controls {
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.debug-button {
-  padding: 0.5rem 1rem;
-  background: var(--accent-color);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-}
-
-.debug-button:hover {
-  background: var(--hover-color);
-}
-
-.debug-log {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: var(--bg-secondary);
-  border-radius: 16px;
-  box-shadow: 
-    -8px -8px 20px -6px rgba(255, 255, 255, 0.05),
-    8px 8px 20px -6px rgba(0, 0, 0, 0.15);
-}
-
-.debug-info {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: var(--bg-primary);
-  border-radius: 8px;
-}
-
-.debug-key-info {
-  margin-top: 1rem;
-  font-family: monospace;
-}
-
-.debug-key-info ul {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0;
-}
-
-.debug-key-info li {
-  padding: 0.25rem 0;
-}
-
-@media (max-height: 816px) {
+/* Responsive design amélioré */
+@media (max-width: 1180px) {
   .keyboard {
-    margin-top: 1rem;
+    transform: scale(0.9);
+  }
+  
+  .keyboard-container {
+    padding: 0.5rem;
   }
 }
 
 @media (max-width: 768px) {
   .keyboard {
-    padding: 0.5rem;
-  }
-
-  .keyboard-container {
-    padding: 0.5rem;
-  }
-
-  .key-row {
-    gap: 0.125rem;
-    margin-bottom: 0.125rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
+    transform: scale(0.8);
   }
 }
 
 @media (max-width: 480px) {
   .keyboard {
-    padding: 0.25rem;
+    transform: scale(0.7);
   }
+}
 
-  .keyboard-container {
-    padding: 0.25rem;
-  }
+/* État des modificateurs */
+.caps-locked .keyboard-key[data-key="CapsLock"] {
+  background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
+  border-color: var(--accent-color);
+}
 
-  .key-row {
-    gap: 0.0625rem;
-    margin-bottom: 0.0625rem;
+.num-locked .keyboard-key[data-key="NumLock"] {
+  background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
+  border-color: var(--accent-color);
+}
+
+/* Animations de transition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.keyboard-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Styles pour le journal d'événements et le débogage */
+.event-log,
+.debug-log {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-width: 600px;
+  width: 100%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.log-container {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) var(--bg-secondary);
+}
+
+.log-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.log-container::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 3px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 3px;
+}
+
+.log-entry {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  background: var(--bg-secondary);
+  font-family: monospace;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  transition: background-color 0.2s ease;
+}
+
+.log-entry:hover {
+  background: var(--hover-color);
 }
 </style> 

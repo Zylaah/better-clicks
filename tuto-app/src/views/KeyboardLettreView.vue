@@ -140,7 +140,7 @@ export default {
 
 <style scoped>
 .keyboard-test {
-  margin-top: clamp(4rem, 6rem, 8rem);
+  margin-top: clamp(6rem, 8rem, 10rem);
   display: flex;
   flex-direction: column;
   align-items: center;
