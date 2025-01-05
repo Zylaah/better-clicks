@@ -16,7 +16,7 @@ module.exports = defineConfig({
       preload: 'src/preload.js',
       builderOptions: {
         appId: "com.numerix.id",
-        productName: "Numérix",
+        productName: "Numerix",
         directories: {
           output: "dist_electron"
         },
@@ -28,7 +28,7 @@ module.exports = defineConfig({
               arch: ["x64"]
             }
           ],
-          artifactName: "Numérix.${ext}"
+          artifactName: "Numerix.${ext}"
         },
         mac: {
           icon: "build/icon.icns",

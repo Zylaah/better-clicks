@@ -1,6 +1,6 @@
 <template>
     <div class="titlebar">
-      <div class="title"><i>v0.1.5</i></div>
+      <div class="title"><i>v0.2.0</i></div>
       <div class="titlebar-controls">
         <button class="titlebar-button minimize" @click="minimize">
           <span><font-awesome-icon icon="minus" /></span>
