@@ -11,7 +11,7 @@
 
     <div class="example-phrase-container">
       <div class="example-phrases">
-        <h3>Taper la lettre :</h3>
+        <h3>Taper le caractère suivant :</h3>
         <div class="phrases-container">
           <div class="phrase-item current">
             {{ currentLetter.display }}
@@ -63,13 +63,7 @@ export default {
       isCorrect: false,
       isIncorrect: false,
       validationMessage: '',
-      letters: [
-        { char: 'A', display: 'A (Majuscule)' },
-        { char: 'k', display: 'k (Minuscule)' },
-        { char: 'Z', display: 'Z (Majuscule)' },
-        { char: 'p', display: 'p (Minuscule)' },
-        // ... autres lettres ...
-      ]
+      letters: this.generateRandomLetters()
     }
   },
 
@@ -80,6 +74,42 @@ export default {
   },
 
   methods: {
+    generateRandomLetters() {
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      const numbers = '0123456789';
+      let characters = [];
+
+      // Ajouter les lettres
+      for (let letter of alphabet) {
+        // 50% de chance d'être en majuscule
+        const isUpperCase = Math.random() < 0.5;
+        const char = isUpperCase ? letter.toUpperCase() : letter;
+        characters.push({
+          char,
+          display: `${char} (${isUpperCase ? 'Majuscule' : 'Minuscule'})`
+        });
+      }
+
+      // Ajouter les chiffres
+      for (let number of numbers) {
+        characters.push({
+          char: number,
+          display: `${number} (Shift + ${number})`
+        });
+      }
+
+      // Mélanger le tableau
+      return this.shuffleArray(characters);
+    },
+
+    shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    },
+
     checkLetter() {
       // Ne vérifie que le premier caractère si l'utilisateur en tape plusieurs
       const input = this.userInput.charAt(0)
@@ -215,6 +245,7 @@ h1 {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.8rem;
 }
 
@@ -281,7 +312,7 @@ h1 {
   background-color: rgba(244, 67, 54, 0.05);
 }
 
-@media (max-height: 816px) {
+@media (max-height: 940px) {
   .keyboard-test {
     scale: 0.8;
   }

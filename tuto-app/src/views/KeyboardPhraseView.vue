@@ -287,7 +287,7 @@ h1 {
   background-color: rgba(244, 67, 54, 0.05);
 }
 
-@media (max-height: 816px) {
+@media (max-height: 940px) {
   .keyboard-test {
     scale: 0.8;
   }
