@@ -22,7 +22,7 @@
             <div class="progress-bar">
               <div 
                 class="progress-fill"
-                :style="{ width: `${(currentPhraseIndex / phrasesExemple.length) * 100}%` }"
+                :style="{ width: `${((currentPhraseIndex + 1) / phrasesExemple.length) * 100}%` }"
               ></div>
             </div>
           </div>

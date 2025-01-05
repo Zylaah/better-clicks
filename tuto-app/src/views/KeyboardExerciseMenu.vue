@@ -29,7 +29,7 @@ export default {
     return {
       exercises: [
         {
-          title: "Découvrir les touches",
+          title: "Découvrir les touches lettres",
           difficulty: "Débutant",
           route: "keyboard-lettre"
         },
