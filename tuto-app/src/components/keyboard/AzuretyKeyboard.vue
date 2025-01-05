@@ -281,6 +281,7 @@ export default {
       lastKeyPressTime: 0,
       keyPressCount: 0,
       typingSpeed: 0,
+      pressedKeys: new Set(),
       keyboardLayout: [
         // Première rangée
         [
@@ -490,6 +491,29 @@ export default {
     },
 
     logKeyPress(event) {
+      // Si c'est la touche espace, relâcher toutes les autres touches
+      if (event.code === 'Space') {
+        // Émettre un événement de relâchement pour chaque touche pressée
+        this.pressedKeys.forEach(key => {
+          if (key !== 'Space') {
+            this.$emit('key-release', {
+              key: key,
+              code: this.keyCodes[key],
+              timestamp: Date.now(),
+              shift: this.isShiftActive,
+              alt: this.isAltActive,
+              ctrl: this.isCtrlActive,
+              caps: this.isCapsLocked
+            });
+          }
+        });
+        // Vider la liste des touches pressées sauf l'espace
+        this.pressedKeys.clear();
+      }
+
+      // Ajouter la touche à la liste des touches pressées
+      this.pressedKeys.add(event.key);
+
       // Limiter le taux de répétition
       if (event.repeat) {
         const now = Date.now();
@@ -534,8 +558,11 @@ export default {
     },
 
     logKeyRelease(event) {
-      this.$emit('key-release', event)
-      this.addLog(`Touche relâchée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`)
+      // Retirer la touche de la liste des touches pressées
+      this.pressedKeys.delete(event.key);
+      
+      this.$emit('key-release', event);
+      this.addLog(`Touche relâchée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`);
     },
 
     addLog(message) {

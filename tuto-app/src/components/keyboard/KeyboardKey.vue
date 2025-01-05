@@ -59,7 +59,8 @@ export default {
       isAltPressed: false,
       isCtrlPressed: false,
       pressedKeys: new Set(),
-      capsLockState: false
+      capsLockState: false,
+      spacePressed: false
     }
   },
 
@@ -109,10 +110,11 @@ export default {
   },
 
   mounted() {
-    window.addEventListener('keydown', this.handleKeyDown)
-    window.addEventListener('keyup', this.handleKeyUp)
-    window.addEventListener('keydown', this.handleModifierKeys)
-    window.addEventListener('keyup', this.handleModifierKeys)
+    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('keyup', this.handleKeyUp);
+    window.addEventListener('keydown', this.handleModifierKeys);
+    window.addEventListener('keyup', this.handleModifierKeys);
+    window.addEventListener('keypress', this.handleSpaceKey);
     
     this.capsLockState = this.getCapsLockState();
     
@@ -120,47 +122,30 @@ export default {
   },
 
   unmounted() {
-    window.removeEventListener('keydown', this.handleKeyDown)
-    window.removeEventListener('keyup', this.handleKeyUp)
-    window.removeEventListener('keydown', this.handleModifierKeys)
-    window.removeEventListener('keyup', this.handleModifierKeys)
+    window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('keyup', this.handleKeyUp);
+    window.removeEventListener('keydown', this.handleModifierKeys);
+    window.removeEventListener('keyup', this.handleModifierKeys);
+    window.removeEventListener('keypress', this.handleSpaceKey);
     document.removeEventListener('keydown', this.checkCapsLock);
   },
 
   methods: {
     handleKeyDown(event) {
       if (this.matchesKey(event)) {
-        this.pressedKeys.add(event.code);
-        this.isKeyPressed = true;
-        
-        if (this.label === 'Caps Lock') {
-          this.$emit('key-press', {
-            key: this.currentCharacter,
-            code: this.keyCode,
-            timestamp: Date.now(),
-            caps: this.capsLockState
-          });
-        } else {
-          this.$emit('key-press', {
-            key: this.currentCharacter,
-            code: this.keyCode,
-            timestamp: Date.now(),
-            shift: this.isShiftPressed,
-            alt: this.isAltPressed,
-            ctrl: this.isCtrlPressed,
-            caps: this.capsLockState
-          });
-        }
-      }
-    },
-
-    handleKeyUp(event) {
-      if (this.matchesKey(event)) {
-        this.pressedKeys.delete(event.code);
-        if (this.pressedKeys.size === 0) {
-          this.isKeyPressed = false;
-          if (this.label !== 'Caps Lock') {
-            this.$emit('key-release', {
+        if (event.code !== 'Space') {
+          this.pressedKeys.add(event.code);
+          this.isKeyPressed = true;
+          
+          if (this.label === 'Caps Lock') {
+            this.$emit('key-press', {
+              key: this.currentCharacter,
+              code: this.keyCode,
+              timestamp: Date.now(),
+              caps: this.capsLockState
+            });
+          } else {
+            this.$emit('key-press', {
               key: this.currentCharacter,
               code: this.keyCode,
               timestamp: Date.now(),
@@ -174,13 +159,30 @@ export default {
       }
     },
 
+    handleKeyUp(event) {
+      if (this.pressedKeys.has(event.code) || this.matchesKey(event)) {
+        this.pressedKeys.delete(event.code);
+        this.isKeyPressed = false;
+        
+        if (this.label !== 'Caps Lock') {
+          this.$emit('key-release', {
+            key: this.currentCharacter,
+            code: this.keyCode,
+            timestamp: Date.now(),
+            shift: this.isShiftPressed,
+            alt: this.isAltPressed,
+            ctrl: this.isCtrlPressed,
+            caps: this.capsLockState
+          });
+        }
+      }
+    },
+
     matchesKey(event) {
-      // Ignorer l'événement Ctrl si c'est en fait un AltGr
       if (event.altKey && event.ctrlKey && this.label === 'Ctrl') {
         return false;
       }
 
-      // Gestion des touches spéciales
       if (this.isSpecialKey) {
         switch (this.label) {
           case 'Shift': return event.code === 'ShiftLeft' || event.code === 'ShiftRight';
@@ -198,12 +200,10 @@ export default {
         }
       }
 
-      // Pour les touches normales, on compare le code de la touche
       if (this.keyCode) {
         return event.code === this.keyCode;
       }
 
-      // Si pas de keyCode, on compare la touche elle-même
       return event.key === this.subLabel;
     },
 
@@ -232,7 +232,6 @@ export default {
     },
 
     getCapsLockState() {
-      // Utiliser un événement test pour détecter l'état initial du Caps Lock
       try {
         const event = new KeyboardEvent('keydown', {
           key: 'a',
@@ -253,6 +252,25 @@ export default {
           this.capsLockState = newCapsLockState;
           this.isCapsLocked = newCapsLockState;
           this.$emit('caps-lock-change', newCapsLockState);
+        }
+      }
+    },
+
+    handleSpaceKey(event) {
+      if (event.code === 'Space' || event.key === ' ') {
+        if (this.label !== 'Espace' && this.isKeyPressed) {
+          this.isKeyPressed = false;
+          this.pressedKeys.clear();
+          
+          this.$emit('key-release', {
+            key: this.currentCharacter,
+            code: this.keyCode,
+            timestamp: Date.now(),
+            shift: this.isShiftPressed,
+            alt: this.isAltPressed,
+            ctrl: this.isCtrlPressed,
+            caps: this.capsLockState
+          });
         }
       }
     }
