@@ -59,7 +59,8 @@ import {
     faBroom,
     faImages,
     faLayerGroup,
-    faWandMagicSparkles
+    faWandMagicSparkles,
+    faRotateRight
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -131,7 +132,8 @@ library.add(
     faBroom,
     faImages,
     faLayerGroup,
-    faWandMagicSparkles
+    faWandMagicSparkles,
+    faRotateRight
 )
 
 const app = createApp(App)
