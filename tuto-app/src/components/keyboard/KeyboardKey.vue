@@ -2,7 +2,7 @@
   <div 
     class="keyboard-key" 
     :class="{ 
-      'is-pressed': isKeyPressed,
+      'is-pressed': isKeyPressed || (label === 'Caps Lock' && capsLockState),
       'is-special': isSpecialKey,
       'is-active': isActive && !isSpecialKeyCheck,
       [`width-${width}`]: true
