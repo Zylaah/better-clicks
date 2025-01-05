@@ -66,7 +66,7 @@ export default {
   computed: {
     isSpecialKeyCheck() {
       const specialKeys = [
-        'Shift', 'Ctrl', 'Alt', 'Alt Gr', 'Space', 'Enter', 
+        'Shift', 'Ctrl', 'Alt', 'Alt Gr', 'Espace', 'Entrée', 
         'Tab', '←', 'Caps Lock', 'Win', 'Menu'
       ];
       return specialKeys.includes(this.label);
