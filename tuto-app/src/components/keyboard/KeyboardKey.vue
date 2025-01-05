@@ -2,22 +2,18 @@
   <div 
     class="keyboard-key" 
     :class="{ 
-      'is-pressed': isPressed || isKeyPressed,
+      'is-pressed': isKeyPressed,
       'is-special': isSpecialKey,
+      'is-active': isActive && !isSpecialKeyCheck,
       [`width-${width}`]: true
     }"
     :data-key="label"
-    @mousedown="handlePress"
-    @mouseup="handleRelease"
-    @mouseleave="handleRelease"
-    @touchstart.prevent="handlePress"
-    @touchend.prevent="handleRelease"
   >
     <div class="key-content">
-      <span class="key-label" :class="{ 'accent-color': shouldHighlightMain }">{{ label }}</span>
+      <span class="key-label" :class="{ 'accent-color': shouldHighlightMain && !isSpecialKeyCheck }">{{ label }}</span>
       <div class="key-sublabels">
-        <span v-if="subLabel" class="key-sublabel" :class="{ 'accent-color': shouldHighlightNormal }">{{ subLabel }}</span>
-        <span v-if="thirdLabel" class="key-third-label" :class="{ 'accent-color': shouldHighlightAlt }">{{ thirdLabel }}</span>
+        <span v-if="subLabel" class="key-sublabel" :class="{ 'accent-color': shouldHighlightNormal && !isSpecialKeyCheck }">{{ subLabel }}</span>
+        <span v-if="thirdLabel" class="key-third-label" :class="{ 'accent-color': shouldHighlightAlt && !isSpecialKeyCheck }">{{ thirdLabel }}</span>
       </div>
     </div>
     <div class="key-shadow"></div>
@@ -57,20 +53,13 @@ export default {
 
   data() {
     return {
-      isPressed: false,
       isKeyPressed: false,
       isCapsLocked: false,
       isShiftPressed: false,
       isAltPressed: false,
       isCtrlPressed: false,
       pressedKeys: new Set(),
-      keyPressTimeout: null,
-      repeatDelay: 500,
-      repeatInterval: 50,
-      repeatTimer: null,
-      longPressTimer: null,
-      longPressDelay: 500,
-      isLongPressed: false
+      capsLockState: false
     }
   },
 
@@ -84,15 +73,18 @@ export default {
     },
 
     shouldHighlightMain() {
-      return (this.isShiftPressed || this.isCapsLocked) && !this.isSpecialKeyCheck;
+      if (this.isSpecialKeyCheck) return false;
+      return (this.isShiftPressed || this.isCapsLocked) && this.label !== this.subLabel;
     },
 
     shouldHighlightNormal() {
-      return (!this.isShiftPressed && !this.isAltPressed && !this.isCapsLocked) && !this.isSpecialKeyCheck;
+      if (this.isSpecialKeyCheck) return false;
+      return (!this.isShiftPressed && !this.isAltPressed && !this.isCapsLocked) && this.subLabel;
     },
 
     shouldHighlightAlt() {
-      return this.isAltPressed && !this.isSpecialKeyCheck;
+      if (this.isSpecialKeyCheck) return false;
+      return this.isAltPressed && this.thirdLabel;
     },
 
     currentCharacter() {
@@ -100,6 +92,19 @@ export default {
       if (this.isAltPressed) return this.thirdLabel || '';
       if (this.isShiftPressed || this.isCapsLocked) return this.label;
       return this.subLabel || '';
+    },
+
+    isActive() {
+      if (this.label === 'Caps Lock') {
+        return this.capsLockState;
+      }
+      if (this.isSpecialKey) {
+        return (this.label === 'Shift' && this.isShiftPressed) ||
+               (this.label === 'Alt' && this.isAltPressed) ||
+               (this.label === 'Alt Gr' && this.isAltPressed && this.isCtrlPressed) ||
+               (this.label === 'Ctrl' && this.isCtrlPressed);
+      }
+      return this.isKeyPressed;
     }
   },
 
@@ -108,6 +113,10 @@ export default {
     window.addEventListener('keyup', this.handleKeyUp)
     window.addEventListener('keydown', this.handleModifierKeys)
     window.addEventListener('keyup', this.handleModifierKeys)
+    
+    this.capsLockState = this.getCapsLockState();
+    
+    document.addEventListener('keydown', this.checkCapsLock);
   },
 
   unmounted() {
@@ -115,129 +124,51 @@ export default {
     window.removeEventListener('keyup', this.handleKeyUp)
     window.removeEventListener('keydown', this.handleModifierKeys)
     window.removeEventListener('keyup', this.handleModifierKeys)
+    document.removeEventListener('keydown', this.checkCapsLock);
   },
 
   methods: {
-    handlePress() {
-      this.isPressed = true;
-      this.pressedKeys.add('mouse');
-      
-      if (this.label === 'Caps Lock') {
-        this.isCapsLocked = !this.isCapsLocked;
-        this.isPressed = this.isCapsLocked;
-      }
-      
-      this.$emit('key-press', {
-        key: this.currentCharacter,
-        code: this.keyCode,
-        timestamp: Date.now(),
-        shift: this.isShiftPressed,
-        alt: this.isAltPressed,
-        ctrl: this.isCtrlPressed,
-        caps: this.isCapsLocked
-      });
-
-      // Gestion de la répétition des touches
-      this.startRepeat();
-      
-      // Gestion de l'appui long
-      this.longPressTimer = setTimeout(() => {
-        this.isLongPressed = true;
-        this.$emit('long-press', {
-          key: this.currentCharacter,
-          timestamp: Date.now()
-        });
-      }, this.longPressDelay);
-    },
-
-    handleRelease() {
-      this.pressedKeys.delete('mouse');
-      this.stopRepeat();
-      this.isLongPressed = false;
-      
-      if (this.longPressTimer) {
-        clearTimeout(this.longPressTimer);
-        this.longPressTimer = null;
-      }
-      
-      if (this.isPressed && this.label !== 'Caps Lock') {
-        this.isPressed = false;
-        this.$emit('key-release', {
-          key: this.currentCharacter,
-          code: this.keyCode,
-          timestamp: Date.now(),
-          shift: this.isShiftPressed,
-          alt: this.isAltPressed,
-          ctrl: this.isCtrlPressed,
-          caps: this.isCapsLocked
-        });
-      }
-    },
-
-    startRepeat() {
-      if (this.isSpecialKeyCheck) return;
-      
-      this.stopRepeat();
-      this.repeatTimer = setTimeout(() => {
-        const interval = setInterval(() => {
-          if (!this.isPressed) {
-            clearInterval(interval);
-            return;
-          }
-          this.$emit('key-repeat', {
-            key: this.currentCharacter,
-            timestamp: Date.now()
-          });
-        }, this.repeatInterval);
-      }, this.repeatDelay);
-    },
-
-    stopRepeat() {
-      if (this.repeatTimer) {
-        clearTimeout(this.repeatTimer);
-        this.repeatTimer = null;
-      }
-    },
-
     handleKeyDown(event) {
       if (this.matchesKey(event)) {
-        if (this.keyPressTimeout) {
-          clearTimeout(this.keyPressTimeout)
-        }
-
-        this.pressedKeys.add(event.code)
-        this.isKeyPressed = true
+        this.pressedKeys.add(event.code);
+        this.isKeyPressed = true;
         
         if (this.label === 'Caps Lock') {
-          this.isCapsLocked = !this.isCapsLocked
-          this.isKeyPressed = this.isCapsLocked
+          this.$emit('key-press', {
+            key: this.currentCharacter,
+            code: this.keyCode,
+            timestamp: Date.now(),
+            caps: this.capsLockState
+          });
+        } else {
+          this.$emit('key-press', {
+            key: this.currentCharacter,
+            code: this.keyCode,
+            timestamp: Date.now(),
+            shift: this.isShiftPressed,
+            alt: this.isAltPressed,
+            ctrl: this.isCtrlPressed,
+            caps: this.capsLockState
+          });
         }
-        
-        this.$emit('key-press', {
-          key: this.label,
-          timestamp: Date.now()
-        })
-
-        this.keyPressTimeout = setTimeout(() => {
-          this.forceKeyRelease()
-        }, 100)
       }
     },
 
     handleKeyUp(event) {
       if (this.matchesKey(event)) {
-        if (this.keyPressTimeout) {
-          clearTimeout(this.keyPressTimeout)
-        }
-
-        this.pressedKeys.delete(event.code)
+        this.pressedKeys.delete(event.code);
         if (this.pressedKeys.size === 0) {
-          this.isKeyPressed = false
+          this.isKeyPressed = false;
           if (this.label !== 'Caps Lock') {
             this.$emit('key-release', {
-              key: this.label,
-              timestamp: Date.now()
-            })
+              key: this.currentCharacter,
+              code: this.keyCode,
+              timestamp: Date.now(),
+              shift: this.isShiftPressed,
+              alt: this.isAltPressed,
+              ctrl: this.isCtrlPressed,
+              caps: this.capsLockState
+            });
           }
         }
       }
@@ -246,34 +177,34 @@ export default {
     matchesKey(event) {
       // Ignorer l'événement Ctrl si c'est en fait un AltGr
       if (event.altKey && event.ctrlKey && this.label === 'Ctrl') {
-        return false
+        return false;
       }
 
       // Gestion des touches spéciales
       if (this.isSpecialKey) {
         switch (this.label) {
-          case 'Shift': return event.code === 'ShiftLeft' || event.code === 'ShiftRight'
-          case 'Ctrl': return event.code === 'ControlLeft' || event.code === 'ControlRight'
-          case 'Alt': return event.code === 'AltLeft'
-          case 'Alt Gr': return event.code === 'AltRight' || (event.altKey && event.ctrlKey)
-          case 'Space': return event.code === 'Space'
-          case 'Enter': return event.code === 'Enter'
-          case 'Tab': return event.code === 'Tab'
-          case '←': return event.code === 'Backspace'
-          case 'Caps Lock': return event.code === 'CapsLock'
-          case 'Win': return event.code === 'MetaLeft'
-          case 'Menu': return event.code === 'ContextMenu'
-          default: return false
+          case 'Shift': return event.code === 'ShiftLeft' || event.code === 'ShiftRight';
+          case 'Ctrl': return event.code === 'ControlLeft' || event.code === 'ControlRight';
+          case 'Alt': return event.code === 'AltLeft';
+          case 'Alt Gr': return event.code === 'AltRight' || (event.altKey && event.ctrlKey);
+          case 'Space': return event.code === 'Space';
+          case 'Enter': return event.code === 'Enter';
+          case 'Tab': return event.code === 'Tab';
+          case '←': return event.code === 'Backspace';
+          case 'Caps Lock': return event.code === 'CapsLock';
+          case 'Win': return event.code === 'MetaLeft';
+          case 'Menu': return event.code === 'ContextMenu';
+          default: return false;
         }
       }
 
       // Pour les touches normales, on compare le code de la touche
       if (this.keyCode) {
-        return event.code === this.keyCode
+        return event.code === this.keyCode;
       }
 
       // Si pas de keyCode, on compare la touche elle-même
-      return event.key === this.subLabel
+      return event.key === this.subLabel;
     },
 
     handleModifierKeys(event) {
@@ -300,28 +231,30 @@ export default {
       }
     },
 
-    forceKeyRelease() {
-      if (this.keyPressTimeout) {
-        clearTimeout(this.keyPressTimeout)
+    getCapsLockState() {
+      // Utiliser un événement test pour détecter l'état initial du Caps Lock
+      try {
+        const event = new KeyboardEvent('keydown', {
+          key: 'a',
+          code: 'KeyA',
+          getModifierState: (key) => key === 'CapsLock' && navigator.keyboard?.getModifierState?.('CapsLock')
+        });
+        return event.getModifierState('CapsLock') || false;
+      } catch (e) {
+        console.warn('Impossible de détecter l\'état initial du Caps Lock, on assume qu\'il est désactivé');
+        return false;
       }
-      
-      if (this.isKeyPressed && this.label !== 'Caps Lock') {
-        this.isKeyPressed = false
-        this.pressedKeys.clear()
-        this.$emit('key-release', {
-          key: this.label,
-          timestamp: Date.now()
-        })
-      }
-    }
-  },
+    },
 
-  beforeUnmount() {
-    if (this.keyPressTimeout) {
-      clearTimeout(this.keyPressTimeout)
-    }
-    if (this.isKeyPressed || this.isPressed) {
-      this.forceKeyRelease()
+    checkCapsLock(event) {
+      if (event.getModifierState) {
+        const newCapsLockState = event.getModifierState('CapsLock');
+        if (this.capsLockState !== newCapsLockState) {
+          this.capsLockState = newCapsLockState;
+          this.isCapsLocked = newCapsLockState;
+          this.$emit('caps-lock-change', newCapsLockState);
+        }
+      }
     }
   }
 }
@@ -364,7 +297,8 @@ export default {
   );
 }
 
-.keyboard-key.is-pressed {
+.keyboard-key.is-pressed,
+.keyboard-key.is-active {
   transform: translateY(2px);
   background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
   box-shadow: 
@@ -373,6 +307,17 @@ export default {
     inset -4px -4px 8px -3px rgba(0, 0, 0, 0.15),
     inset 4px 4px 8px -3px rgba(255, 255, 255, 0.05);
   transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.keyboard-key.is-pressed .key-content,
+.keyboard-key.is-active .key-content {
+  transform: scale(0.95);
+}
+
+.keyboard-key.is-pressed .key-shadow,
+.keyboard-key.is-active .key-shadow {
+  height: 2px;
+  opacity: 0.6;
 }
 
 .keyboard-key.is-long-pressed {
@@ -409,10 +354,6 @@ export default {
   transition: transform 0.15s ease;
 }
 
-.keyboard-key.is-pressed .key-content {
-  transform: scale(0.95);
-}
-
 .key-shadow {
   position: absolute;
   bottom: 0;
@@ -427,11 +368,6 @@ export default {
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0.8;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.keyboard-key.is-pressed .key-shadow {
-  height: 2px;
-  opacity: 0.6;
 }
 
 .key-label {

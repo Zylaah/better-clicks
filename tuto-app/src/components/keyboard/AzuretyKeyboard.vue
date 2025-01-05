@@ -266,7 +266,8 @@ export default {
     'long-press',
     'debug-toggle',
     'debug-key-info',
-    'modifier-change'
+    'modifier-change',
+    'modifier-lock'
   ],
 
   data() {
@@ -398,7 +399,10 @@ export default {
         '*': 'Backslash',
         '<': 'IntlBackslash',
         '>': 'IntlBackslash'  // Ajout du chevron fermant
-      }
+      },
+      lockedModifiers: new Set(),
+      lastRepeatTime: 0,
+      repeatRateLimit: 16, // ~60Hz maximum
     }
   },
 
@@ -426,6 +430,10 @@ export default {
 
     isCtrlActive() {
       return this.activeModifiers.has('ControlLeft') || this.activeModifiers.has('ControlRight')
+    },
+
+    hasLockedModifiers() {
+      return this.lockedModifiers.size > 0;
     }
   },
 
@@ -482,19 +490,30 @@ export default {
     },
 
     logKeyPress(event) {
-      // Calcul de la vitesse de frappe
-      const now = Date.now()
-      if (now - this.lastKeyPressTime < 5000) { // 5 secondes pour le calcul
-        this.keyPressCount++
-        this.typingSpeed = Math.round((this.keyPressCount / 5) * 60) // WPM approximatif
-      } else {
-        this.keyPressCount = 1
+      // Limiter le taux de répétition
+      if (event.repeat) {
+        const now = Date.now();
+        if (now - this.lastRepeatTime < this.repeatRateLimit) {
+          return;
+        }
+        this.lastRepeatTime = now;
       }
-      this.lastKeyPressTime = now
 
-      // Retour haptique si activé
-      if (this.hapticFeedback && navigator.vibrate) {
-        navigator.vibrate(10)
+      // Calcul de la vitesse de frappe (seulement pour les frappes non répétées)
+      if (!event.repeat) {
+        const now = Date.now();
+        if (now - this.lastKeyPressTime < 5000) {
+          this.keyPressCount++;
+          this.typingSpeed = Math.round((this.keyPressCount / 5) * 60);
+        } else {
+          this.keyPressCount = 1;
+        }
+        this.lastKeyPressTime = now;
+      }
+
+      // Retour haptique seulement sur la première frappe
+      if (!event.repeat && this.hapticFeedback && navigator.vibrate) {
+        navigator.vibrate(10);
       }
 
       this.$emit('key-press', {
@@ -506,8 +525,12 @@ export default {
           ctrl: this.isCtrlActive,
           caps: this.isCapsLocked
         }
-      })
-      this.addLog(`Touche pressée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`)
+      });
+
+      // Log seulement les frappes non répétées
+      if (!event.repeat) {
+        this.addLog(`Touche pressée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`);
+      }
     },
 
     logKeyRelease(event) {
@@ -530,6 +553,23 @@ export default {
       } else {
         this.activeModifiers.delete(key)
       }
+    },
+
+    handleModifierLock(event) {
+      const { key, locked } = event;
+      if (locked) {
+        this.lockedModifiers.add(key);
+      } else {
+        this.lockedModifiers.delete(key);
+      }
+      
+      this.$emit('modifier-change', {
+        shift: this.isShiftActive,
+        alt: this.isAltActive,
+        ctrl: this.isCtrlActive,
+        caps: this.isCapsLocked,
+        locked: Array.from(this.lockedModifiers)
+      });
     }
   }
 }
