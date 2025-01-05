@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <KeyboardOnboarding />
 
     <div class="exercises-container fade">
       <h2 class="exercises-title">Exercices de frappe au clavier</h2>
@@ -22,8 +23,13 @@
 </template>
 
 <script>
+import KeyboardOnboarding from '@/components/onboarding/KeyboardOnboarding.vue'
+
 export default {
   name: 'KeyboardExerciseMenu',
+  components: {
+    KeyboardOnboarding
+  },
   
   data() {
     return {
@@ -85,7 +91,7 @@ h2 {
 .exercises-title {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   margin-bottom: clamp(0.2rem, 3vw, 1rem);
-  margin-top: 5rem;
+  margin-top: clamp(4rem, 6rem, 8rem);
   text-align: center;
   color: var(--accent-color);
 }
