@@ -77,21 +77,16 @@ export default {
 
 <style scoped>
 .guide-container {
+  min-height: 100vh;
   display: flex;
-  gap: 2rem;
-  padding: 0;
 }
 
 .sidebar {
-  width: 20vw;
+  min-width: 280px;
   background: var(--navbar-bg);
-  padding: 0 2rem 1rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: min(8vh, 5rem);
-  position: fixed;
-  height: 100%;
-  z-index: 1000;
-  outline: 1px solid var(--accent-color);
+  margin-top: max(5vh, 4rem);
+  padding: 1em;
+  border-right: 1px solid var(--accent-color);
 }
 
 .sidebar h2 {
@@ -144,12 +139,9 @@ export default {
 }
 
 .content {
-  flex: 1;
-  padding: 2rem;
+  flex-grow: 1;
+  padding: 2rem 3rem;
   background: var(--color-background-soft);
-  border-radius: 8px;
-  margin-top: min(10vh, 5rem);
-  margin-left: 25vw;
 }
 
 h1 {
@@ -234,56 +226,5 @@ h1 {
   border-radius: 4px;
   font-family: monospace;
 }
-
-
-@media (max-width: 1175px) {
-  .guide-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .content {
-    margin-left: 0;
-  }
-
-  .sidebar {
-    height: 7vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .sidebar h2 {
-    display: none;
-  }
-
-  .chapters-nav {
-    margin-top: 0;
-  }
-
-  .chapter-title {
-    display: none;
-  }
-
-  .content {
-    margin-top: 15vh;
-  }
-}
-
-@media (max-width: 768px) {
-  .content {
-    margin-left: 0;
-    margin-top: 17vh;
-  }
-
-  .sidebar {
-    margin-top: 13vh;
-  }
-}
 </style>
+

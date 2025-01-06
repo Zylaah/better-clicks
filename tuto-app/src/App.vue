@@ -103,7 +103,8 @@ export default {
 
     const showBackButton = computed(() => {
       return route.name === 'keyboard-lettre' || 
-             route.name === 'keyboard-phrase';
+             route.name === 'keyboard-phrase' ||
+             route.name === 'keyboard-symboles';
     });
 
     return {

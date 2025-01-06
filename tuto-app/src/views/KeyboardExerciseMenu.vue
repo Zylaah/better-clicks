@@ -35,19 +35,19 @@ export default {
     return {
       exercises: [
         {
-          title: "Découvrir les touches lettres",
+          title: "Découvrir les touches lettres et chiffres",
           difficulty: "Débutant",
           route: "keyboard-lettre"
+        },
+        {
+          title: "symboles et accents",
+          difficulty: "Intermédiaire",
+          route: "keyboard-symboles"
         },
         {
           title: "Taper des mots",
           difficulty: "Débutant",
           route: "keyboard-mots"
-        },
-        {
-          title: "symboles, chiffres et accents",
-          difficulty: "Intermédiaire",
-          route: "keyboard-symboles"
         },
         {
           title: "Taper des phrases",
