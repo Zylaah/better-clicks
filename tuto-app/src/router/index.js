@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import FileTreeView from '../views/FileTreeView.vue'
-import ExerciseView from '../views/ExerciseView.vue'
+import FileTreeView from '../views/explorerexercises/FileTreeView.vue'
+import ExerciseView from '../views/explorerexercises/ExerciseView.vue'
 import AboutView from '../views/AboutView.vue'
 import UnderConstructionView from '../views/UnderConstructionView.vue'
 import GuideExplorerView from '../views/GuideExplorerView.vue'
-import KeyboardPhraseView from '../views/KeyboardPhraseView.vue'
-import KeyboardExerciseMenu from '../views/KeyboardExerciseMenu.vue'
-import KeyboardLettreView from '../views/KeyboardLettreView.vue'
-import KeyboardSymbolesView from '../views/KeyboardSymbolesView.vue'
-import KeyboardMotView from '../views/KeyboardMotView.vue'
+import KeyboardPhraseView from '../views/keyboardexercises/KeyboardPhraseView.vue'
+import KeyboardExerciseMenu from '../views/keyboardexercises/KeyboardExerciseMenu.vue'
+import KeyboardLettreView from '../views/keyboardexercises/KeyboardLettreView.vue'
+import KeyboardSymbolesView from '../views/keyboardexercises/KeyboardSymbolesView.vue'
+import KeyboardMotView from '../views/keyboardexercises/KeyboardMotView.vue'
 
 const routes = [
   {
