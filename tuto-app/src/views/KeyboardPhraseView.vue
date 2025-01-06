@@ -311,7 +311,7 @@ h1 {
 
 @media (max-height: 940px) {
   .keyboard-test {
-    scale: 0.8;
+    scale: 0.7;
   }
   .back-button-container {
     margin-top: 2rem;

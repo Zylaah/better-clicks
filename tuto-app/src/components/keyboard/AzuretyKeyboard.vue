@@ -16,6 +16,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
+          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -46,6 +47,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
+          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -75,6 +77,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
+          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -106,6 +109,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
+          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -256,6 +260,10 @@ export default {
     hapticFeedback: {
       type: Boolean,
       default: true
+    },
+    highlightedKey: {
+      type: String,
+      default: ''
     }
   },
 

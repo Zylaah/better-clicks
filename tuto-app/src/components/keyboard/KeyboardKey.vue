@@ -5,6 +5,7 @@
       'is-pressed': isKeyPressed || (label === 'Caps Lock' && capsLockState),
       'is-special': isSpecialKey,
       'is-active': isActive && !isSpecialKeyCheck,
+      'is-highlighted': isHighlighted,
       [`width-${width}`]: true
     }"
     :data-key="label"
@@ -48,6 +49,10 @@ export default {
     keyCode: {
       type: String,
       default: ''
+    },
+    isHighlighted: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -571,5 +576,28 @@ export default {
     2px 2px 5px -3px rgba(0, 0, 0, 0.2),
     inset -4px -4px 8px -3px rgba(0, 0, 0, 0.15),
     inset 4px 4px 8px -3px rgba(255, 255, 255, 0.05);
+}
+
+.keyboard-key.is-highlighted {
+  background: linear-gradient(145deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.1));
+  border: 2px solid #4CAF50;
+  box-shadow: 
+    0 0 15px rgba(76, 175, 80, 0.3),
+    inset 0 0 5px rgba(76, 175, 80, 0.2);
+}
+
+.keyboard-key.is-highlighted .key-label,
+.keyboard-key.is-highlighted .key-sublabel,
+.keyboard-key.is-highlighted .key-third-label {
+  color: #4CAF50;
+  text-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+.keyboard-key.is-highlighted:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, rgba(76, 175, 80, 0.4), rgba(76, 175, 80, 0.2));
+  box-shadow: 
+    0 0 20px rgba(76, 175, 80, 0.4),
+    inset 0 0 10px rgba(76, 175, 80, 0.3);
 }
 </style> 
