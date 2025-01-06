@@ -98,36 +98,36 @@ export default {
   methods: {
     generateSymbolsList() {
       const symbols = [
-        { char: 'é', display: 'é (e accent aigu - touche 2)', modifiers: [] },
-        { char: 'è', display: 'è (e accent grave - touche 7)', modifiers: [] },
-        { char: 'à', display: 'à (a accent grave - touche 0)', modifiers: [] },
-        { char: 'ù', display: 'ù (u accent grave - touche %)', modifiers: [] },
-        { char: 'ç', display: 'ç (c cédille - touche 9)', modifiers: [] },
-        { char: '&', display: '& (esperluette - touche 1)', modifiers: [] },
-        { char: '"', display: '" (guillemet - touche 3)', modifiers: [] },
-        { char: "'", display: "' (apostrophe - touche 4)", modifiers: [] },
-        { char: '(', display: '( (parenthèse ouvrante - touche 5)', modifiers: [] },
-        { char: ')', display: ') (parenthèse fermante - touche °)', modifiers: [] },
-        { char: '-', display: '- (tiret - touche 6)', modifiers: [] },
-        { char: '_', display: '_ (underscore - touche 8)', modifiers: [] },
-        { char: '^', display: '^ (accent circonflexe - touche ¨)', modifiers: [] },
-        { char: '$', display: '$ (dollar - touche £)', modifiers: [] },
-        { char: '*', display: '* (astérisque - touche µ)', modifiers: [] },
-        { char: ',', display: ', (virgule - touche ?)', modifiers: [] },
-        { char: ';', display: '; (point-virgule - touche .)', modifiers: [] },
-        { char: ':', display: ': (deux-points - touche /)', modifiers: [] },
-        { char: '!', display: '! (point d\'exclamation - touche §)', modifiers: [] },
-        { char: '²', display: '² (exposant 2 - touche ²)', modifiers: [] },
-        { char: '~', display: '~ (tilde - AltGr + é)', modifiers: ['AltRight'], keyCode: 'Digit2' },
-        { char: '#', display: '# (dièse - AltGr + ")', modifiers: ['AltRight'], keyCode: 'Digit3' },
-        { char: '{', display: '{ (accolade ouvrante - AltGr + ")', modifiers: ['AltRight'], keyCode: 'Digit4' },
-        { char: '[', display: '[ (crochet ouvrant - AltGr + ()', modifiers: ['AltRight'], keyCode: 'Digit5' },
-        { char: '|', display: '| (barre verticale - AltGr + -)', modifiers: ['AltRight'], keyCode: 'Digit6' },
-        { char: '`', display: '` (accent grave - AltGr + è)', modifiers: ['AltRight'], keyCode: 'Digit7' },
-        { char: '\\', display: '\\ (barre oblique inversée - AltGr + _)', modifiers: ['AltRight'], keyCode: 'Digit8' },
-        { char: '@', display: '@ (arobase - AltGr + à)', modifiers: ['AltRight'], keyCode: 'Digit0' },
-        { char: ']', display: '] (crochet fermant - AltGr + ))', modifiers: ['AltRight'], keyCode: 'Minus' },
-        { char: '}', display: '} (accolade fermante - AltGr + =)', modifiers: ['AltRight'], keyCode: 'Equal' }
+        { char: 'é', display: 'é', modifiers: [] },
+        { char: 'è', display: 'è', modifiers: [] },
+        { char: 'à', display: 'à', modifiers: [] },
+        { char: 'ù', display: 'ù', modifiers: [] },
+        { char: 'ç', display: 'ç', modifiers: [] },
+        { char: '&', display: '&', modifiers: [] },
+        { char: '"', display: '"', modifiers: [] },
+        { char: "'", display: "'", modifiers: [] },
+        { char: '(', display: '(', modifiers: [] },
+        { char: ')', display: ')', modifiers: [] },
+        { char: '-', display: '-', modifiers: [] },
+        { char: '_', display: '_', modifiers: [] },
+        { char: '^', display: '^', modifiers: [] },
+        { char: '$', display: '$', modifiers: [] },
+        { char: '*', display: '*', modifiers: [] },
+        { char: ',', display: ',', modifiers: [] },
+        { char: ';', display: ';', modifiers: [] },
+        { char: ':', display: ':', modifiers: [] },
+        { char: '!', display: '!', modifiers: [] },
+        { char: '²', display: '²', modifiers: [] },
+        { char: '~', display: '~', modifiers: ['AltRight'], keyCode: 'Digit2' },
+        { char: '#', display: '#', modifiers: ['AltRight'], keyCode: 'Digit3' },
+        { char: '{', display: '{', modifiers: ['AltRight'], keyCode: 'Digit4' },
+        { char: '[', display: '[', modifiers: ['AltRight'], keyCode: 'Digit5' },
+        { char: '|', display: '|', modifiers: ['AltRight'], keyCode: 'Digit6' },
+        { char: '`', display: '`', modifiers: ['AltRight'], keyCode: 'Digit7' },
+        { char: '\\', display: '\\', modifiers: ['AltRight'], keyCode: 'Digit8' },
+        { char: '@', display: '@', modifiers: ['AltRight'], keyCode: 'Digit0' },
+        { char: ']', display: ']', modifiers: ['AltRight'], keyCode: 'Minus' },
+        { char: '}', display: '}', modifiers: ['AltRight'], keyCode: 'Equal' }
       ]
       return this.shuffleArray(symbols)
     },
@@ -296,7 +296,12 @@ h1 {
 }
 
 .phrase-item {
-  padding: clamp(0.5rem, 1vh, 0.8rem);
+  aspect-ratio: 1;
+  width: clamp(3rem, 6vh, 4.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.4rem, 0.8vh, 0.6rem);
   border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.05);
   cursor: pointer;
@@ -317,7 +322,9 @@ h1 {
 .phrase-item.current {
   border-color: var(--accent-color);
   background-color: rgba(var(--accent-color-rgb), 0.1);
-  font-size: 1.1rem;
+  font-size: 2rem;
+  color: var(--accent-color);
+  font-weight: bold;
 }
 
 .progress-info {

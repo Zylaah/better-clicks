@@ -17,6 +17,9 @@
           <div class="phrase-item current">
             {{ currentLetter.display }}
           </div>
+          <div v-if="isNaN(currentLetter.display)" class="case-info">
+            {{ currentLetter.display === currentLetter.display.toUpperCase() ? 'Majuscule' : 'Minuscule' }}
+          </div>
           <div class="progress-info">
             <span>Lettre {{ currentIndex + 1 }} sur {{ letters.length }}</span>
             <div class="progress-bar">
@@ -104,7 +107,7 @@ export default {
         const char = isUpperCase ? letter.toUpperCase() : letter;
         characters.push({
           char,
-          display: `${char} (${isUpperCase ? 'Majuscule' : 'Minuscule'})`,
+          display: `${char}`,
           modifiers: isUpperCase ? ['ShiftLeft'] : []
         });
       }
@@ -113,7 +116,7 @@ export default {
       for (let number of numbers) {
         characters.push({
           char: number,
-          display: `${number} (Shift + ${number})`,
+          display: `${number}`,
           modifiers: ['ShiftLeft']
         });
       }
@@ -278,13 +281,19 @@ h1 {
 }
 
 .phrase-item {
-  padding: clamp(0.5rem, 1vh, 0.8rem);
+  aspect-ratio: 1;
+  width: clamp(3rem, 6vh, 4.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.4rem, 0.8vh, 0.6rem);
   border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
   border: 2px solid transparent;
   color: var(--text-color);
+
 }
 
 .phrase-item:hover {
@@ -299,7 +308,16 @@ h1 {
 .phrase-item.current {
   border-color: var(--accent-color);
   background-color: rgba(var(--accent-color-rgb), 0.1);
-  font-size: 1.1rem;
+  font-size: 2rem;
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.case-info {
+  text-align: center;
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .progress-info {
