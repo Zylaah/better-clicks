@@ -87,8 +87,11 @@ export default {
     },
 
     highlightedKeys() {
-      if (!this.currentSymbol) return []
-      return [this.currentSymbol.char, ...this.currentSymbol.modifiers]
+      const symbol = this.currentSymbol
+      if (!symbol || !symbol.char) return []
+      const keys = [...(symbol.modifiers || [])]
+      if (symbol.char) keys.push(symbol.char)
+      return keys
     }
   },
 
@@ -115,17 +118,16 @@ export default {
         { char: ':', display: ': (deux-points - touche /)', modifiers: [] },
         { char: '!', display: '! (point d\'exclamation - touche §)', modifiers: [] },
         { char: '²', display: '² (exposant 2 - touche ²)', modifiers: [] },
-        { char: '~', display: '~ (tilde - AltGr + é)', modifiers: ['AltRight'] },
-        { char: '#', display: '# (dièse - AltGr + ")', modifiers: ['AltRight'] },
-        { char: '{', display: '{ (accolade ouvrante - AltGr + ")', modifiers: ['AltRight'] },
-        { char: '[', display: '[ (crochet ouvrant - AltGr + ()', modifiers: ['AltRight'] },
-        { char: '|', display: '| (barre verticale - AltGr + -)', modifiers: ['AltRight'] },
-        { char: '`', display: '` (accent grave - AltGr + è)', modifiers: ['AltRight'] },
-        { char: '\\', display: '\\ (barre oblique inversée - AltGr + _)', modifiers: ['AltRight'] },
-        { char: '^', display: '^ (accent circonflexe - AltGr + 9)', modifiers: ['AltRight'] },
-        { char: '@', display: '@ (arobase - AltGr + à)', modifiers: ['AltRight'] },
-        { char: ']', display: '] (crochet fermant - AltGr + ))', modifiers: ['AltRight'] },
-        { char: '}', display: '} (accolade fermante - AltGr + =)', modifiers: ['AltRight'] }
+        { char: '~', display: '~ (tilde - AltGr + é)', modifiers: ['AltRight'], keyCode: 'Digit2' },
+        { char: '#', display: '# (dièse - AltGr + ")', modifiers: ['AltRight'], keyCode: 'Digit3' },
+        { char: '{', display: '{ (accolade ouvrante - AltGr + ")', modifiers: ['AltRight'], keyCode: 'Digit4' },
+        { char: '[', display: '[ (crochet ouvrant - AltGr + ()', modifiers: ['AltRight'], keyCode: 'Digit5' },
+        { char: '|', display: '| (barre verticale - AltGr + -)', modifiers: ['AltRight'], keyCode: 'Digit6' },
+        { char: '`', display: '` (accent grave - AltGr + è)', modifiers: ['AltRight'], keyCode: 'Digit7' },
+        { char: '\\', display: '\\ (barre oblique inversée - AltGr + _)', modifiers: ['AltRight'], keyCode: 'Digit8' },
+        { char: '@', display: '@ (arobase - AltGr + à)', modifiers: ['AltRight'], keyCode: 'Digit0' },
+        { char: ']', display: '] (crochet fermant - AltGr + ))', modifiers: ['AltRight'], keyCode: 'Minus' },
+        { char: '}', display: '} (accolade fermante - AltGr + =)', modifiers: ['AltRight'], keyCode: 'Equal' }
       ]
       return this.shuffleArray(symbols)
     },
@@ -139,9 +141,21 @@ export default {
     },
 
     checkSymbol() {
+      if (!this.userInput) {
+        this.isCorrect = false
+        this.isIncorrect = false
+        this.validationMessage = ''
+        return
+      }
+
       const input = this.userInput.charAt(0)
+      const currentSymbol = this.currentSymbol
       
-      if (input === this.currentSymbol.char) {
+      if (!currentSymbol || !currentSymbol.char) {
+        return
+      }
+      
+      if (input === currentSymbol.char) {
         this.isCorrect = true
         this.isIncorrect = false
         
