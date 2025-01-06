@@ -118,7 +118,7 @@ export default {
 
     restartExercise() {
       const allPhrases = this.phrasesExemple.concat(/* ... copier toutes les phrases ici ... */);
-      this.phrasesExemple = this.getRandomPhrases(allPhrases, 10);
+      this.phrasesExemple = this.getRandomPhrases(allPhrases, 15);
       this.currentPhraseIndex = 0;
       this.isExerciseComplete = false;
       this.isCorrect = false;
