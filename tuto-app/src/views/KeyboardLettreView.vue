@@ -5,7 +5,7 @@
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
-      :highlighted-key="currentLetter.char"
+      :highlighted-keys="highlightedKeys"
       @key-press="handleKeyPress"
       @key-release="handleKeyRelease"
     />
@@ -82,7 +82,12 @@ export default {
 
   computed: {
     currentLetter() {
-      return this.letters[this.currentIndex] || { char: '', display: '' }
+      return this.letters[this.currentIndex] || { char: '', display: '', modifiers: [] }
+    },
+
+    highlightedKeys() {
+      if (!this.currentLetter || !this.currentLetter.char) return []
+      return [this.currentLetter.char, ...this.currentLetter.modifiers]
     }
   },
 
@@ -99,7 +104,8 @@ export default {
         const char = isUpperCase ? letter.toUpperCase() : letter;
         characters.push({
           char,
-          display: `${char} (${isUpperCase ? 'Majuscule' : 'Minuscule'})`
+          display: `${char} (${isUpperCase ? 'Majuscule' : 'Minuscule'})`,
+          modifiers: isUpperCase ? ['ShiftLeft'] : []
         });
       }
 
@@ -107,7 +113,8 @@ export default {
       for (let number of numbers) {
         characters.push({
           char: number,
-          display: `${number} (Shift + ${number})`
+          display: `${number} (Shift + ${number})`,
+          modifiers: ['ShiftLeft']
         });
       }
 

@@ -16,7 +16,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
-          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
+          :is-highlighted="highlightedKeys.includes(key.normal) || highlightedKeys.includes(key.main) || highlightedKeys.includes(key.alt)"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -47,7 +47,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
-          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
+          :is-highlighted="highlightedKeys.includes(key.normal) || highlightedKeys.includes(key.main) || highlightedKeys.includes(key.alt)"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -55,7 +55,7 @@
           label="µ"
           :sub-label="'*'"
           :key-code="keyCodes['*']"
-          :is-highlighted="highlightedKey === '*'"
+          :is-highlighted="highlightedKeys.includes('*')"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -78,7 +78,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
-          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
+          :is-highlighted="highlightedKeys.includes(key.normal) || highlightedKeys.includes(key.main) || highlightedKeys.includes(key.alt)"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -100,6 +100,7 @@
           :is-special="true"
           key-code="ShiftLeft"
           data-key="ShiftLeft"
+          :is-highlighted="highlightedKeys.includes('ShiftLeft')"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -110,7 +111,7 @@
           :sub-label="key.normal"
           :third-label="key.alt"
           :key-code="keyCodes[key.normal]"
-          :is-highlighted="highlightedKey === key.normal || highlightedKey === key.main"
+          :is-highlighted="highlightedKeys.includes(key.normal) || highlightedKeys.includes(key.main) || highlightedKeys.includes(key.alt)"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -120,6 +121,7 @@
           :is-special="true"
           key-code="ShiftRight"
           data-key="ShiftRight"
+          :is-highlighted="highlightedKeys.includes('ShiftRight')"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -165,6 +167,7 @@
           :width="1.5"
           :is-special="true"
           key-code="AltRight"
+          :is-highlighted="highlightedKeys.includes('AltRight')"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -248,23 +251,9 @@ export default {
       type: Boolean,
       default: false
     },
-    theme: {
-      type: String,
-      default: 'default',
-      validator: (value) => ['default', 'modern', 'minimal'].includes(value)
-    },
-    size: {
-      type: String,
-      default: 'normal',
-      validator: (value) => ['small', 'normal', 'large'].includes(value)
-    },
-    hapticFeedback: {
-      type: Boolean,
-      default: true
-    },
-    highlightedKey: {
-      type: String,
-      default: ''
+    highlightedKeys: {
+      type: Array,
+      default: () => []
     }
   },
 

@@ -5,7 +5,7 @@
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
-      :highlighted-key="currentSymbol.char"
+      :highlighted-keys="highlightedKeys"
       @key-press="handleKeyPress"
       @key-release="handleKeyRelease"
     />
@@ -76,39 +76,56 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       symbols: this.generateSymbolsList(),
-      isExerciseComplete: false
+      isExerciseComplete: false,
+      modifierKeys: []
     }
   },
 
   computed: {
     currentSymbol() {
-      return this.symbols[this.currentIndex] || { char: '', display: '' }
+      return this.symbols[this.currentIndex] || { char: '', display: '', modifiers: [] }
+    },
+
+    highlightedKeys() {
+      if (!this.currentSymbol) return []
+      return [this.currentSymbol.char, ...this.currentSymbol.modifiers]
     }
   },
 
   methods: {
     generateSymbolsList() {
       const symbols = [
-        { char: 'é', display: 'é (e accent aigu - touche 2)' },
-        { char: 'è', display: 'è (e accent grave - touche 7)' },
-        { char: 'à', display: 'à (a accent grave - touche 0)' },
-        { char: 'ù', display: 'ù (u accent grave - touche %)' },
-        { char: 'ç', display: 'ç (c cédille - touche 9)' },
-        { char: '&', display: '& (esperluette - touche 1)' },
-        { char: '"', display: '" (guillemet - touche 3)' },
-        { char: "'", display: "' (apostrophe - touche 4)" },
-        { char: '(', display: '( (parenthèse ouvrante - touche 5)' },
-        { char: ')', display: ') (parenthèse fermante - touche °)' },
-        { char: '-', display: '- (tiret - touche 6)' },
-        { char: '_', display: '_ (underscore - touche 8)' },
-        { char: '^', display: '^ (accent circonflexe - touche ¨)' },
-        { char: '$', display: '$ (dollar - touche £)' },
-        { char: '*', display: '* (astérisque - touche µ)' },
-        { char: ',', display: ', (virgule - touche ?)' },
-        { char: ';', display: '; (point-virgule - touche .)' },
-        { char: ':', display: ': (deux-points - touche /)' },
-        { char: '!', display: '! (point d\'exclamation - touche §)' },
-        { char: '²', display: '² (exposant 2 - touche ²)' }
+        { char: 'é', display: 'é (e accent aigu - touche 2)', modifiers: [] },
+        { char: 'è', display: 'è (e accent grave - touche 7)', modifiers: [] },
+        { char: 'à', display: 'à (a accent grave - touche 0)', modifiers: [] },
+        { char: 'ù', display: 'ù (u accent grave - touche %)', modifiers: [] },
+        { char: 'ç', display: 'ç (c cédille - touche 9)', modifiers: [] },
+        { char: '&', display: '& (esperluette - touche 1)', modifiers: [] },
+        { char: '"', display: '" (guillemet - touche 3)', modifiers: [] },
+        { char: "'", display: "' (apostrophe - touche 4)", modifiers: [] },
+        { char: '(', display: '( (parenthèse ouvrante - touche 5)', modifiers: [] },
+        { char: ')', display: ') (parenthèse fermante - touche °)', modifiers: [] },
+        { char: '-', display: '- (tiret - touche 6)', modifiers: [] },
+        { char: '_', display: '_ (underscore - touche 8)', modifiers: [] },
+        { char: '^', display: '^ (accent circonflexe - touche ¨)', modifiers: [] },
+        { char: '$', display: '$ (dollar - touche £)', modifiers: [] },
+        { char: '*', display: '* (astérisque - touche µ)', modifiers: [] },
+        { char: ',', display: ', (virgule - touche ?)', modifiers: [] },
+        { char: ';', display: '; (point-virgule - touche .)', modifiers: [] },
+        { char: ':', display: ': (deux-points - touche /)', modifiers: [] },
+        { char: '!', display: '! (point d\'exclamation - touche §)', modifiers: [] },
+        { char: '²', display: '² (exposant 2 - touche ²)', modifiers: [] },
+        { char: '~', display: '~ (tilde - AltGr + é)', modifiers: ['AltRight'] },
+        { char: '#', display: '# (dièse - AltGr + ")', modifiers: ['AltRight'] },
+        { char: '{', display: '{ (accolade ouvrante - AltGr + ")', modifiers: ['AltRight'] },
+        { char: '[', display: '[ (crochet ouvrant - AltGr + ()', modifiers: ['AltRight'] },
+        { char: '|', display: '| (barre verticale - AltGr + -)', modifiers: ['AltRight'] },
+        { char: '`', display: '` (accent grave - AltGr + è)', modifiers: ['AltRight'] },
+        { char: '\\', display: '\\ (barre oblique inversée - AltGr + _)', modifiers: ['AltRight'] },
+        { char: '^', display: '^ (accent circonflexe - AltGr + 9)', modifiers: ['AltRight'] },
+        { char: '@', display: '@ (arobase - AltGr + à)', modifiers: ['AltRight'] },
+        { char: ']', display: '] (crochet fermant - AltGr + ))', modifiers: ['AltRight'] },
+        { char: '}', display: '} (accolade fermante - AltGr + =)', modifiers: ['AltRight'] }
       ]
       return this.shuffleArray(symbols)
     },
