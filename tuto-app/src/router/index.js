@@ -9,6 +9,7 @@ import KeyboardPhraseView from '../views/KeyboardPhraseView.vue'
 import KeyboardExerciseMenu from '../views/KeyboardExerciseMenu.vue'
 import KeyboardLettreView from '../views/KeyboardLettreView.vue'
 import KeyboardSymbolesView from '../views/KeyboardSymbolesView.vue'
+import KeyboardMotView from '../views/KeyboardMotView.vue'
 
 const routes = [
   {
@@ -61,6 +62,11 @@ const routes = [
     path: '/keyboard',
     name: 'keyboard-symboles',
     component: KeyboardSymbolesView
+  },
+  {
+    path: '/keyboard',
+    name: 'keyboard-mots',
+    component: KeyboardMotView
   }
 ]
 
