@@ -197,6 +197,7 @@ h1 {
 
 .modern-textarea {
   width: 100%;
+  height: clamp(3rem, 5vh, 6rem);
   padding: 1rem;
   border: 2px solid var(--accent-color);
   border-radius: 8px;
@@ -268,7 +269,8 @@ h1 {
 .phrase-item.current {
   border-color: var(--accent-color);
   background-color: rgba(var(--accent-color-rgb), 0.1);
-  font-size: 1.1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .progress-info {
