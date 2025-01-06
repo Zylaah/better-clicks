@@ -55,6 +55,7 @@
           label="µ"
           :sub-label="'*'"
           :key-code="keyCodes['*']"
+          :is-highlighted="highlightedKey === '*'"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
