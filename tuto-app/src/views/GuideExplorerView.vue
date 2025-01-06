@@ -87,6 +87,8 @@ export default {
   margin-top: max(5vh, 4rem);
   padding: 1em;
   border-right: 1px solid var(--accent-color);
+  position: fixed;
+  height: 100dvh;
 }
 
 .sidebar h2 {
@@ -139,9 +141,9 @@ export default {
 }
 
 .content {
-  flex-grow: 1;
-  padding: 2rem 3rem;
   background: var(--color-background-soft);
+  margin-left: 320px;
+  flex-grow: 1;
 }
 
 h1 {
