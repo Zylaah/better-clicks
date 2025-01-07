@@ -70,9 +70,12 @@ export default defineComponent({
 <style scoped>
 /* Base styles */
 .container {
+  margin-top: clamp(4rem, 6rem, 8rem);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: min(100dvh, 80vh);
   padding: 0;
 }
 
