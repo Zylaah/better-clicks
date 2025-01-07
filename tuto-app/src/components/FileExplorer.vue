@@ -204,7 +204,7 @@ export default defineComponent({
   color: var(--text-color);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 6px var(--shadow-color);
+  box-shadow: 0 8px 16px var(--shadow-color);
 }
 
 .sidebar {

@@ -438,16 +438,16 @@ body, html{
 :root {
   /* Light theme */
   --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
+  --bg-secondary: #e6e6e6;
   --bg-tertiary: #ffffff;
   --text-color: #2c3e50;
   --text-secondary: #6c757d;
   --accent-color: #42b883;
-  --border-color: #e2e8f0;
+  --border-color: #7a7a7a;
   --hover-color: rgba(66, 184, 131, 0.1);
   --card-bg: #ffffff;
   --navbar-bg: #eff3f7;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
   --input-bg: #f8fafc;
   --input-border: #e2e8f0;
   --success-color: #42b883;
