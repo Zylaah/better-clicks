@@ -1,68 +1,7 @@
 <template>
   <div class="container">
-    <!-- Boutons de navigation -->
-    <div class="navigation-buttons">
-      <button 
-        :class="['nav-button', { active: currentView === 'demo' }]"
-        @click="currentView = 'demo'"
-      >
-        Démonstration
-      </button>
-      <button 
-        :class="['nav-button', { active: currentView === 'exercises' }]"
-        @click="currentView = 'exercises'"
-      >
-        Les exercices
-      </button>
-    </div>
-
-    <!-- Vue Démonstration -->
-    <div v-if="currentView === 'demo'" class="demo-container fade">
-      <file-explorer :fileTree="fileTree">
-        <div class="file-system-explanation">
-          <h4 class="modern-title">
-            <font-awesome-icon icon="folder-tree" class="title-icon" />
-            Découvrez l'Arborescence des Fichiers
-          </h4>
-
-          <div class="intro-card">
-            <p>Imaginez votre ordinateur comme une bibliothèque parfaitement organisée. L'arborescence des fichiers est votre guide numérique pour tout retrouver facilement ! 🚀</p>
-          </div>
-
-          <div class="feature-grid">
-            <div class="feature-card">
-              <h5><font-awesome-icon icon="folder" /> Structure de Base</h5>
-              <ul>
-                <li><span class="highlight">Dossiers racines</span> - Vos points de départ ("Documents", "Images")</li>
-                <li><span class="highlight">Sous-dossiers</span> - Créez des catégories selon vos besoins</li>
-                <li><span class="highlight">Fichiers</span> - Vos documents, photos et autres contenus</li>
-              </ul>
-            </div>
-
-            <div class="feature-card">
-              <h5><font-awesome-icon icon="code" /> Navigation Intuitive</h5>
-              <ul>
-                <li>💡 Un clic pour explorer les dossiers</li>
-                <li>↕️ Flèches pour développer/réduire</li>
-                <li>🧭 Suivez votre chemin en haut</li>
-              </ul>
-            </div>
-
-            <div class="feature-card">
-              <h5><font-awesome-icon icon="star" /> Avantages Clés</h5>
-              <ul>
-                <li>🎯 Retrouvez vos fichiers en quelques clics</li>
-                <li>✨ Une organisation claire et efficace</li>
-                <li>🎨 Une structure adaptée à vos besoins</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </file-explorer>
-    </div>
-
     <!-- Vue Exercices -->
-    <div v-else class="exercises-container fade">
+    <div class="exercises-container fade">
       <h2 class="exercises-title">Exercices sur l'arborescence des fichiers</h2>
       <div class="exercises-grid">
         <div 
@@ -85,7 +24,6 @@
 
 <script>
 import { defineComponent } from 'vue'
-import FileExplorer from '@/components/FileExplorer.vue'
 import ExerciseTypeA from '@/components/ExerciseTypeA.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faFolder, faFolderTree, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram, faDesktop, faCode, faStar } from '@fortawesome/free-solid-svg-icons'
@@ -97,31 +35,11 @@ library.add(faFolder, faFolderTree, faFile, faHome, faFolderOpen, faChevronRight
 export default defineComponent({
   name: 'FileTreeView',
   components: {
-    FileExplorer,
     FontAwesomeIcon
   },
   data() {
     return {
-      currentView: 'demo',
       selectedExercise: null,
-      fileTree: [
-        {
-          name: 'Documents',
-          type: 'folder',
-          children: [
-            { name: 'Attestation.pdf', type: 'file', content: 'Contenu de l\'attestation de scolarité' },
-            { name: 'Repas du jour.pdf', type: 'file', content: 'Contenu du repas du jour' },
-            {
-              name: 'Photos',
-              type: 'folder',
-              children: [
-                { name: 'Reception.jpg', type: 'file', content: 'Contenu de la photo de la réception' }
-              ]
-            }
-          ]
-        },
-        { name: 'logo.png', type: 'file', content: 'Contenu du logo' }
-      ],
       exercises: exercisesData.map(exercise => ({
         ...exercise,
         component: exercise.type === 'A' ? ExerciseTypeA : null
@@ -158,110 +76,10 @@ export default defineComponent({
   padding: 0;
 }
 
-.file-explorer {
-  height: 100%;
-}
-
-/* Navigation buttons */
-.navigation-buttons {
-  display: flex;
-  gap: clamp(0.5rem, 2vw, 1rem);
-  margin-top: max(12vh, 7rem);
-  z-index: 100;
-  justify-content: center;
-  width: 100%;
-}
-
-.nav-button {
-  padding: 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: clamp(0.9rem, 1.5vw, 1rem);
-  transition: all 0.3s ease;
-  background-color: var(--switch-buttob-bg);
-  color: var(--text-color);
-}
-
-.nav-button:hover {
-  background-color: var(--accent-color);
-  transform: translateY(-2px);
-}
-
-.nav-button.active {
-  background-color: var(--accent-color);
-  box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-/* Demo Container */
-.demo-container {
-  width: min(95%, 70vw);
-  height: calc(75vh - clamp(2rem, 5vh, 4rem));
-  border-radius: 10px;
-  position: relative;
-  margin: clamp(1rem, 5vh, 2rem) auto 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: auto;
-  box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-/* File System Explanation */
-.file-system-explanation {
-  color: var(--text-color);
-  padding: clamp(.7rem, 2vw, 1rem);
-}
-
-.modern-title {
-  color: var(--accent-color);
-  margin-bottom: clamp(1rem, 2vw, 2rem);
-  margin-top: 0;
-}
-
-.title-icon {
-  margin-right: 10px;
-}
-
-.intro-card {
-  background-color: var(--bg-secondary);
-  padding: clamp(1rem, 2vw, 2rem);
-  border-radius: 8px;
-  margin-bottom: clamp(1.5rem, 3vw, 3rem);
-  flex-shrink: 0;
-}
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: clamp(1rem, 2vw, 2rem);
-  padding-bottom: 1rem;
-}
-
-.feature-card {
-  min-height: fit-content;
-  height: auto;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  padding: clamp(0.5rem, 2vw, 1rem);
-}
-
-.feature-card h5 {
-  color: var(--accent-color);
-  margin-bottom: clamp(0.75rem, 1.5vw, 1rem);
-  margin-top: 0;
-}
-
-.highlight {
-  color: var(--accent-color);
-  font-weight: bold;
-}
-
 /* Exercises Container */
 .exercises-container {
   width: min(95%, 60vw);
-  padding: clamp(1rem, 4vh, 2rem) clamp(1rem, 3vw, 3rem) clamp(2rem, 4vw, 4rem) clamp(1rem, 3vw, 3rem);
+  padding: clamp(1rem, 4vh, 2rem) clamp(1rem, 3vw, 3rem);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -271,7 +89,7 @@ export default defineComponent({
 .exercises-title {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   margin-bottom: clamp(0.2rem, 3vw, 1rem);
-  margin-top: 0;
+  margin-top: clamp(4rem, 6rem, 8rem);
   text-align: center;
   color: var(--accent-color);
 }
@@ -373,98 +191,6 @@ export default defineComponent({
   transform: translateY(0);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .card {
-    min-height: 200px;
-    padding: 1.2rem;
-  }
-
-  .card_body {
-    bottom: 1.2rem;
-    right: 1.2rem;
-  }
-
-  .card span {
-    bottom: 1.2rem;
-    left: 1.2rem;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .exercises-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Dark Mode Adjustments */
-@media (prefers-color-scheme: dark) {
-  .card {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  }
-
-  .card:hover {
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-  }
-
-  .card_body p {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-}
-
-@media (max-width: 1180px) {
-  .desktop-content {
-    display: none;
-  }
-}
-
-
-/* Media Queries */
-@media screen and (max-width: 1366px) {
-  .feature-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .exercises-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .exercises-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-@media (max-height: 768px) {
-
-  .card > strong {
-    font-size: 1.2rem;
-  }
-
-  .card {
-    min-height: 180px;
-  }
-
-  .demo-container {
-    margin-top: 1rem;
-  }
-
-  .exercises-container {
-    padding: 0 0 1rem 0;
-  }
-
-  .exercises-title {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-  }
-}
-
 /* Animation */
 .fade {
   animation: fade 0.3s ease-in-out;
@@ -475,14 +201,29 @@ export default defineComponent({
   to { opacity: 1; }
 }
 
-/* Optimisation des performances */
-@media (prefers-reduced-motion: reduce) {
-  .fade {
-    animation: none;
+/* Media queries */
+@media (max-width: 768px) {
+  .exercises-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .nav-button {
-    transition: none;
+
+  .card {
+    min-height: 180px;
+  }
+}
+
+@media (max-height: 940px) {
+  .container {
+    scale: 0.8;
+  }
+  .exercises-title {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 940px) {
+  .container {
+    display: none;
   }
 }
 </style>

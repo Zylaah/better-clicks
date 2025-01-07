@@ -36,17 +36,17 @@ export default {
       exercises: [
         {
           title: "Découvrir les touches lettres et chiffres",
-          difficulty: "Débutant",
+          difficulty: "Facile",
           route: "keyboard-lettre"
         },
         {
           title: "symboles et accents",
-          difficulty: "Intermédiaire",
+          difficulty: "Moyen",
           route: "keyboard-symboles"
         },
         {
           title: "Taper des mots",
-          difficulty: "Débutant",
+          difficulty: "Moyen",
           route: "keyboard-mots"
         },
         {
@@ -75,11 +75,6 @@ export default {
   justify-content: center;
   height: min(100dvh, 80vh);
   padding: 0;
-}
-
-.keyboard-3d-wrapper {
-  width: min(95%, 60vw);
-  margin-top: clamp(2rem, 4vh, 4rem);
 }
 
 h2 {
@@ -224,7 +219,7 @@ h2 {
 
 @media (max-height: 940px) {
   .container {
-    scale: 0.7;
+    scale: 0.8;
   }
   .exercises-title {
     margin-top: 2rem;

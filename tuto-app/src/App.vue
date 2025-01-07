@@ -157,7 +157,7 @@ body, html{
 
 .navbar {
   background: var(--navbar-bg);
-  padding: 0.8rem 2rem;
+  padding: 0.3rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -167,6 +167,7 @@ body, html{
   left: 0;
   right: 0;
   z-index: 1000;
+  height: var(--navbar-height);
 }
 
 .nav-brand {
@@ -462,6 +463,7 @@ body, html{
   --menu-bg: #1e2a24;
   --titlebar-bg: #f8fafc;
   --sidebar-bg: #eff3f7;
+  --navbar-height: 60px;
 }
 
 [data-theme="dark"] {

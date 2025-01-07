@@ -157,7 +157,7 @@ export default {
 
 .exercise-container {
   width: min(95%, 70vw);
-  height: calc(75vh - clamp(2rem, 5vh, 4rem));
+  height: calc(80vh - clamp(2rem, 5vh, 4rem));
   border-radius: 10px;
   position: relative;
   margin: clamp(1rem, 5vh, 2rem) auto 0;
@@ -412,12 +412,8 @@ export default {
 }
 
 @media (max-width: 940px) {
-  .exercise-container {
-    display: none;
-  }
-
   .exercise-view {
-    scale: 0.7;
+    display: none;
   }
 }
 </style>
