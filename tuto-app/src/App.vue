@@ -357,7 +357,7 @@ body, html{
   }
 
   .navbar {
-    padding: 0.4rem 2rem;
+    height: calc(var(--navbar-height) * 0.8);
   }
 }
 
