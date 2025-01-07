@@ -2,10 +2,6 @@
   <div class="container">
     <KeyboardOnboarding />
 
-    <div class="keyboard-3d-wrapper fade">
-      <Keyboard3D />
-    </div>
-
     <div class="exercises-container fade">
       <h2 class="exercises-title">Exercices de frappe au clavier</h2>
       <div class="exercises-grid">
@@ -28,13 +24,11 @@
 
 <script>
 import KeyboardOnboarding from '@/components/onboarding/KeyboardOnboarding.vue'
-import Keyboard3D from '@/components/keyboard/Keyboard3D.vue'
 
 export default {
   name: 'KeyboardExerciseMenu',
   components: {
-    KeyboardOnboarding,
-    Keyboard3D
+    KeyboardOnboarding
   },
   
   data() {
