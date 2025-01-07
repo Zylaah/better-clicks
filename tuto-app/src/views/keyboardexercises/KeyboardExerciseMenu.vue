@@ -68,9 +68,12 @@ export default {
 
 <style scoped>
 .container {
+  margin-top: clamp(4rem, 6rem, 8rem);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: min(100dvh, 80vh);
   padding: 0;
 }
 
@@ -219,16 +222,16 @@ h2 {
   }
 }
 
-@media (max-height: 816px) {
+@media (max-height: 940px) {
   .container {
-    scale: 0.8;
+    scale: 0.7;
   }
   .exercises-title {
     margin-top: 2rem;
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 940px) {
   .container {
     display: none;
   }

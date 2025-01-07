@@ -1,10 +1,5 @@
 <template>
   <div class="exercise-view">
-    <div class="back-button-container">
-      <button class="back-button" @click="goBack">
-        <font-awesome-icon icon="arrow-left" /> Retour à l'explorateur
-      </button>
-    </div>
     <div class="exercise-container">
       <file-explorer :fileTree="exercise.fileTree">
         <div class="exercise-instructions">
@@ -123,9 +118,12 @@ export default {
 
 <style scoped>
 .exercise-view {
+  margin-top: clamp(4rem, 6rem, 8rem);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: min(100dvh, 80vh);
   padding: 0;
 }
 

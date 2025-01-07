@@ -368,7 +368,7 @@ h1 {
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 940px) {
   .keyboard-test {
     display: none;
   }

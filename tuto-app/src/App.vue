@@ -8,7 +8,7 @@
         </router-link>
         <router-link 
           v-if="showBackButton" 
-          to="/keyboard" 
+          :to="backButtonRoute"
           class="nav-link back-nav-button"
         >
           <font-awesome-icon icon="arrow-left" />
@@ -42,18 +42,17 @@
             <span>Les exercices</span>
           </div>
           <div class="menu-content-exercise">
-            <ul>
-              <li>
-                <router-link to="/file-tree" class="nav-link-menu">
-                  <font-awesome-icon icon="folder-tree" />
-                  <span>Explorateur</span>
+            <ul><li>
+                <router-link to="/keyboard" class="nav-link-menu">
+                  <font-awesome-icon icon="keyboard" />
+                  <span>Le clavier</span>
                 </router-link>
               </li>
               <hr>
               <li>
-                <router-link to="/keyboard" class="nav-link-menu">
-                  <font-awesome-icon icon="keyboard" />
-                  <span>Le clavier</span>
+                <router-link to="/file-tree" class="nav-link-menu">
+                  <font-awesome-icon icon="folder-tree" />
+                  <span>Explorateur</span>
                 </router-link>
               </li>
             </ul> 
@@ -105,13 +104,22 @@ export default {
       return route.name === 'keyboard-lettre' || 
              route.name === 'keyboard-phrase' ||
              route.name === 'keyboard-symboles'||
-             route.name === 'keyboard-mots';
+             route.name === 'keyboard-mots' ||
+             route.name === 'exercise';
+    });
+
+    const backButtonRoute = computed(() => {
+      if (route.name === 'exercise') {
+        return '/file-tree';
+      }
+      return '/keyboard';
     });
 
     return {
       isGuideActive,
       isExerciseActive,
-      showBackButton
+      showBackButton,
+      backButtonRoute
     };
   }
 }
@@ -329,12 +337,26 @@ body, html{
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 940px) {
   .mobile-message {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+}
+
+@media (max-width: 1180px) {
+  .nav-links {
+    gap: 0.5rem;
+  }
+
+  .nav-link span {
+    font-size: 0.8rem;
+  }
+
+  .navbar {
+    padding: 0.4rem 2rem;
   }
 }
 
