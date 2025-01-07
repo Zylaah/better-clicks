@@ -411,31 +411,13 @@ export default {
   background: var(--accent-color);
 }
 
-@media (max-height: 768px) {
-  .exercise-instructions h3 {
-    margin-top: 0.2rem;
-  }
-
-  .exercise-instructions-container {
-    margin-top: 1rem;
-  }
-
+@media (max-width: 940px) {
   .exercise-container {
-    margin-top: 1rem;
+    display: none;
   }
 
   .exercise-view {
-    scale: 0.9;
-  }
-}
-
-@media (max-width: 1180px) {
-  .exercise-container {
-    display: none;
-  }
-
-  .back-button {
-    display: none;
+    scale: 0.7;
   }
 }
 </style>
