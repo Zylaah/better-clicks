@@ -49,7 +49,7 @@
             @keydown.enter.prevent
           ></textarea>
         </template>
-        <div class="validation-message" v-if="validationMessage">
+        <div class="validation-message" :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }" v-if="validationMessage">
           {{ validationMessage }}
         </div>
       </div>
@@ -107,10 +107,17 @@ export default {
           document.addEventListener('keydown', this.handleEnterKey)
         }
       } else {
-        this.isCorrect = false
-        const isPartiallyCorrect = currentMot.startsWith(this.textContent)
-        this.isIncorrect = !isPartiallyCorrect
-        this.validationMessage = ''
+        this.isCorrect = false;
+        const isPartiallyCorrect = currentMot.startsWith(this.textContent);
+        this.isIncorrect = !isPartiallyCorrect;
+        
+        if (!isPartiallyCorrect) {
+          this.validationMessage = `
+          Vous avez écrit : "${this.textContent}"
+          Attendu : "${currentMot.slice(0, Math.max(this.textContent.length, 0))}"`;
+        } else {
+          this.validationMessage = '';
+        }
       }
     },
 
@@ -296,6 +303,14 @@ h1 {
   text-align: center;
   color: var(--accent-color);
   font-size: 0.9rem;
+}
+
+.validation-message.correct {
+  color: var(--accent-color);
+}
+
+.validation-message.incorrect {
+  color: #f44336;
 }
 
 .modern-textarea.correct {

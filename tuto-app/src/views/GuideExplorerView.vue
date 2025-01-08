@@ -48,7 +48,7 @@ export default {
           // données spécifiques au chapitre 1
         },
         {
-          title: "Gestion des fichiers",
+          title: "Introduction aux dossiers",
           component: 'ExplorerChapterTwo',
           // données spécifiques au chapitre 2
         }
