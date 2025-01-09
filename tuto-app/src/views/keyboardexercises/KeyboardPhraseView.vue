@@ -31,13 +31,24 @@
 
       <div class="textarea-container">
         <template v-if="isExerciseComplete">
-          <button 
-            class="restart-button"
-            @click="restartExercise"
-          >
-            <font-awesome-icon icon="rotate-right" />
-            Recommencer l'exercice
-          </button>
+          <div class="modal-overlay">
+            <div class="modal-content">
+              <h2>Félicitations !</h2>
+              <div class="modal-buttons">
+                <button 
+                  class="restart-button"
+                  @click="restartExercise"
+                >
+                  <font-awesome-icon icon="rotate-right" />
+                  Recommencer l'exercice
+                </button>
+                <button class="next-button" @click="goBack">
+                  <font-awesome-icon icon="arrow-right" />
+                  Revenir au menu des exercices
+                </button>
+              </div>
+            </div>
+          </div>
         </template>
         <template v-else>
           <textarea 
@@ -284,6 +295,10 @@ h1 {
   margin-top: clamp(0.5rem, 1vh, 1rem);
   text-align: center;
   color: var(--text-color);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .progress-bar {
@@ -293,6 +308,7 @@ h1 {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
+  width: 300px;
 }
 
 .progress-fill {
@@ -390,6 +406,40 @@ h1 {
 
 .next-button:active {
   transform: translateY(0);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--bg-secondary);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 90%;
+  width: 400px;
+}
+
+.modal-content h2 {
+  color: var(--accent-color);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 </style>
