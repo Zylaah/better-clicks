@@ -41,6 +41,10 @@
             <font-awesome-icon icon="rotate-right" />
             Recommencer l'exercice
           </button>
+          <button class="next-button" @click="goNext">
+            <font-awesome-icon icon="arrow-right" />
+            Passer à l'exercice suivant
+          </button>
         </template>
         <template v-else>
           <textarea 
@@ -190,6 +194,10 @@ export default {
       this.isIncorrect = false
       this.userInput = ''
       this.validationMessage = ''
+    },
+
+    goNext() {
+      this.$router.push({ name: 'keyboard-symboles' })
     }
   },
 
@@ -398,4 +406,31 @@ h1 {
 .restart-button:active {
   transform: translateY(0);
 }
+
+.next-button {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.next-button:hover {
+  transform: translateY(-2px);
+  background-color: var(--accent-color-hover, #357b5e);
+}
+
+.next-button:active {
+  transform: translateY(0);
+}
+
 </style>

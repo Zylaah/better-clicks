@@ -19,7 +19,7 @@
 
         <p class="subtitle">Apprenez à utiliser votre ordinateur pas à pas, sans stress et à votre rythme.</p>
         <div class="cta-buttons">
-          <router-link to="/file-tree" class="cta-button primary">
+          <router-link to="/keyboard" class="cta-button primary">
             <font-awesome-icon icon="graduation-cap" />
             Débuter l'apprentissage
           </router-link>
@@ -47,7 +47,7 @@
             <font-awesome-icon icon="globe" />
           </div>
           <h3>Internet et Navigation</h3>
-          <p>Naviguez sur Internet en toute sécurité, utilisez votre messagerie et découvrez les sites utiles</p>
+          <p>A venir</p>
         </div>
 
         <div class="feature-card">
@@ -55,7 +55,7 @@
             <font-awesome-icon icon="shield-halved" />
           </div>
           <h3>Sécurité Numérique</h3>
-          <p>Protégez-vous des virus, gérez vos mots de passe et sécurisez vos données personnelles</p>
+          <p>A venir</p>
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@
         <router-link to="/file-tree" class="tutorial-card">
           <div class="tutorial-badge">Débutant</div>
           <div class="tutorial-content">
-            <h3>Premiers Pas avec Windows</h3>
+            <h3>L'arborescence des fichiers</h3>
             <p>Apprenez à naviguer dans une arborescence de fichiers</p>
             <div class="tutorial-meta">
               <span><font-awesome-icon icon="clock" /> 30 min</span>
@@ -75,16 +75,17 @@
           </div>
         </router-link>
 
-        <div class="tutorial-card">
+        <router-link to="/keyboard" class="tutorial-card">
+          <div class="tutorial-badge">Intermédiaire</div>
           <div class="tutorial-content">
-            <h3>Gérer ses Fichiers</h3>
-            <p>Organisez vos documents, photos et dossiers comme un pro</p>
+            <h3>Découvrir le clavier</h3>
+            <p>Apprenez à utiliser votre clavier comme un pro</p>
             <div class="tutorial-meta">
               <span><font-awesome-icon icon="clock" /> 45 min</span>
               <span><font-awesome-icon icon="keyboard" /> Pratique</span>
             </div>
           </div>
-        </div>
+        </router-link>
 
         <div class="tutorial-card">
           <div class="tutorial-content">

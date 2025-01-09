@@ -5,7 +5,7 @@
         <h1>À propos de <span class="accent">Numérix</span></h1>
         <p class="subtitle">Une nouvelle approche de l'apprentissage numérique</p>
         <div class="header-badges">
-          <span class="version-badge">Version 0.1.5</span>
+          <span class="version-badge">Version 0.2.0</span>
           <span class="status-badge">Beta</span>
         </div>
       </div>
@@ -52,7 +52,7 @@
         </div>
         <p>Un environnement sûr pour apprendre et pratiquer en toute confiance.</p>
         <ul class="feature-list">
-          <li>Données sécurisées</li>
+          <li>Pas besoin de connexion internet</li>
           <li>Mises à jour régulières</li>
           <li>Support technique</li>
         </ul>

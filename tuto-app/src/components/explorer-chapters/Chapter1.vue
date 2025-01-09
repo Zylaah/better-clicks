@@ -4,7 +4,7 @@
     <section class="chapter-section">
       <h2>🎯 Introduction aux Fichiers Numériques</h2>
       <div class="concept-card">
-        <p>Imaginez votre ordinateur comme une grande bibliothèque numérique. Les fichiers sont comme les livres de cette bibliothèque : ils contiennent toutes vos informations, documents et médias.</p>
+        <p>Le contenu de l'ordinateur est organisé en <b>fichiers</b>, eux mêmes présents dans des <b>dossiers</b>. On appelle cela l'arborescence, car chaque dossier peut lui-même contenir plusieurs dossiers, formant ainsi des "branches" de l'arborescence.</p>
       </div>
     </section>
 
@@ -215,6 +215,8 @@ h4 {
   padding: 0.3rem 0.8rem;
   border-radius: 4px;
   font-family: monospace;
+  color: var(--accent-color);
+  font-weight: bold;
 }
 
 .practices-grid {
