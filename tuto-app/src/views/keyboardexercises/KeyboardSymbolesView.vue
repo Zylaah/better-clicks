@@ -65,14 +65,12 @@
 </template>
 
 <script>
-import AzuretyKeyboard from '@/components/keyboard/AzuretyKeyboard.vue'
-import ProgressBar from '@/components/ProgressBar.vue'
 export default {
   name: 'KeyboardSymbolesView',
   
   components: {
-    AzuretyKeyboard,
-    ProgressBar
+    AzuretyKeyboard : () => import('@/components/keyboard/AzuretyKeyboard.vue'),
+    ProgressBar : () => import('@/components/ProgressBar.vue')
   },
 
   data() {
