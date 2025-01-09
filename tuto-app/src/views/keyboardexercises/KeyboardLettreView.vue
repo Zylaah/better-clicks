@@ -20,15 +20,10 @@
           <div v-if="isNaN(currentLetter.display)" class="case-info">
             {{ currentLetter.display === currentLetter.display.toUpperCase() ? 'Majuscule' : 'Minuscule' }}
           </div>
-          <div class="progress-info">
-            <span>Lettre {{ currentIndex + 1 }} sur {{ letters.length }}</span>
-            <div class="progress-bar">
-              <div 
-                class="progress-fill"
-                :style="{ width: `${((currentIndex + 1) / letters.length) * 100}%` }"
-              ></div>
-            </div>
-          </div>
+          <ProgressBar 
+            :current-value="currentIndex + 1"
+            :total-value="letters.length"
+          />
         </div>
       </div>
 
@@ -74,12 +69,15 @@
 
 <script>
 import AzuretyKeyboard from '@/components/keyboard/AzuretyKeyboard.vue'
+import { LetterGenerator } from '@/services/letterGenerator'
+import ProgressBar from '@/components/ProgressBar.vue'
 
 export default {
   name: 'KeyboardLettreView',
   
   components: {
-    AzuretyKeyboard
+    AzuretyKeyboard,
+    ProgressBar
   },
 
   data() {
@@ -89,7 +87,7 @@ export default {
       isCorrect: false,
       isIncorrect: false,
       validationMessage: '',
-      letters: this.generateRandomLetters(),
+      letters: LetterGenerator.generateRandomLetters(),
       isExerciseComplete: false
     }
   },
@@ -106,44 +104,6 @@ export default {
   },
 
   methods: {
-    generateRandomLetters() {
-      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-      const numbers = '0123456789';
-      let characters = [];
-
-      // Ajouter les lettres
-      for (let letter of alphabet) {
-        // 50% de chance d'être en majuscule
-        const isUpperCase = Math.random() < 0.5;
-        const char = isUpperCase ? letter.toUpperCase() : letter;
-        characters.push({
-          char,
-          display: `${char}`,
-          modifiers: isUpperCase ? ['ShiftLeft'] : []
-        });
-      }
-
-      // Ajouter les chiffres
-      for (let number of numbers) {
-        characters.push({
-          char: number,
-          display: `${number}`,
-          modifiers: ['ShiftLeft']
-        });
-      }
-
-      // Mélanger le tableau
-      return this.shuffleArray(characters);
-    },
-
-    shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    },
-
     checkLetter() {
       const input = this.userInput.charAt(0)
       
@@ -194,7 +154,7 @@ export default {
     },
 
     restartExercise() {
-      this.letters = this.generateRandomLetters()
+      this.letters = LetterGenerator.generateRandomLetters()
       this.currentIndex = 0
       this.isExerciseComplete = false
       this.isCorrect = false

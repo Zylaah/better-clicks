@@ -16,15 +16,10 @@
           <div class="phrase-item current">
             {{ motsExemple[currentMotIndex] }}
           </div>
-          <div class="progress-info">
-            <span>Mot {{ currentMotIndex + 1 }} sur {{ motsExemple.length }}</span>
-            <div class="progress-bar">
-              <div 
-                class="progress-fill"
-                :style="{ width: `${((currentMotIndex + 1) / motsExemple.length) * 100}%` }"
-              ></div>
-            </div>
-          </div>
+          <ProgressBar 
+            :current-value="currentMotIndex + 1"
+            :total-value="motsExemple.length"
+          />
         </div>
       </div>
 
@@ -71,12 +66,14 @@
 <script>
 import AzuretyKeyboard from '@/components/keyboard/AzuretyKeyboard.vue'
 import mots from '@/data/mots.json'
+import ProgressBar from '@/components/ProgressBar.vue'
 
 export default {
   name: 'KeyboardMotView',
   
   components: {
-    AzuretyKeyboard
+    AzuretyKeyboard,
+    ProgressBar
   },
 
   data() {

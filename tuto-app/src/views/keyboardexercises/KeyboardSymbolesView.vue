@@ -17,15 +17,10 @@
           <div class="phrase-item current">
             {{ currentSymbol.display }}
           </div>
-          <div class="progress-info">
-            <span>Symbole {{ currentIndex + 1 }} sur {{ symbols.length }}</span>
-            <div class="progress-bar">
-              <div 
-                class="progress-fill"
-                :style="{ width: `${((currentIndex + 1) / symbols.length) * 100}%` }"
-              ></div>
-            </div>
-          </div>
+          <ProgressBar 
+            :current-value="currentIndex + 1"
+            :total-value="symbols.length"
+          />
         </div>
       </div>
 
@@ -71,12 +66,13 @@
 
 <script>
 import AzuretyKeyboard from '@/components/keyboard/AzuretyKeyboard.vue'
-
+import ProgressBar from '@/components/ProgressBar.vue'
 export default {
   name: 'KeyboardSymbolesView',
   
   components: {
-    AzuretyKeyboard
+    AzuretyKeyboard,
+    ProgressBar
   },
 
   data() {
