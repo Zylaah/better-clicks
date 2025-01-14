@@ -24,27 +24,26 @@
       </div>
 
       <div class="textarea-container">
-        <template v-if="isExerciseComplete">
-          <div class="modal-overlay">
-            <div class="modal-content">
-              <h2>Félicitations !</h2>
-              <div class="modal-buttons">
-                <button 
-                  class="restart-button"
-                  @click="restartExercise"
-                >
-                  <font-awesome-icon icon="rotate-right" />
-                  Recommencer l'exercice
-                </button>
-                <button class="next-button" @click="goNext">
-                  <font-awesome-icon icon="arrow-right" />
-                  Passer à l'exercice suivant
-                </button>
-              </div>
-            </div>
+        <RestartModal v-model="isExerciseComplete">
+          <template #header>
+            <h2>Félicitations !</h2>
+          </template>
+          
+          <div class="modal-buttons">
+            <button 
+              class="restart-button"
+              @click="restartExercise"
+            >
+              <font-awesome-icon icon="rotate-right" />
+              Recommencer l'exercice
+            </button>
+            <button class="next-button" @click="goNext">
+              <font-awesome-icon icon="arrow-right" />
+              Passer à l'exercice suivant
+            </button>
           </div>
-        </template>
-        <template v-else>
+        </RestartModal>
+        <template v-if="!isExerciseComplete">
           <textarea 
             v-model="textContent"
             class="modern-textarea"
@@ -68,6 +67,7 @@ import { defineAsyncComponent } from 'vue'
 import { debounce } from '@/utils/eventHelper'
 import mots from '@/data/mots.json'
 import ProgressBar from '@/components/ProgressBar.vue'
+import RestartModal from '@/components/RestartModal.vue'
 
 const AzuretyKeyboard = defineAsyncComponent({
   loader: () => import('@/components/keyboard/AzuretyKeyboard.vue'),
@@ -100,7 +100,8 @@ export default {
   
   components: {
     AzuretyKeyboard,
-    ProgressBar
+    ProgressBar,
+    RestartModal
   },
 
   created() {
@@ -221,268 +222,5 @@ export default {
 </script>
 
 <style scoped>
-.keyboard-test {
-  margin-top: clamp(6rem, 8rem, 10rem);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: min(100dvh, 80vh);
-  padding: 0;
-}
-
-h1 {
-  color: var(--accent-color);
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  text-align: center;
-}
-
-.textarea-container {
-  display: flex;
-  padding: 1rem;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 750px;
-  margin: 0 auto;
-}
-
-.modern-textarea {
-  width: 100%;
-  height: clamp(3rem, 5vh, 6rem);
-  padding: 1rem;
-  border: 2px solid var(--accent-color);
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--text-color);
-  font-size: 1.1rem;
-  line-height: 1.5;
-  resize: none;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-.modern-textarea:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.3);
-  border-color: var(--accent-color);
-}
-
-.modern-textarea::placeholder {
-  color: rgba(var(--text-color-rgb), 0.5);
-}
-
-.example-phrase-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.example-phrases {
-  padding: clamp(1rem, 2vh, 2rem);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.example-phrases h3 {
-  color: var(--accent-color);
-  margin-bottom: clamp(0.5rem, 1vh, 1rem);
-  font-size: 1.2rem;
-}
-
-.phrases-container {
-  width: 100%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.phrase-item {
-  padding: clamp(0.5rem, 1vh, 0.8rem);
-  border-radius: 6px;
-  background-color: rgba(255, 255, 255, 0.05);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-  color: var(--text-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.phrase-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.phrase-item.active {
-  border-color: var(--accent-color);
-  background-color: rgba(var(--accent-color-rgb), 0.1);
-}
-
-.phrase-item.current {
-  border-color: var(--accent-color);
-  background-color: rgba(var(--accent-color-rgb), 0.1);
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.progress-info {
-  margin-top: clamp(0.5rem, 1vh, 1rem);
-  text-align: center;
-  color: var(--text-color);
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.progress-bar {
-  margin-top: clamp(0.25rem, 0.5vh, 0.5rem);
-  width: 100%;
-  height: 6px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  overflow: hidden;
-  width: 300px;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: var(--accent-color);
-  transition: width 0.3s ease;
-}
-
-.validation-message {
-  margin-top: clamp(0.25rem, 0.5vh, 0.5rem);
-  text-align: center;
-  color: var(--accent-color);
-  font-size: 0.9rem;
-}
-
-.validation-message.correct {
-  color: var(--accent-color);
-}
-
-.validation-message.incorrect {
-  color: #f44336;
-}
-
-.modern-textarea.correct {
-  border-color: #4CAF50;
-  background-color: rgba(76, 175, 80, 0.05);
-}
-
-.modern-textarea.incorrect {
-  border-color: #f44336;
-  background-color: rgba(244, 67, 54, 0.05);
-}
-
-@media (max-height: 940px) {
-  .keyboard-test {
-    scale: 0.7;
-  }
-  .back-button-container {
-    margin-top: 2rem;
-  }
-
-  .modal-overlay {
-    scale: 1;
-  }
-}
-
-@media (max-width: 940px) {
-  .keyboard-test {
-    display: none;
-  }
-}
-
-.restart-button {
-  width: 100%;
-  padding: 1rem;
-  background-color: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.restart-button:hover {
-  transform: translateY(-2px);
-  background-color: var(--accent-color-hover, #357b5e);
-}
-
-.restart-button:active {
-  transform: translateY(0);
-}
-
-.next-button {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 1rem;
-  background-color: var(--accent-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.next-button:hover {
-  transform: translateY(-2px);
-  background-color: var(--accent-color-hover, #357b5e);
-}
-
-.next-button:active {
-  transform: translateY(0);
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: var(--bg-secondary);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 90%;
-  width: 400px;
-}
-
-.modal-content h2 {
-  color: var(--accent-color);
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.modal-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+@import '@/assets/styles/keyboard-exercises.css';
 </style>
