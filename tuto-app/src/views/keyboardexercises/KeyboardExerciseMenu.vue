@@ -23,12 +23,18 @@
 </template>
 
 <script>
+import { onMounted } from 'vue'
 import KeyboardOnboarding from '@/components/onboarding/KeyboardOnboarding.vue'
 
 export default {
   name: 'KeyboardExerciseMenu',
   components: {
     KeyboardOnboarding
+  },
+  setup() {
+    onMounted(() => {
+      import('@/components/keyboard/AzuretyKeyboard.vue')
+    })
   },
   
   data() {

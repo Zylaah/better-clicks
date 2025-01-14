@@ -5,8 +5,8 @@
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
-      @key-press="handleKeyPress"
-      @key-release="handleKeyRelease"
+      @key-press="debouncedKeyPress"
+      @key-release="debouncedKeyRelease"
       @debug-toggle="handleDebugToggle"
       @debug-key-info="handleDebugKeyInfo"
     />
@@ -66,9 +66,36 @@
 </template>
 
 <script>
-import AzuretyKeyboard from '@/components/keyboard/AzuretyKeyboard.vue'
+import { defineAsyncComponent } from 'vue'
+import { debounce } from '@/utils/eventHelper'
 import phrases from '@/data/phrases.json'
 import ProgressBar from '@/components/ProgressBar.vue'
+
+const AzuretyKeyboard = defineAsyncComponent({
+  loader: () => import('@/components/keyboard/AzuretyKeyboard.vue'),
+  // Temps minimum avant d'afficher le loading
+  delay: 200,
+  // Temps maximum d'attente avant erreur
+  timeout: 5000,
+  // État pendant le chargement
+  loadingComponent: {
+    template: `
+      <div class="keyboard-loading">
+        <p>Chargement du clavier...</p>
+      </div>
+    `
+  },
+  // En cas d'erreur
+  errorComponent: {
+    template: `
+      <div class="keyboard-error">
+        <p>Erreur lors du chargement du clavier</p>
+      </div>
+    `
+  },
+  // Si le composant est en cours de chargement
+  suspensible: true
+})
 
 export default {
   name: 'KeyboardTestView',
@@ -76,6 +103,11 @@ export default {
   components: {
     AzuretyKeyboard,
     ProgressBar
+  },
+
+  created() {
+    this.debouncedKeyPress = debounce(this.handleKeyPress, 16)
+    this.debouncedKeyRelease = debounce(this.handleKeyRelease, 16)
   },
 
   data() {
@@ -86,7 +118,9 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       isExerciseComplete: false,
-      phrasesExemple: this.getRandomPhrases(phrases.phrases, 15)
+      phrasesExemple: this.getRandomPhrases(phrases.phrases, 15),
+      debouncedKeyPress: null,
+      debouncedKeyRelease: null
     }
   },
 
@@ -177,7 +211,17 @@ export default {
     goBack() {
       this.$router.push({ name: 'keyboard-menu' })
     }
-  }
+  },
+
+  beforeUnmount() {
+    if (this.debouncedKeyPress?.cancel) {
+      this.debouncedKeyPress.cancel()
+    }
+    if (this.debouncedKeyRelease?.cancel) {
+      this.debouncedKeyRelease.cancel()
+    }
+    document.removeEventListener('keydown', this.handleEnterKey)
+  } 
 }
 </script>
 
