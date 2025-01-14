@@ -119,7 +119,12 @@ export default {
       isExerciseComplete: false,
       modifierKeys: [],
       debouncedKeyPress: null,
-      debouncedKeyRelease: null
+      debouncedKeyRelease: null,
+      cachedHighlightedKeys: {
+        char: null,
+        modifiers: null,
+        keys: []
+      }
     }
   },
 
@@ -130,10 +135,16 @@ export default {
 
     highlightedKeys() {
       const symbol = this.currentSymbol
-      if (!symbol || !symbol.char) return []
-      const keys = [...(symbol.modifiers || [])]
-      if (symbol.char) keys.push(symbol.char)
-      return keys
+      if (!symbol?.char) return []
+      
+      // Utiliser le cache existant si les données n'ont pas changé
+      if (this.cachedHighlightedKeys.char === symbol.char && 
+          this.cachedHighlightedKeys.modifiers === symbol.modifiers) {
+        return this.cachedHighlightedKeys.keys
+      }
+      
+      // Sinon, mettre à jour le cache via une méthode
+      return this.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
     }
   },
 
@@ -247,10 +258,24 @@ export default {
       this.isIncorrect = false
       this.userInput = ''
       this.validationMessage = ''
+      this.cachedHighlightedKeys = {
+        char: null,
+        modifiers: null,
+        keys: []
+      }
     },
 
     goNext() {
       this.$router.push({ name: 'keyboard-mots' })
+    },
+
+    updateHighlightedKeysCache(char, modifiers) {
+      this.cachedHighlightedKeys = {
+        char,
+        modifiers,
+        keys: [char, ...(modifiers || [])]
+      }
+      return this.cachedHighlightedKeys.keys
     }
   },
 
@@ -495,7 +520,6 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;

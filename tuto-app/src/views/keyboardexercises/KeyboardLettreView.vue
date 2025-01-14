@@ -122,7 +122,12 @@ export default {
       letters: LetterGenerator.generateRandomLetters(),
       isExerciseComplete: false,
       debouncedKeyPress: null,
-      debouncedKeyRelease: null
+      debouncedKeyRelease: null,
+      cachedHighlightedKeys: {
+        char: null,
+        modifiers: null,
+        keys: []
+      }
     }
   },
 
@@ -132,12 +137,28 @@ export default {
     },
 
     highlightedKeys() {
-      if (!this.currentLetter || !this.currentLetter.char) return []
-      return [this.currentLetter.char, ...this.currentLetter.modifiers]
+      const letter = this.currentLetter
+      if (!letter?.char) return []
+      
+      if (this.cachedHighlightedKeys.char === letter.char && 
+          this.cachedHighlightedKeys.modifiers === letter.modifiers) {
+        return this.cachedHighlightedKeys.keys
+      }
+      
+      return this.updateHighlightedKeysCache(letter.char, letter.modifiers)
     }
   },
 
   methods: {
+    updateHighlightedKeysCache(char, modifiers) {
+      this.cachedHighlightedKeys = {
+        char,
+        modifiers,
+        keys: [char, ...(modifiers || [])]
+      }
+      return this.cachedHighlightedKeys.keys
+    },
+
     checkLetter() {
       const input = this.userInput.charAt(0)
       
@@ -195,6 +216,11 @@ export default {
       this.isIncorrect = false
       this.userInput = ''
       this.validationMessage = ''
+      this.cachedHighlightedKeys = {
+        char: null,
+        modifiers: null,
+        keys: []
+      }
     },
 
     goNext() {
@@ -452,7 +478,6 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;

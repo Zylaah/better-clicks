@@ -116,7 +116,7 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       isExerciseComplete: false,
-      motsExemple: this.getRandomMots(mots.mots, 20),
+      motsExemple: this.getRandomMots(mots.mots, 2),
       debouncedKeyPress: null,
       debouncedKeyRelease: null
     }
@@ -388,6 +388,10 @@ h1 {
   .back-button-container {
     margin-top: 2rem;
   }
+
+  .modal-overlay {
+    scale: 1;
+  }
 }
 
 @media (max-width: 940px) {
@@ -454,6 +458,7 @@ h1 {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
