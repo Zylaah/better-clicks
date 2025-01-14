@@ -146,6 +146,12 @@ h1 {
   font-weight: bold;
 }
 
+.case-info{
+  color: var(--accent-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 .progress-info {
   margin-top: clamp(0.5rem, 1vh, 1rem);
   text-align: center;
