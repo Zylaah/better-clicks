@@ -1,14 +1,15 @@
 <template>
   <div class="keyboard-test">
-    
-    <AzuretyKeyboard
+    <GlobalKeyboard
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
       :highlighted-keys="highlightedKeys"
-      @key-press="debouncedKeyPress"
-      @key-release="debouncedKeyRelease"
     />
+
+    <div v-if="typingSpeed > 0" class="typing-speed">
+      Vitesse de frappe : {{ typingSpeed }} frappes/minute
+    </div>
 
     <div class="example-phrase-container">
       <div class="example-phrases">
@@ -64,44 +65,17 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
-import { debounce } from '@/utils/eventHelper'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
-
-const AzuretyKeyboard = defineAsyncComponent({
-  loader: () => import('@/components/keyboard/AzuretyKeyboard.vue'),
-  // Temps minimum avant d'afficher le loading
-  delay: 200,
-  // Temps maximum d'attente avant erreur
-  timeout: 5000,
-  // État pendant le chargement
-  loadingComponent: {
-    template: `
-      <div class="keyboard-loading">
-        <p>Chargement du clavier...</p>
-      </div>
-    `
-  },
-  // En cas d'erreur
-  errorComponent: {
-    template: `
-      <div class="keyboard-error">
-        <p>Erreur lors du chargement du clavier</p>
-      </div>
-    `
-  },
-  // Si le composant est en cours de chargement
-  suspensible: true
-})
+import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 
 export default {
   name: 'KeyboardSymbolesView',
   
   components: {
-    AzuretyKeyboard,
+    GlobalKeyboard,
     ProgressBar,
     RestartModal
   },
@@ -116,11 +90,6 @@ export default {
     }
   },
 
-  created() {
-    this.debouncedKeyPress = debounce(this.handleKeyPress, 32)
-    this.debouncedKeyRelease = debounce(this.handleKeyRelease, 32)
-  },
-
   data() {
     return {
       userInput: '',
@@ -131,8 +100,6 @@ export default {
       symbols: this.generateSymbolsList(),
       isExerciseComplete: false,
       modifierKeys: [],
-      debouncedKeyPress: null,
-      debouncedKeyRelease: null,
       cachedHighlightedKeys: {
         char: null,
         modifiers: null,
@@ -253,14 +220,6 @@ export default {
       }
     },
 
-    handleKeyPress(event) {
-      this.store.handleKeyPress(event)
-    },
-
-    handleKeyRelease(event) {
-      this.store.handleKeyRelease(event)
-    },
-
     restartExercise() {
       this.symbols = this.generateSymbolsList()
       this.currentIndex = 0
@@ -287,12 +246,6 @@ export default {
   },
 
   beforeUnmount() {
-    if (this.debouncedKeyPress?.cancel) {
-      this.debouncedKeyPress.cancel()
-    }
-    if (this.debouncedKeyRelease?.cancel) {
-      this.debouncedKeyRelease.cancel()
-    }
     document.removeEventListener('keydown', this.handleEnterKey)
     this.store.reset()
   }

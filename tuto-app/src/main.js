@@ -72,6 +72,8 @@ import {
     faYoutube
 } from '@fortawesome/free-brands-svg-icons'
 
+import { preloadCriticalResources } from '@/utils/preloader'
+
 library.add(
     faHome,
     faCode,
@@ -144,11 +146,14 @@ app.use(pinia)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 
-// S'assurer que l'application démarre sur la page d'accueil
-router.isReady().then(() => {
+// Préchargement des ressources critiques
+preloadCriticalResources().then(() => {
+  // S'assurer que l'application démarre sur la page d'accueil
+  router.isReady().then(() => {
     if (router.currentRoute.value.path !== '/') {
-        router.push('/')
+      router.push('/')
     }
-})
+  })
 
-app.mount('#app')
+  app.mount('#app')
+})

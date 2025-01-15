@@ -1,14 +1,15 @@
 <template>
   <div class="keyboard-test">
-    <AzuretyKeyboard
+    <GlobalKeyboard
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
-      @key-press="debouncedKeyPress"
-      @key-release="debouncedKeyRelease"
-      @debug-toggle="handleDebugToggle"
-      @debug-key-info="handleDebugKeyInfo"
     />
+
+    <div v-if="typingSpeed > 0" class="typing-speed">
+      Vitesse de frappe : {{ typingSpeed }} frappes/minute
+    </div>
+
     <div class="example-phrase-container">
       <div class="example-phrases">
         <h3>Mot à recopier :</h3>
@@ -63,45 +64,18 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
-import { debounce } from '@/utils/eventHelper'
 import mots from '@/data/mots.json'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
-
-const AzuretyKeyboard = defineAsyncComponent({
-  loader: () => import('@/components/keyboard/AzuretyKeyboard.vue'),
-  // Temps minimum avant d'afficher le loading
-  delay: 200,
-  // Temps maximum d'attente avant erreur
-  timeout: 5000,
-  // État pendant le chargement
-  loadingComponent: {
-    template: `
-      <div class="keyboard-loading">
-        <p>Chargement du clavier...</p>
-      </div>
-    `
-  },
-  // En cas d'erreur
-  errorComponent: {
-    template: `
-      <div class="keyboard-error">
-        <p>Erreur lors du chargement du clavier</p>
-      </div>
-    `
-  },
-  // Si le composant est en cours de chargement
-  suspensible: true
-})
+import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 
 export default {
   name: 'KeyboardMotView',
   
   components: {
-    AzuretyKeyboard,
+    GlobalKeyboard,
     ProgressBar,
     RestartModal
   },
@@ -116,11 +90,6 @@ export default {
     }
   },
 
-  created() {
-    this.debouncedKeyPress = debounce(this.handleKeyPress, 32)
-    this.debouncedKeyRelease = debounce(this.handleKeyRelease, 32)
-  },
-
   data() {
     return {
       textContent: '',
@@ -129,9 +98,7 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       isExerciseComplete: false,
-      motsExemple: this.getRandomMots(mots.mots, 20),
-      debouncedKeyPress: null,
-      debouncedKeyRelease: null
+      motsExemple: this.getRandomMots(mots.mots, 20)
     }
   },
 
@@ -202,32 +169,10 @@ export default {
 
     goNext() {
       this.$router.push({ name: 'keyboard-phrase' })
-    },
-
-    handleKeyPress(event) {
-      this.store.handleKeyPress(event)
-    },
-
-    handleKeyRelease(event) {
-      this.store.handleKeyRelease(event)
-    },
-
-    handleDebugToggle(isEnabled) {
-      console.log('Mode debug:', isEnabled)
-    },
-
-    handleDebugKeyInfo(keyInfo) {
-      console.log('Info debug:', keyInfo)
     }
   },
 
   beforeUnmount() {
-    if (this.debouncedKeyPress?.cancel) {
-      this.debouncedKeyPress.cancel()
-    }
-    if (this.debouncedKeyRelease?.cancel) {
-      this.debouncedKeyRelease.cancel()
-    }
     document.removeEventListener('keydown', this.handleEnterKey)
     this.store.reset()
   }
