@@ -69,6 +69,8 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
+import { useKeyboardStore } from '@/stores/keyboard'
+import { storeToRefs } from 'pinia'
 import { debounce } from '@/utils/eventHelper'
 import { LetterGenerator } from '@/services/letterGenerator'
 import ProgressBar from '@/components/ProgressBar.vue'
@@ -109,9 +111,19 @@ export default {
     RestartModal
   },
 
+  setup() {
+    const store = useKeyboardStore()
+    const { typingSpeed } = storeToRefs(store)
+
+    return {
+      store,
+      typingSpeed
+    }
+  },
+
   created() {
-    this.debouncedKeyPress = debounce(this.handleKeyPress, 16)
-    this.debouncedKeyRelease = debounce(this.handleKeyRelease, 16)
+    this.debouncedKeyPress = debounce(this.handleKeyPress, 32)
+    this.debouncedKeyRelease = debounce(this.handleKeyRelease, 32)
   },
 
   data() {
@@ -147,20 +159,11 @@ export default {
         return this.cachedHighlightedKeys.keys
       }
       
-      return this.updateHighlightedKeysCache(letter.char, letter.modifiers)
+      return this.store.updateHighlightedKeysCache(letter.char, letter.modifiers)
     }
   },
 
   methods: {
-    updateHighlightedKeysCache(char, modifiers) {
-      this.cachedHighlightedKeys = {
-        char,
-        modifiers,
-        keys: [char, ...(modifiers || [])]
-      }
-      return this.cachedHighlightedKeys.keys
-    },
-
     checkLetter() {
       const input = this.userInput.charAt(0)
       
@@ -199,11 +202,11 @@ export default {
     },
 
     handleKeyPress(event) {
-      console.log('Touche pressée:', event)
+      this.store.handleKeyPress(event)
     },
 
     handleKeyRelease(event) {
-      console.log('Touche relâchée:', event)
+      this.store.handleKeyRelease(event)
     },
 
     goBack() {
@@ -218,11 +221,7 @@ export default {
       this.isIncorrect = false
       this.userInput = ''
       this.validationMessage = ''
-      this.cachedHighlightedKeys = {
-        char: null,
-        modifiers: null,
-        keys: []
-      }
+      this.store.reset()
     },
 
     goNext() {
@@ -231,7 +230,6 @@ export default {
   },
 
   beforeUnmount() {
-    // Nettoyer les timeouts en attente
     if (this.debouncedKeyPress?.cancel) {
       this.debouncedKeyPress.cancel()
     }
@@ -239,11 +237,11 @@ export default {
       this.debouncedKeyRelease.cancel()
     }
     document.removeEventListener('keydown', this.handleEnterKey)
+    this.store.reset()
   }
 }
 </script>
 
 <style scoped>
 @import '@/assets/styles/keyboard-exercises.css';
-
 </style>

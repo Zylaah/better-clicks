@@ -224,6 +224,8 @@
 
 <script>
 import KeyboardKey from './KeyboardKey.vue'
+import { useKeyboardStore } from '@/stores/keyboard'
+import { storeToRefs } from 'pinia'
 
 export default {
   name: 'AzuretyKeyboard',
@@ -233,7 +235,6 @@ export default {
   },
 
   props: {
-    // Permet de contrôler l'affichage des différentes sections
     showDebugControls: {
       type: Boolean,
       default: false
@@ -242,7 +243,6 @@ export default {
       type: Boolean,
       default: false
     },
-    // Permet de définir la taille maximale du journal d'événements
     maxLogEntries: {
       type: Number,
       default: 10
@@ -268,18 +268,43 @@ export default {
     'modifier-lock'
   ],
 
+  setup() {
+    const store = useKeyboardStore()
+    const { 
+      pressedKeys,
+      activeModifiers,
+      lockedModifiers,
+      isCapsLocked,
+      isNumLocked,
+      typingSpeed,
+      isShiftActive,
+      isAltActive,
+      isCtrlActive,
+      hasLockedModifiers
+    } = storeToRefs(store)
+
+    return {
+      store,
+      pressedKeys,
+      activeModifiers,
+      lockedModifiers,
+      isCapsLocked,
+      isNumLocked,
+      typingSpeed,
+      isShiftActive,
+      isAltActive,
+      isCtrlActive,
+      hasLockedModifiers
+    }
+  },
+
   data() {
     return {
       eventLogs: [],
       debugMode: false,
       lastKeyInfo: null,
-      activeModifiers: new Set(),
-      isCapsLocked: false,
-      isNumLocked: false,
-      lastKeyPressTime: 0,
-      keyPressCount: 0,
-      typingSpeed: 0,
-      pressedKeys: new Set(),
+      lastRepeatTime: 0,
+      repeatRateLimit: 32, // Augmenté de 16 à 32ms pour optimisation
       keyboardLayout: [
         // Première rangée
         [
@@ -399,9 +424,6 @@ export default {
         '<': 'IntlBackslash',
         '>': 'IntlBackslash'  // Ajout du chevron fermant
       },
-      lockedModifiers: new Set(),
-      lastRepeatTime: 0,
-      repeatRateLimit: 16, // ~60Hz maximum
     }
   },
 
@@ -417,22 +439,6 @@ export default {
           'num-locked': this.isNumLocked
         }
       ]
-    },
-
-    isShiftActive() {
-      return this.activeModifiers.has('ShiftLeft') || this.activeModifiers.has('ShiftRight')
-    },
-
-    isAltActive() {
-      return this.activeModifiers.has('AltLeft') || this.activeModifiers.has('AltRight')
-    },
-
-    isCtrlActive() {
-      return this.activeModifiers.has('ControlLeft') || this.activeModifiers.has('ControlRight')
-    },
-
-    hasLockedModifiers() {
-      return this.lockedModifiers.size > 0;
     }
   },
 
@@ -489,54 +495,16 @@ export default {
     },
 
     logKeyPress(event) {
-      // Si c'est la touche espace, relâcher toutes les autres touches
-      if (event.code === 'Space') {
-        // Émettre un événement de relâchement pour chaque touche pressée
-        this.pressedKeys.forEach(key => {
-          if (key !== 'Space') {
-            this.$emit('key-release', {
-              key: key,
-              code: this.keyCodes[key],
-              timestamp: Date.now(),
-              shift: this.isShiftActive,
-              alt: this.isAltActive,
-              ctrl: this.isCtrlActive,
-              caps: this.isCapsLocked
-            });
-          }
-        });
-        // Vider la liste des touches pressées sauf l'espace
-        this.pressedKeys.clear();
-      }
-
-      // Ajouter la touche à la liste des touches pressées
-      this.pressedKeys.add(event.key);
-
       // Limiter le taux de répétition
       if (event.repeat) {
-        const now = Date.now();
+        const now = Date.now()
         if (now - this.lastRepeatTime < this.repeatRateLimit) {
-          return;
+          return
         }
-        this.lastRepeatTime = now;
+        this.lastRepeatTime = now
       }
 
-      // Calcul de la vitesse de frappe (seulement pour les frappes non répétées)
-      if (!event.repeat) {
-        const now = Date.now();
-        if (now - this.lastKeyPressTime < 5000) {
-          this.keyPressCount++;
-          this.typingSpeed = Math.round((this.keyPressCount / 5) * 60);
-        } else {
-          this.keyPressCount = 1;
-        }
-        this.lastKeyPressTime = now;
-      }
-
-      // Retour haptique seulement sur la première frappe
-      if (!event.repeat && this.hapticFeedback && navigator.vibrate) {
-        navigator.vibrate(10);
-      }
+      this.store.handleKeyPress(event)
 
       this.$emit('key-press', {
         ...event,
@@ -547,20 +515,17 @@ export default {
           ctrl: this.isCtrlActive,
           caps: this.isCapsLocked
         }
-      });
+      })
 
-      // Log seulement les frappes non répétées
       if (!event.repeat) {
-        this.addLog(`Touche pressée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`);
+        this.addLog(`Touche pressée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`)
       }
     },
 
     logKeyRelease(event) {
-      // Retirer la touche de la liste des touches pressées
-      this.pressedKeys.delete(event.key);
-      
-      this.$emit('key-release', event);
-      this.addLog(`Touche relâchée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`);
+      this.store.handleKeyRelease(event)
+      this.$emit('key-release', event)
+      this.addLog(`Touche relâchée: ${event.key} à ${new Date(event.timestamp).toLocaleTimeString()}`)
     },
 
     addLog(message) {
@@ -573,20 +538,11 @@ export default {
     },
 
     handleModifierChange(key, isActive) {
-      if (isActive) {
-        this.activeModifiers.add(key)
-      } else {
-        this.activeModifiers.delete(key)
-      }
+      this.store.handleModifierChange(key, isActive)
     },
 
     handleModifierLock(event) {
-      const { key, locked } = event;
-      if (locked) {
-        this.lockedModifiers.add(key);
-      } else {
-        this.lockedModifiers.delete(key);
-      }
+      this.store.handleModifierLock(event)
       
       this.$emit('modifier-change', {
         shift: this.isShiftActive,
@@ -594,7 +550,7 @@ export default {
         ctrl: this.isCtrlActive,
         caps: this.isCapsLocked,
         locked: Array.from(this.lockedModifiers)
-      });
+      })
     }
   }
 }

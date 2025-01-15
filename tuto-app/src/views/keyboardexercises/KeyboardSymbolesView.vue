@@ -65,6 +65,8 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
+import { useKeyboardStore } from '@/stores/keyboard'
+import { storeToRefs } from 'pinia'
 import { debounce } from '@/utils/eventHelper'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
@@ -104,9 +106,19 @@ export default {
     RestartModal
   },
 
+  setup() {
+    const store = useKeyboardStore()
+    const { typingSpeed } = storeToRefs(store)
+
+    return {
+      store,
+      typingSpeed
+    }
+  },
+
   created() {
-    this.debouncedKeyPress = debounce(this.handleKeyPress, 16)
-    this.debouncedKeyRelease = debounce(this.handleKeyRelease, 16)
+    this.debouncedKeyPress = debounce(this.handleKeyPress, 32)
+    this.debouncedKeyRelease = debounce(this.handleKeyRelease, 32)
   },
 
   data() {
@@ -138,14 +150,12 @@ export default {
       const symbol = this.currentSymbol
       if (!symbol?.char) return []
       
-      // Utiliser le cache existant si les données n'ont pas changé
       if (this.cachedHighlightedKeys.char === symbol.char && 
           this.cachedHighlightedKeys.modifiers === symbol.modifiers) {
         return this.cachedHighlightedKeys.keys
       }
       
-      // Sinon, mettre à jour le cache via une méthode
-      return this.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
+      return this.store.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
     }
   },
 
@@ -244,11 +254,11 @@ export default {
     },
 
     handleKeyPress(event) {
-      console.log('Touche pressée:', event)
+      this.store.handleKeyPress(event)
     },
 
     handleKeyRelease(event) {
-      console.log('Touche relâchée:', event)
+      this.store.handleKeyRelease(event)
     },
 
     restartExercise() {
@@ -259,11 +269,7 @@ export default {
       this.isIncorrect = false
       this.userInput = ''
       this.validationMessage = ''
-      this.cachedHighlightedKeys = {
-        char: null,
-        modifiers: null,
-        keys: []
-      }
+      this.store.reset()
     },
 
     goNext() {
@@ -288,6 +294,7 @@ export default {
       this.debouncedKeyRelease.cancel()
     }
     document.removeEventListener('keydown', this.handleEnterKey)
+    this.store.reset()
   }
 }
 </script>
