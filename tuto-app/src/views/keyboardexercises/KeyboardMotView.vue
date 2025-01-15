@@ -53,7 +53,7 @@
           :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
           placeholder="Recopiez le mot ici..."
           rows="5"
-          @input="checkMot"
+          @input="debouncedCheck(this, $event.target.value)"
           @keydown.enter.prevent
         ></textarea>
         
@@ -70,6 +70,7 @@ import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
 import mots from '@/data/mots.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
+import { useDebounce } from '@/composables/useDebounce'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -105,12 +106,15 @@ export default {
     const store = useKeyboardStore()
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
+    const { debounce, clearDebounces } = useDebounce()
 
     return {
       store,
       typingSpeed,
       animationClasses,
-      animateIfPossible
+      animateIfPossible,
+      debouncedCheck: debounce((vm, input) => vm.checkMot(input), 100),
+      clearDebounces
     }
   },
 
@@ -127,7 +131,8 @@ export default {
         char: null,
         modifiers: null,
         keys: []
-      }
+      },
+      enterKeyListener: null
     }
   },
 
@@ -164,34 +169,43 @@ export default {
           this.validationMessage = 'Parfait ! Vous avez terminé tous les mots !'
         } else {
           this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer au mot suivant.'
-          document.addEventListener('keydown', this.handleEnterKey)
+          this.addEnterKeyListener()
         }
       } else {
-        this.isCorrect = false;
-        const isPartiallyCorrect = currentMot.startsWith(this.textContent);
-        this.isIncorrect = !isPartiallyCorrect;
+        this.isCorrect = false
+        const isPartiallyCorrect = currentMot.startsWith(this.textContent)
+        this.isIncorrect = !isPartiallyCorrect
         
         if (!isPartiallyCorrect) {
           this.validationMessage = `
           Vous avez écrit : "${this.textContent}"
           Attendu : "${currentMot.slice(0, Math.max(this.textContent.length, 0))}"`;
         } else {
-          this.validationMessage = '';
+          this.validationMessage = ''
         }
       }
     },
 
-    handleEnterKey(event) {
-      if (event.key === 'Enter') {
-        if (this.isCorrect && this.currentMotIndex < this.motsExemple.length - 1) {
-          this.currentMotIndex++
-          this.isCorrect = false
-          this.validationMessage = ''
-        }
-        this.textContent = ''
-        this.isIncorrect = false
-        document.removeEventListener('keydown', this.handleEnterKey)
+    addEnterKeyListener() {
+      if (this.enterKeyListener) {
+        document.removeEventListener('keydown', this.enterKeyListener)
       }
+      
+      this.enterKeyListener = (event) => {
+        if (event.key === 'Enter') {
+          if (this.isCorrect && this.currentMotIndex < this.motsExemple.length - 1) {
+            this.currentMotIndex++
+            this.isCorrect = false
+            this.validationMessage = ''
+          }
+          this.textContent = ''
+          this.isIncorrect = false
+          document.removeEventListener('keydown', this.enterKeyListener)
+          this.enterKeyListener = null
+        }
+      }
+      
+      document.addEventListener('keydown', this.enterKeyListener, { passive: true })
     },
 
     restartExercise() {
@@ -211,7 +225,10 @@ export default {
   },
 
   beforeUnmount() {
-    document.removeEventListener('keydown', this.handleEnterKey)
+    if (this.enterKeyListener) {
+      document.removeEventListener('keydown', this.enterKeyListener)
+    }
+    this.clearDebounces()
     this.store.reset()
   }
 }

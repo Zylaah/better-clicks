@@ -53,7 +53,7 @@
           :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
           placeholder="Recopiez la phrase ici..."
           rows="5"
-          @input="checkPhrase"
+          @input="debouncedCheck(this, $event.target.value)"
           @keydown.enter.prevent
         ></textarea>
 
@@ -70,6 +70,7 @@ import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
 import phrases from '@/data/phrases.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
+import { useDebounce } from '@/composables/useDebounce'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -105,12 +106,15 @@ export default {
     const store = useKeyboardStore()
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
+    const { debounce, clearDebounces } = useDebounce()
 
     return {
       store,
       typingSpeed,
       animationClasses,
-      animateIfPossible
+      animateIfPossible,
+      debouncedCheck: debounce((vm, input) => vm.checkPhrase(input), 100),
+      clearDebounces
     }
   },
 
@@ -127,7 +131,8 @@ export default {
         char: null,
         modifiers: null,
         keys: []
-      }
+      },
+      enterKeyListener: null
     }
   },
 
@@ -154,31 +159,53 @@ export default {
     },
 
     checkPhrase() {
-      const currentPhrase = this.phrasesExemple[this.currentPhraseIndex];
+      const currentPhrase = this.phrasesExemple[this.currentPhraseIndex]
       
       if (this.textContent === currentPhrase) {
-        this.isCorrect = true;
-        this.isIncorrect = false;
+        this.isCorrect = true
+        this.isIncorrect = false
         if (this.currentPhraseIndex === this.phrasesExemple.length - 1) {
-          this.isExerciseComplete = true;
-          this.validationMessage = 'Parfait ! Vous avez terminé toutes les phrases !';
+          this.isExerciseComplete = true
+          this.validationMessage = 'Parfait ! Vous avez terminé toutes les phrases !'
         } else {
-          this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la phrase suivante.';
-          document.addEventListener('keydown', this.handleEnterKey);
+          this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la phrase suivante.'
+          this.addEnterKeyListener()
         }
       } else {
-        this.isCorrect = false;
-        const isPartiallyCorrect = currentPhrase.startsWith(this.textContent);
-        this.isIncorrect = !isPartiallyCorrect;
+        this.isCorrect = false
+        const isPartiallyCorrect = currentPhrase.startsWith(this.textContent)
+        this.isIncorrect = !isPartiallyCorrect
         
         if (!isPartiallyCorrect) {
           this.validationMessage = `
           Vous avez écrit : "${this.textContent}"
           Attendu : "${currentPhrase.slice(0, Math.max(this.textContent.length, 0))}"`;
         } else {
-          this.validationMessage = '';
+          this.validationMessage = ''
         }
       }
+    },
+
+    addEnterKeyListener() {
+      if (this.enterKeyListener) {
+        document.removeEventListener('keydown', this.enterKeyListener)
+      }
+      
+      this.enterKeyListener = (event) => {
+        if (event.key === 'Enter') {
+          if (this.isCorrect && this.currentPhraseIndex < this.phrasesExemple.length - 1) {
+            this.currentPhraseIndex++
+            this.isCorrect = false
+            this.validationMessage = ''
+          }
+          this.textContent = ''
+          this.isIncorrect = false
+          document.removeEventListener('keydown', this.enterKeyListener)
+          this.enterKeyListener = null
+        }
+      }
+      
+      document.addEventListener('keydown', this.enterKeyListener, { passive: true })
     },
 
     restartExercise() {
@@ -192,30 +219,16 @@ export default {
       this.store.reset()
     },
 
-    handleEnterKey(event) {
-      if (event.key === 'Enter') {
-        if (this.isCorrect && this.currentPhraseIndex < this.phrasesExemple.length - 1) {
-          this.currentPhraseIndex++;
-          this.isCorrect = false;
-          this.validationMessage = '';
-        }
-        this.textContent = '';
-        this.isIncorrect = false;
-        document.removeEventListener('keydown', this.handleEnterKey);
-      }
-    },
-
-    selectPhrase(index) {
-      this.currentPhraseIndex = index;
-    },
-
-    goBack() {
+    goNext() {
       this.$router.push({ name: 'keyboard-menu' })
     }
   },
 
   beforeUnmount() {
-    document.removeEventListener('keydown', this.handleEnterKey)
+    if (this.enterKeyListener) {
+      document.removeEventListener('keydown', this.enterKeyListener)
+    }
+    this.clearDebounces()
     this.store.reset()
   }
 }
