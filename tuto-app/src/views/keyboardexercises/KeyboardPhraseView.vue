@@ -7,10 +7,6 @@
       :highlighted-keys="highlightedKeys"
     />
 
-    <div v-show="typingSpeed > 0" class="typing-speed fade-in">
-      Vitesse de frappe : {{ typingSpeed }} frappes/minute
-    </div>
-
     <div class="example-phrase-container slide-up">
       <div class="example-phrases">
         <h3 v-once>Phrase à recopier :</h3>
