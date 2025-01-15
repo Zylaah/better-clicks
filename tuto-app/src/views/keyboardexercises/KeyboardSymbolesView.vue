@@ -13,12 +13,13 @@
 
     <div class="example-phrase-container slide-up">
       <div class="example-phrases">
-        <h3>Taper le symbole suivant :</h3>
+        <h3 v-once>Taper le symbole suivant :</h3>
         <div class="lettre-and-symbols-container">
           <div class="lettre-and-symbols-item current">
             {{ currentSymbol.display }}
           </div>
           <ProgressBar 
+            v-memo="[currentIndex]"
             :current-value="currentIndex + 1"
             :total-value="symbols.length"
           />
@@ -28,7 +29,7 @@
       <div class="textarea-container">
         <RestartModal v-model="isExerciseComplete">
           <template #header>
-            <h2>Félicitations !</h2>
+            <h2 v-once>Félicitations !</h2>
           </template>
           
           <div class="modal-buttons">
@@ -36,12 +37,12 @@
               class="restart-button"
               @click="restartExercise"
             >
-              <font-awesome-icon icon="rotate-right" />
-              Recommencer l'exercice
+              <font-awesome-icon v-once icon="rotate-right" />
+              <span v-once>Recommencer l'exercice</span>
             </button>
             <button class="next-button" @click="goNext">
-              <font-awesome-icon icon="arrow-right" />
-              Passer à l'exercice suivant
+              <font-awesome-icon v-once icon="arrow-right" />
+              <span v-once>Passer à l'exercice suivant</span>
             </button>
           </div>
         </RestartModal>
