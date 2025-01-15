@@ -1,5 +1,5 @@
 <template>
-  <div class="textarea-container">
+  <div class="keyboard-textarea-wrapper">
     <textarea 
       v-show="!isComplete"
       :value="modelValue"
@@ -69,20 +69,20 @@ export default {
 </script>
 
 <style scoped>
-.textarea-container {
+.keyboard-textarea-wrapper {
+  width: 100%;
   display: flex;
-  padding: 1rem;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 750px;
-  margin: 0 auto;
+  contain: content;
+  padding-inline: 1rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .modern-textarea {
   width: 100%;
-  height: clamp(3rem, 5vh, 6rem);
+  height: clamp(6rem, 10vh, 8rem);
   padding: 1rem;
   border: 2px solid var(--accent-color);
   border-radius: 8px;
@@ -92,6 +92,9 @@ export default {
   line-height: 1.5;
   resize: none;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  contain: content;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .modern-textarea:focus {
@@ -105,10 +108,11 @@ export default {
 }
 
 .validation-message {
-  margin-top: clamp(0.25rem, 0.5vh, 0.5rem);
+  margin-block-start: clamp(0.25rem, 0.5vh, 0.5rem);
   text-align: center;
   color: var(--accent-color);
   font-size: 0.9rem;
+  contain: content;
 }
 
 .validation-message.correct {
