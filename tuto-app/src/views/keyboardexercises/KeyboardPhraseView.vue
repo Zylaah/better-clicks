@@ -71,6 +71,31 @@ import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 
+// Map des caractères avec leurs modifiers pour AZERTY
+const AZERTY_CHAR_MODIFIERS = new Map([
+  // Chiffres (tous avec Shift sur AZERTY)
+  ['1', ['Shift']], ['2', ['Shift']], ['3', ['Shift']], ['4', ['Shift']], 
+  ['5', ['Shift']], ['6', ['Shift']], ['7', ['Shift']], ['8', ['Shift']], 
+  ['9', ['Shift']], ['0', ['Shift']],
+  
+  // Ponctuation haute
+  ['!', ['Shift']], ['/', ['Shift']], ['\\', ['AltGr']], ['|', ['AltGr']],
+  ['@', ['AltGr']], ['#', ['AltGr']], ['$', ['Shift']], ['€', ['AltGr']],
+  ['£', ['Shift']], ['%', ['Shift']], ['?', ['Shift']], ['.', ['Shift']],
+  ['/', ['Shift']], ['§', ['Shift']], ['&', ['Shift']], ['"', ['Shift']],
+  ['\'', ['Shift']], ['(', ['Shift']], [')', ['Shift']], ['[', ['AltGr']],
+  [']', ['AltGr']], ['{', ['AltGr']], ['}', ['AltGr']], ['<', ['Shift']],
+  ['>', ['Shift']], ['°', ['Shift']], ['+', ['Shift']], ['=', ['Shift']],
+  ['_', ['Shift']], ['µ', ['Shift']], ['*', ['Shift']], ['¨', ['Shift']],
+  ['`', ['AltGr']], ['~', ['AltGr']], ['^', ['Shift']], ['¤', ['Shift']],
+  [':', ['Shift']], [';', ['Shift']]
+])
+
+// Fonction pour détecter les majuscules
+function isUpperCase(char) {
+  return char === char.toUpperCase() && char !== char.toLowerCase()
+}
+
 // Cache pour les phrases avec gestionnaire de cache
 const phraseCache = {
   cacheManager: useCacheManager(100),
@@ -152,25 +177,29 @@ export default {
 
     currentCharToType() {
       const phrase = this.currentPhrase
-      if (!phrase) return ''
-      return this.textContent.length < phrase.length ? phrase[this.textContent.length] : ''
-    },
-
-    shouldUpdateHighlightedKeys() {
-      return this.cachedHighlightedKeys.char !== this.currentCharToType
+      if (!phrase) return { char: '', display: '', modifiers: [] }
+      const char = this.textContent.length < phrase.length ? phrase[this.textContent.length] : ''
+      
+      let modifiers = []
+      // Vérifier si c'est une majuscule
+      if (isUpperCase(char)) {
+        modifiers.push('ShiftLeft')
+      }
+      // Vérifier si le caractère a des modifiers spéciaux
+      const specialModifiers = AZERTY_CHAR_MODIFIERS.get(char)
+      if (specialModifiers) {
+        modifiers = [...new Set([...modifiers, ...specialModifiers])]
+      }
+      
+      return {
+        char,
+        display: char,
+        modifiers
+      }
     },
 
     highlightedKeys() {
-      const currentChar = this.currentCharToType
-      if (!currentChar) return []
-      
-      const cacheKey = currentChar
-      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
-      if (cached) return cached
-      
-      const keys = this.store.updateHighlightedKeysCache(currentChar, [])
-      this.highlightedKeysCache.addToCache(cacheKey, keys)
-      return keys
+      return this.cachedHighlightedKeys.keys
     },
 
     isPartiallyCorrect() {
@@ -181,6 +210,28 @@ export default {
       if (!this.textContent || this.isPartiallyCorrect) return ''
       return `Vous avez écrit : "${this.textContent}"
       Attendu : "${this.currentPhrase.slice(0, Math.max(this.textContent.length, 0))}"`
+    }
+  },
+
+  watch: {
+    currentCharToType: {
+      handler(current) {
+        if (!current.char) {
+          this.cachedHighlightedKeys = { char: null, modifiers: null, keys: [] }
+          return
+        }
+
+        if (this.cachedHighlightedKeys.char !== current.char || 
+            !this.arraysEqual(this.cachedHighlightedKeys.modifiers, current.modifiers)) {
+          const keys = this.store.updateHighlightedKeysCache(current.char, current.modifiers)
+          this.cachedHighlightedKeys = {
+            char: current.char,
+            modifiers: current.modifiers,
+            keys: [...keys, ...current.modifiers]
+          }
+        }
+      },
+      immediate: true
     }
   },
 
@@ -219,6 +270,12 @@ export default {
 
     goNext() {
       this.$router.push({ name: 'keyboard-menu' })
+    },
+
+    arraysEqual(a, b) {
+      if (!Array.isArray(a) || !Array.isArray(b)) return false
+      if (a.length !== b.length) return false
+      return a.every((val, index) => val === b[index])
     }
   },
 
