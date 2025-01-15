@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
     <div v-if="isVisible" class="onboarding-overlay">
       <div class="onboarding-content">
         <h2>Bienvenue dans les exercices de frappe</h2>
@@ -34,6 +35,7 @@
         </button>
       </div>
     </div>
+  </Teleport>
   </template>
   
   <script>
@@ -84,10 +86,10 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   }
   
-  .onboarding-content h2 {
+  .onboarding-content h2, .onboarding-content p , .onboarding-content h3{
     color: var(--accent-color);
     margin-bottom: 2rem;
-    font-size: 1.8rem;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
   
   .onboarding-steps {
@@ -150,6 +152,46 @@
     .onboarding-steps {
       grid-template-columns: 1fr;
       gap: 1rem;
+    }
+  }
+
+  @media (max-height: 940px) {
+    .onboarding-content {
+      transform: scale(0.9);
+      padding: 1.5rem;
+    }
+
+    .onboarding-steps {
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .step {
+      padding: 1rem;
+    }
+
+    .step-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step h3 {
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .step p {
+      font-size: 0.8rem;
+    }
+
+    .start-button {
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .onboarding-content h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
     }
   }
   </style>
