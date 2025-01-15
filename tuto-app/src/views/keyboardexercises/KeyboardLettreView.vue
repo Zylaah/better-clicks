@@ -76,6 +76,7 @@ import { LetterGenerator } from '@/services/letterGenerator'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
+import { useValidation } from '@/composables/useValidation'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -113,6 +114,7 @@ export default {
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
     const highlightedKeysCache = useCacheManager(20)
+    const validation = useValidation({ maxCacheSize: 30 })
 
     return {
       store,
@@ -121,7 +123,8 @@ export default {
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkLetter(input), 100),
       clearDebounces,
-      highlightedKeysCache
+      highlightedKeysCache,
+      ...validation
     }
   },
 
@@ -129,11 +132,7 @@ export default {
     return {
       userInput: '',
       currentIndex: 0,
-      isCorrect: false,
-      isIncorrect: false,
-      validationMessage: '',
       letters: letterCache.getCachedLetters(),
-      isExerciseComplete: false,
       cachedHighlightedKeys: {
         char: null,
         modifiers: null,
@@ -190,26 +189,15 @@ export default {
   methods: {
     checkLetter() {
       const input = this.userInput.charAt(0)
-      
-      if (input === this.currentCharToType) {
-        this.isCorrect = true
-        this.isIncorrect = false
-        
-        if (this.currentIndex === this.letters.length - 1) {
-          this.isExerciseComplete = true
-          this.validationMessage = 'Parfait ! Vous avez terminé toutes les lettres !'
-        } else {
-          this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la lettre suivante.'
-          this.addEnterKeyListener()
-        }
-      } else if (this.isValidInput) {
-        this.isCorrect = false
-        this.isIncorrect = true
-        this.validationMessage = ''
-      } else {
-        this.isCorrect = false
-        this.isIncorrect = false
-        this.validationMessage = ''
+      const result = this.validateInput(input, this.currentCharToType, {
+        isLastItem: this.currentIndex === this.letters.length - 1,
+        successMessage: 'Parfait !',
+        completeMessage: 'Parfait ! Vous avez terminé toutes les lettres !',
+        nextMessage: 'Appuyez sur Entrée pour passer à la lettre suivante.'
+      })
+
+      if (result.isCorrect && !result.isComplete) {
+        this.addEnterKeyListener()
       }
     },
 
@@ -237,11 +225,8 @@ export default {
     restartExercise() {
       this.letters = letterCache.refreshCache()
       this.currentIndex = 0
-      this.isExerciseComplete = false
-      this.isCorrect = false
-      this.isIncorrect = false
       this.userInput = ''
-      this.validationMessage = ''
+      this.resetValidation()
       this.store.reset()
     },
 

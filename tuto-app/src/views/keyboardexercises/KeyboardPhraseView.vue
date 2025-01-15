@@ -73,6 +73,7 @@ import phrases from '@/data/phrases.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
+import { useValidation } from '@/composables/useValidation'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -117,6 +118,7 @@ export default {
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
     const highlightedKeysCache = useCacheManager(20)
+    const validation = useValidation({ maxCacheSize: 50 })
 
     return {
       store,
@@ -125,7 +127,8 @@ export default {
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkPhrase(input), 100),
       clearDebounces,
-      highlightedKeysCache
+      highlightedKeysCache,
+      ...validation
     }
   },
 
@@ -133,10 +136,6 @@ export default {
     return {
       textContent: '',
       currentPhraseIndex: 0,
-      isCorrect: false,
-      isIncorrect: false,
-      validationMessage: '',
-      isExerciseComplete: false,
       phrasesExemple: phraseCache.getRandomPhrases(15),
       cachedHighlightedKeys: {
         char: null,
@@ -196,21 +195,15 @@ export default {
     },
 
     checkPhrase() {
-      if (this.textContent === this.currentPhrase) {
-        this.isCorrect = true
-        this.isIncorrect = false
-        
-        if (this.isLastPhrase) {
-          this.isExerciseComplete = true
-          this.validationMessage = 'Parfait ! Vous avez terminé toutes les phrases !'
-        } else {
-          this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la phrase suivante.'
-          this.addEnterKeyListener()
-        }
-      } else {
-        this.isCorrect = false
-        this.isIncorrect = !this.isPartiallyCorrect
-        this.validationMessage = this.validationErrorMessage
+      const result = this.validateInput(this.textContent, this.currentPhrase, {
+        isLastItem: this.isLastPhrase,
+        successMessage: 'Parfait !',
+        completeMessage: 'Parfait ! Vous avez terminé toutes les phrases !',
+        nextMessage: 'Appuyez sur Entrée pour passer à la phrase suivante.'
+      })
+
+      if (result.isCorrect && !result.isComplete) {
+        this.addEnterKeyListener()
       }
     },
 
@@ -239,11 +232,8 @@ export default {
     restartExercise() {
       this.phrasesExemple = this.getRandomPhrases(15)
       this.currentPhraseIndex = 0
-      this.isExerciseComplete = false
-      this.isCorrect = false
-      this.isIncorrect = false
       this.textContent = ''
-      this.validationMessage = ''
+      this.resetValidation()
       this.store.reset()
     },
 

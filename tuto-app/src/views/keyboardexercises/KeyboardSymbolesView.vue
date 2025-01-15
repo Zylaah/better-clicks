@@ -72,6 +72,7 @@ import { storeToRefs } from 'pinia'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
+import { useValidation } from '@/composables/useValidation'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -143,6 +144,7 @@ export default {
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
     const highlightedKeysCache = useCacheManager(20)
+    const validation = useValidation({ maxCacheSize: 30 })
 
     return {
       store,
@@ -151,7 +153,8 @@ export default {
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkSymbol(input), 100),
       clearDebounces,
-      highlightedKeysCache
+      highlightedKeysCache,
+      ...validation
     }
   },
 
@@ -159,11 +162,7 @@ export default {
     return {
       userInput: '',
       currentIndex: 0,
-      isCorrect: false,
-      isIncorrect: false,
-      validationMessage: '',
       symbols: symbolCache.getSymbols(),
-      isExerciseComplete: false,
       modifierKeys: [],
       cachedHighlightedKeys: {
         char: null,
@@ -224,27 +223,19 @@ export default {
 
     checkSymbol() {
       if (!this.isValidInput) {
-        this.isCorrect = false
-        this.isIncorrect = false
-        this.validationMessage = ''
+        this.resetValidation()
         return
       }
 
-      if (this.currentInput === this.currentCharToType) {
-        this.isCorrect = true
-        this.isIncorrect = false
-        
-        if (this.isLastSymbol) {
-          this.isExerciseComplete = true
-          this.validationMessage = 'Parfait ! Vous avez terminé tous les symboles !'
-        } else {
-          this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer au symbole suivant.'
-          this.addEnterKeyListener()
-        }
-      } else {
-        this.isCorrect = false
-        this.isIncorrect = true
-        this.validationMessage = ''
+      const result = this.validateInput(this.currentInput, this.currentCharToType, {
+        isLastItem: this.isLastSymbol,
+        successMessage: 'Parfait !',
+        completeMessage: 'Parfait ! Vous avez terminé tous les symboles !',
+        nextMessage: 'Appuyez sur Entrée pour passer au symbole suivant.'
+      })
+
+      if (result.isCorrect && !result.isComplete) {
+        this.addEnterKeyListener()
       }
     },
 
@@ -272,11 +263,8 @@ export default {
     restartExercise() {
       this.symbols = this.generateSymbolsList()
       this.currentIndex = 0
-      this.isExerciseComplete = false
-      this.isCorrect = false
-      this.isIncorrect = false
       this.userInput = ''
-      this.validationMessage = ''
+      this.resetValidation()
       this.store.reset()
     },
 

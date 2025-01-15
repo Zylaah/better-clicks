@@ -73,6 +73,7 @@ import mots from '@/data/mots.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
+import { useValidation } from '@/composables/useValidation'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -117,6 +118,7 @@ export default {
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
     const highlightedKeysCache = useCacheManager(20)
+    const validation = useValidation({ maxCacheSize: 50 })
 
     return {
       store,
@@ -125,7 +127,8 @@ export default {
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkMot(input), 100),
       clearDebounces,
-      highlightedKeysCache
+      highlightedKeysCache,
+      ...validation
     }
   },
 
@@ -133,10 +136,6 @@ export default {
     return {
       textContent: '',
       currentMotIndex: 0,
-      isCorrect: false,
-      isIncorrect: false,
-      validationMessage: '',
-      isExerciseComplete: false,
       motsExemple: motCache.getRandomMots(20),
       cachedHighlightedKeys: {
         char: null,
@@ -196,21 +195,15 @@ export default {
     },
 
     checkMot() {
-      if (this.textContent === this.currentMot) {
-        this.isCorrect = true
-        this.isIncorrect = false
-        
-        if (this.isLastMot) {
-          this.isExerciseComplete = true
-          this.validationMessage = 'Parfait ! Vous avez terminé tous les mots !'
-        } else {
-          this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer au mot suivant.'
-          this.addEnterKeyListener()
-        }
-      } else {
-        this.isCorrect = false
-        this.isIncorrect = !this.isPartiallyCorrect
-        this.validationMessage = this.validationErrorMessage
+      const result = this.validateInput(this.textContent, this.currentMot, {
+        isLastItem: this.isLastMot,
+        successMessage: 'Parfait !',
+        completeMessage: 'Parfait ! Vous avez terminé tous les mots !',
+        nextMessage: 'Appuyez sur Entrée pour passer au mot suivant.'
+      })
+
+      if (result.isCorrect && !result.isComplete) {
+        this.addEnterKeyListener()
       }
     },
 
@@ -239,11 +232,8 @@ export default {
     restartExercise() {
       this.motsExemple = this.getRandomMots(20)
       this.currentMotIndex = 0
-      this.isExerciseComplete = false
-      this.isCorrect = false
-      this.isIncorrect = false
       this.textContent = ''
-      this.validationMessage = ''
+      this.resetValidation()
       this.store.reset()
     },
 
