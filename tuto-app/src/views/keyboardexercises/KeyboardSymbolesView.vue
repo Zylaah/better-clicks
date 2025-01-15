@@ -173,16 +173,39 @@ export default {
       return this.symbols[this.currentIndex] || { char: '', display: '', modifiers: [] }
     },
 
+    isLastSymbol() {
+      return this.currentIndex === this.symbols.length - 1
+    },
+
+    currentCharToType() {
+      const symbol = this.currentSymbol
+      if (!symbol?.char) return ''
+      return symbol.char
+    },
+
+    shouldUpdateHighlightedKeys() {
+      const symbol = this.currentSymbol
+      return this.cachedHighlightedKeys.char !== symbol.char || 
+             this.cachedHighlightedKeys.modifiers !== symbol.modifiers
+    },
+
     highlightedKeys() {
       const symbol = this.currentSymbol
       if (!symbol?.char) return []
       
-      if (this.cachedHighlightedKeys.char === symbol.char && 
-          this.cachedHighlightedKeys.modifiers === symbol.modifiers) {
+      if (!this.shouldUpdateHighlightedKeys) {
         return this.cachedHighlightedKeys.keys
       }
       
       return this.store.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
+    },
+
+    isValidInput() {
+      return this.userInput.length > 0
+    },
+
+    currentInput() {
+      return this.userInput.charAt(0)
     }
   },
 
@@ -192,38 +215,27 @@ export default {
     },
 
     checkSymbol() {
-      if (!this.userInput) {
+      if (!this.isValidInput) {
         this.isCorrect = false
         this.isIncorrect = false
         this.validationMessage = ''
         return
       }
 
-      const input = this.userInput.charAt(0)
-      const currentSymbol = this.currentSymbol
-      
-      if (!currentSymbol || !currentSymbol.char) {
-        return
-      }
-      
-      if (input === currentSymbol.char) {
+      if (this.currentInput === this.currentCharToType) {
         this.isCorrect = true
         this.isIncorrect = false
         
-        if (this.currentIndex === this.symbols.length - 1) {
+        if (this.isLastSymbol) {
           this.isExerciseComplete = true
           this.validationMessage = 'Parfait ! Vous avez terminé tous les symboles !'
         } else {
           this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer au symbole suivant.'
           this.addEnterKeyListener()
         }
-      } else if (input) {
-        this.isCorrect = false
-        this.isIncorrect = true
-        this.validationMessage = ''
       } else {
         this.isCorrect = false
-        this.isIncorrect = false
+        this.isIncorrect = true
         this.validationMessage = ''
       }
     },

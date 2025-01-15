@@ -138,19 +138,43 @@ export default {
   },
 
   computed: {
+    currentPhrase() {
+      return this.phrasesExemple[this.currentPhraseIndex] || ''
+    },
+
+    isLastPhrase() {
+      return this.currentPhraseIndex === this.phrasesExemple.length - 1
+    },
+
+    currentCharToType() {
+      const phrase = this.currentPhrase
+      if (!phrase) return ''
+      return this.textContent.length < phrase.length ? phrase[this.textContent.length] : ''
+    },
+
+    shouldUpdateHighlightedKeys() {
+      return this.cachedHighlightedKeys.char !== this.currentCharToType
+    },
+
     highlightedKeys() {
-      const currentPhrase = this.phrasesExemple[this.currentPhraseIndex]
-      if (!currentPhrase) return []
+      const currentChar = this.currentCharToType
+      if (!currentChar) return []
       
-      const currentChar = this.textContent.length < currentPhrase.length 
-        ? currentPhrase[this.textContent.length] 
-        : ''
-      
-      if (this.cachedHighlightedKeys.char === currentChar) {
+      if (!this.shouldUpdateHighlightedKeys) {
         return this.cachedHighlightedKeys.keys
       }
       
       return this.store.updateHighlightedKeysCache(currentChar, [])
+    },
+
+    isPartiallyCorrect() {
+      return this.currentPhrase.startsWith(this.textContent)
+    },
+
+    validationErrorMessage() {
+      if (!this.textContent || this.isPartiallyCorrect) return ''
+      return `Vous avez écrit : "${this.textContent}"
+      Attendu : "${this.currentPhrase.slice(0, Math.max(this.textContent.length, 0))}"`
     }
   },
 
@@ -160,12 +184,11 @@ export default {
     },
 
     checkPhrase() {
-      const currentPhrase = this.phrasesExemple[this.currentPhraseIndex]
-      
-      if (this.textContent === currentPhrase) {
+      if (this.textContent === this.currentPhrase) {
         this.isCorrect = true
         this.isIncorrect = false
-        if (this.currentPhraseIndex === this.phrasesExemple.length - 1) {
+        
+        if (this.isLastPhrase) {
           this.isExerciseComplete = true
           this.validationMessage = 'Parfait ! Vous avez terminé toutes les phrases !'
         } else {
@@ -174,16 +197,8 @@ export default {
         }
       } else {
         this.isCorrect = false
-        const isPartiallyCorrect = currentPhrase.startsWith(this.textContent)
-        this.isIncorrect = !isPartiallyCorrect
-        
-        if (!isPartiallyCorrect) {
-          this.validationMessage = `
-          Vous avez écrit : "${this.textContent}"
-          Attendu : "${currentPhrase.slice(0, Math.max(this.textContent.length, 0))}"`;
-        } else {
-          this.validationMessage = ''
-        }
+        this.isIncorrect = !this.isPartiallyCorrect
+        this.validationMessage = this.validationErrorMessage
       }
     },
 

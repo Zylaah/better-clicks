@@ -18,8 +18,8 @@
           <div class="lettre-and-symbols-item current">
             {{ currentLetter.display }}
           </div>
-          <div v-show="isNaN(currentLetter.display)" class="case-info">
-            {{ currentLetter.display === currentLetter.display.toUpperCase() ? 'Majuscule' : 'Minuscule' }}
+          <div v-show="shouldShowCaseInfo" class="case-info">
+            {{ caseInfoText }}
           </div>
           <ProgressBar 
             v-memo="[currentIndex]"
@@ -142,12 +142,36 @@ export default {
       return this.letters[this.currentIndex] || { char: '', display: '', modifiers: [] }
     },
 
+    shouldShowCaseInfo() {
+      return isNaN(this.currentLetter.display)
+    },
+
+    caseInfoText() {
+      if (!this.shouldShowCaseInfo) return ''
+      return this.currentLetter.display === this.currentLetter.display.toUpperCase() ? 'Majuscule' : 'Minuscule'
+    },
+
+    isValidInput() {
+      return this.userInput.length > 0
+    },
+
+    currentCharToType() {
+      const letter = this.currentLetter
+      if (!letter?.char) return ''
+      return letter.char
+    },
+
+    shouldUpdateHighlightedKeys() {
+      const letter = this.currentLetter
+      return this.cachedHighlightedKeys.char !== letter.char || 
+             this.cachedHighlightedKeys.modifiers !== letter.modifiers
+    },
+
     highlightedKeys() {
       const letter = this.currentLetter
       if (!letter?.char) return []
       
-      if (this.cachedHighlightedKeys.char === letter.char && 
-          this.cachedHighlightedKeys.modifiers === letter.modifiers) {
+      if (!this.shouldUpdateHighlightedKeys) {
         return this.cachedHighlightedKeys.keys
       }
       
@@ -159,7 +183,7 @@ export default {
     checkLetter() {
       const input = this.userInput.charAt(0)
       
-      if (input === this.currentLetter.char) {
+      if (input === this.currentCharToType) {
         this.isCorrect = true
         this.isIncorrect = false
         
@@ -170,7 +194,7 @@ export default {
           this.validationMessage = 'Parfait ! Appuyez sur Entrée pour passer à la lettre suivante.'
           this.addEnterKeyListener()
         }
-      } else if (input) {
+      } else if (this.isValidInput) {
         this.isCorrect = false
         this.isIncorrect = true
         this.validationMessage = ''

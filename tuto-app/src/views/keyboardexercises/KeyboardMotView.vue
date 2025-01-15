@@ -138,19 +138,43 @@ export default {
   },
 
   computed: {
+    currentMot() {
+      return this.motsExemple[this.currentMotIndex] || ''
+    },
+
+    isLastMot() {
+      return this.currentMotIndex === this.motsExemple.length - 1
+    },
+
+    currentCharToType() {
+      const mot = this.currentMot
+      if (!mot) return ''
+      return this.textContent.length < mot.length ? mot[this.textContent.length] : ''
+    },
+
+    shouldUpdateHighlightedKeys() {
+      return this.cachedHighlightedKeys.char !== this.currentCharToType
+    },
+
     highlightedKeys() {
-      const currentMot = this.motsExemple[this.currentMotIndex]
-      if (!currentMot) return []
+      const currentChar = this.currentCharToType
+      if (!currentChar) return []
       
-      const currentChar = this.textContent.length < currentMot.length 
-        ? currentMot[this.textContent.length] 
-        : ''
-      
-      if (this.cachedHighlightedKeys.char === currentChar) {
+      if (!this.shouldUpdateHighlightedKeys) {
         return this.cachedHighlightedKeys.keys
       }
       
       return this.store.updateHighlightedKeysCache(currentChar, [])
+    },
+
+    isPartiallyCorrect() {
+      return this.currentMot.startsWith(this.textContent)
+    },
+
+    validationErrorMessage() {
+      if (!this.textContent || this.isPartiallyCorrect) return ''
+      return `Vous avez écrit : "${this.textContent}"
+      Attendu : "${this.currentMot.slice(0, Math.max(this.textContent.length, 0))}"`
     }
   },
 
@@ -160,12 +184,11 @@ export default {
     },
 
     checkMot() {
-      const currentMot = this.motsExemple[this.currentMotIndex]
-      
-      if (this.textContent === currentMot) {
+      if (this.textContent === this.currentMot) {
         this.isCorrect = true
         this.isIncorrect = false
-        if (this.currentMotIndex === this.motsExemple.length - 1) {
+        
+        if (this.isLastMot) {
           this.isExerciseComplete = true
           this.validationMessage = 'Parfait ! Vous avez terminé tous les mots !'
         } else {
@@ -174,16 +197,8 @@ export default {
         }
       } else {
         this.isCorrect = false
-        const isPartiallyCorrect = currentMot.startsWith(this.textContent)
-        this.isIncorrect = !isPartiallyCorrect
-        
-        if (!isPartiallyCorrect) {
-          this.validationMessage = `
-          Vous avez écrit : "${this.textContent}"
-          Attendu : "${currentMot.slice(0, Math.max(this.textContent.length, 0))}"`;
-        } else {
-          this.validationMessage = ''
-        }
+        this.isIncorrect = !this.isPartiallyCorrect
+        this.validationMessage = this.validationErrorMessage
       }
     },
 
