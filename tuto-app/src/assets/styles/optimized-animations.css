@@ -1,0 +1,99 @@
+/* Classes de base pour les animations */
+.use-transitions * {
+  transition-property: transform, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Réduction des animations */
+.reduce-motion * {
+  transition-duration: 100ms !important;
+  animation-duration: 100ms !important;
+  transition-timing-function: ease-in-out !important;
+}
+
+/* Désactivation complète des animations */
+.disable-animations * {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Animations optimisées utilisant transform et opacity */
+.fade-in {
+  animation: optimizedFadeIn 300ms ease-out forwards;
+}
+
+.fade-out {
+  animation: optimizedFadeOut 300ms ease-in forwards;
+}
+
+.slide-up {
+  animation: optimizedSlideUp 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.slide-down {
+  animation: optimizedSlideDown 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Keyframes optimisés */
+@keyframes optimizedFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes optimizedFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes optimizedSlideUp {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes optimizedSlideDown {
+  from {
+    transform: translateY(-20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Versions réduites des animations pour les appareils moins puissants */
+.reduce-motion .fade-in,
+.reduce-motion .fade-out {
+  animation-duration: 100ms !important;
+  transform: none !important;
+}
+
+.reduce-motion .slide-up,
+.reduce-motion .slide-down {
+  animation-duration: 100ms !important;
+  transform: translateY(0) !important;
+}
+
+/* Media query pour les préférences de réduction de mouvement */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 100ms !important;
+    animation-duration: 100ms !important;
+  }
+} 

@@ -1,5 +1,5 @@
 <template>
-  <div class="keyboard-test">
+  <div class="keyboard-test" :class="animationClasses">
     <GlobalKeyboard
       :show-debug-controls="true"
       :show-event-log="true"
@@ -7,11 +7,11 @@
       :highlighted-keys="highlightedKeys"
     />
 
-    <div v-if="typingSpeed > 0" class="typing-speed">
+    <div v-if="typingSpeed > 0" class="typing-speed fade-in">
       Vitesse de frappe : {{ typingSpeed }} frappes/minute
     </div>
 
-    <div class="example-phrase-container">
+    <div class="example-phrase-container slide-up">
       <div class="example-phrases">
         <h3>Taper le symbole suivant :</h3>
         <div class="lettre-and-symbols-container">
@@ -67,6 +67,7 @@
 <script>
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
+import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -83,10 +84,13 @@ export default {
   setup() {
     const store = useKeyboardStore()
     const { typingSpeed } = storeToRefs(store)
+    const { animationClasses, animateIfPossible } = useOptimizedAnimations()
 
     return {
       store,
-      typingSpeed
+      typingSpeed,
+      animationClasses,
+      animateIfPossible
     }
   },
 
@@ -254,5 +258,20 @@ export default {
 
 <style scoped>
 @import '@/assets/styles/keyboard-exercises.css';
+@import '@/assets/styles/optimized-animations.css';
 
+/* Optimisations supplémentaires */
+.keyboard-test {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.typing-speed {
+  will-change: transform, opacity;
+}
+
+.example-phrase-container {
+  will-change: transform;
+}
 </style>
