@@ -122,7 +122,29 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       isExerciseComplete: false,
-      phrasesExemple: phraseCache.getRandomPhrases(15)
+      phrasesExemple: phraseCache.getRandomPhrases(15),
+      cachedHighlightedKeys: {
+        char: null,
+        modifiers: null,
+        keys: []
+      }
+    }
+  },
+
+  computed: {
+    highlightedKeys() {
+      const currentPhrase = this.phrasesExemple[this.currentPhraseIndex]
+      if (!currentPhrase) return []
+      
+      const currentChar = this.textContent.length < currentPhrase.length 
+        ? currentPhrase[this.textContent.length] 
+        : ''
+      
+      if (this.cachedHighlightedKeys.char === currentChar) {
+        return this.cachedHighlightedKeys.keys
+      }
+      
+      return this.store.updateHighlightedKeysCache(currentChar, [])
     }
   },
 
