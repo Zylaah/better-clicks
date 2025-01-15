@@ -71,49 +71,53 @@ import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
+import { useCacheManager } from '@/composables/useCacheManager'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 
-// Cache pour les symboles
+// Cache pour les symboles avec gestionnaire de cache
 const symbolCache = {
-  allSymbols: null,
+  cacheManager: useCacheManager(50),
   getSymbols() {
-    if (!this.allSymbols) {
-      this.allSymbols = [
-        { char: 'é', display: 'é', modifiers: [] },
-        { char: 'è', display: 'è', modifiers: [] },
-        { char: 'à', display: 'à', modifiers: [] },
-        { char: 'ù', display: 'ù', modifiers: [] },
-        { char: 'ç', display: 'ç', modifiers: [] },
-        { char: '&', display: '&', modifiers: [] },
-        { char: '"', display: '"', modifiers: [] },
-        { char: "'", display: "'", modifiers: [] },
-        { char: '(', display: '(', modifiers: [] },
-        { char: ')', display: ')', modifiers: [] },
-        { char: '-', display: '-', modifiers: [] },
-        { char: '_', display: '_', modifiers: [] },
-        { char: '^', display: '^', modifiers: [] },
-        { char: '$', display: '$', modifiers: [] },
-        { char: '*', display: '*', modifiers: [] },
-        { char: ',', display: ',', modifiers: [] },
-        { char: ';', display: ';', modifiers: [] },
-        { char: ':', display: ':', modifiers: [] },
-        { char: '!', display: '!', modifiers: [] },
-        { char: '²', display: '²', modifiers: [] },
-        { char: '~', display: '~', modifiers: ['AltRight'], keyCode: 'Digit2' },
-        { char: '#', display: '#', modifiers: ['AltRight'], keyCode: 'Digit3' },
-        { char: '{', display: '{', modifiers: ['AltRight'], keyCode: 'Digit4' },
-        { char: '[', display: '[', modifiers: ['AltRight'], keyCode: 'Digit5' },
-        { char: '|', display: '|', modifiers: ['AltRight'], keyCode: 'Digit6' },
-        { char: '`', display: '`', modifiers: ['AltRight'], keyCode: 'Digit7' },
-        { char: '\\', display: '\\', modifiers: ['AltRight'], keyCode: 'Digit8' },
-        { char: '@', display: '@', modifiers: ['AltRight'], keyCode: 'Digit0' },
-        { char: ']', display: ']', modifiers: ['AltRight'], keyCode: 'Minus' },
-        { char: '}', display: '}', modifiers: ['AltRight'], keyCode: 'Equal' }
-      ]
-    }
-    return this.shuffleArray([...this.allSymbols])
+    const cached = this.cacheManager.getFromCache('symbols')
+    if (cached) return [...cached]
+
+    const symbols = [
+      { char: 'é', display: 'é', modifiers: [] },
+      { char: 'è', display: 'è', modifiers: [] },
+      { char: 'à', display: 'à', modifiers: [] },
+      { char: 'ù', display: 'ù', modifiers: [] },
+      { char: 'ç', display: 'ç', modifiers: [] },
+      { char: '&', display: '&', modifiers: [] },
+      { char: '"', display: '"', modifiers: [] },
+      { char: "'", display: "'", modifiers: [] },
+      { char: '(', display: '(', modifiers: [] },
+      { char: ')', display: ')', modifiers: [] },
+      { char: '-', display: '-', modifiers: [] },
+      { char: '_', display: '_', modifiers: [] },
+      { char: '^', display: '^', modifiers: [] },
+      { char: '$', display: '$', modifiers: [] },
+      { char: '*', display: '*', modifiers: [] },
+      { char: ',', display: ',', modifiers: [] },
+      { char: ';', display: ';', modifiers: [] },
+      { char: ':', display: ':', modifiers: [] },
+      { char: '!', display: '!', modifiers: [] },
+      { char: '²', display: '²', modifiers: [] },
+      { char: '~', display: '~', modifiers: ['AltRight'], keyCode: 'Digit2' },
+      { char: '#', display: '#', modifiers: ['AltRight'], keyCode: 'Digit3' },
+      { char: '{', display: '{', modifiers: ['AltRight'], keyCode: 'Digit4' },
+      { char: '[', display: '[', modifiers: ['AltRight'], keyCode: 'Digit5' },
+      { char: '|', display: '|', modifiers: ['AltRight'], keyCode: 'Digit6' },
+      { char: '`', display: '`', modifiers: ['AltRight'], keyCode: 'Digit7' },
+      { char: '\\', display: '\\', modifiers: ['AltRight'], keyCode: 'Digit8' },
+      { char: '@', display: '@', modifiers: ['AltRight'], keyCode: 'Digit0' },
+      { char: ']', display: ']', modifiers: ['AltRight'], keyCode: 'Minus' },
+      { char: '}', display: '}', modifiers: ['AltRight'], keyCode: 'Equal' }
+    ]
+    
+    this.cacheManager.addToCache('symbols', symbols)
+    return this.shuffleArray([...symbols])
   },
   shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -138,6 +142,7 @@ export default {
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
+    const highlightedKeysCache = useCacheManager(20)
 
     return {
       store,
@@ -145,7 +150,8 @@ export default {
       animationClasses,
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkSymbol(input), 100),
-      clearDebounces
+      clearDebounces,
+      highlightedKeysCache
     }
   },
 
@@ -193,11 +199,13 @@ export default {
       const symbol = this.currentSymbol
       if (!symbol?.char) return []
       
-      if (!this.shouldUpdateHighlightedKeys) {
-        return this.cachedHighlightedKeys.keys
-      }
+      const cacheKey = `${symbol.char}-${symbol.modifiers?.join(',') || ''}`
+      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
+      if (cached) return cached
       
-      return this.store.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
+      const keys = this.store.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
+      this.highlightedKeysCache.addToCache(cacheKey, keys)
+      return keys
     },
 
     isValidInput() {
@@ -292,6 +300,8 @@ export default {
     }
     this.clearDebounces()
     this.store.reset()
+    this.highlightedKeysCache.clearCache()
+    symbolCache.cacheManager.cleanOldEntries()
   }
 }
 </script>

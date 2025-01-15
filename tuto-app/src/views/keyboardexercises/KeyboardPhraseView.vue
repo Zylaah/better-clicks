@@ -72,18 +72,26 @@ import { storeToRefs } from 'pinia'
 import phrases from '@/data/phrases.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
+import { useCacheManager } from '@/composables/useCacheManager'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 
-// Cache pour les phrases
+// Cache pour les phrases avec gestionnaire de cache
 const phraseCache = {
-  allPhrases: [],
+  cacheManager: useCacheManager(100),
   getRandomPhrases(count) {
-    if (this.allPhrases.length === 0) {
-      this.allPhrases = [...phrases.phrases]
+    const cacheKey = `phrases-${count}`
+    const cached = this.cacheManager.getFromCache(cacheKey)
+    if (cached) return [...cached]
+
+    if (!this.cacheManager.getFromCache('allPhrases')) {
+      this.cacheManager.addToCache('allPhrases', [...phrases.phrases])
     }
-    return this.shuffleArray([...this.allPhrases]).slice(0, count)
+    
+    const randomPhrases = this.shuffleArray([...this.cacheManager.getFromCache('allPhrases')]).slice(0, count)
+    this.cacheManager.addToCache(cacheKey, randomPhrases)
+    return [...randomPhrases]
   },
   shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -108,6 +116,7 @@ export default {
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
+    const highlightedKeysCache = useCacheManager(20)
 
     return {
       store,
@@ -115,7 +124,8 @@ export default {
       animationClasses,
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkPhrase(input), 100),
-      clearDebounces
+      clearDebounces,
+      highlightedKeysCache
     }
   },
 
@@ -160,11 +170,13 @@ export default {
       const currentChar = this.currentCharToType
       if (!currentChar) return []
       
-      if (!this.shouldUpdateHighlightedKeys) {
-        return this.cachedHighlightedKeys.keys
-      }
+      const cacheKey = currentChar
+      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
+      if (cached) return cached
       
-      return this.store.updateHighlightedKeysCache(currentChar, [])
+      const keys = this.store.updateHighlightedKeysCache(currentChar, [])
+      this.highlightedKeysCache.addToCache(cacheKey, keys)
+      return keys
     },
 
     isPartiallyCorrect() {
@@ -246,6 +258,8 @@ export default {
     }
     this.clearDebounces()
     this.store.reset()
+    this.highlightedKeysCache.clearCache()
+    phraseCache.cacheManager.cleanOldEntries()
   }
 }
 </script>

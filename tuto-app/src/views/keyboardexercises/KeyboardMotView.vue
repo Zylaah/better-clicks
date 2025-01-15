@@ -72,18 +72,26 @@ import { storeToRefs } from 'pinia'
 import mots from '@/data/mots.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
+import { useCacheManager } from '@/composables/useCacheManager'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 
-// Cache pour les mots
+// Cache pour les mots avec gestionnaire de cache
 const motCache = {
-  allMots: [],
+  cacheManager: useCacheManager(100),
   getRandomMots(count) {
-    if (this.allMots.length === 0) {
-      this.allMots = [...mots.mots]
+    const cacheKey = `mots-${count}`
+    const cached = this.cacheManager.getFromCache(cacheKey)
+    if (cached) return [...cached]
+
+    if (!this.cacheManager.getFromCache('allMots')) {
+      this.cacheManager.addToCache('allMots', [...mots.mots])
     }
-    return this.shuffleArray([...this.allMots]).slice(0, count)
+    
+    const randomMots = this.shuffleArray([...this.cacheManager.getFromCache('allMots')]).slice(0, count)
+    this.cacheManager.addToCache(cacheKey, randomMots)
+    return [...randomMots]
   },
   shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -108,6 +116,7 @@ export default {
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
+    const highlightedKeysCache = useCacheManager(20)
 
     return {
       store,
@@ -115,7 +124,8 @@ export default {
       animationClasses,
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkMot(input), 100),
-      clearDebounces
+      clearDebounces,
+      highlightedKeysCache
     }
   },
 
@@ -160,11 +170,13 @@ export default {
       const currentChar = this.currentCharToType
       if (!currentChar) return []
       
-      if (!this.shouldUpdateHighlightedKeys) {
-        return this.cachedHighlightedKeys.keys
-      }
+      const cacheKey = currentChar
+      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
+      if (cached) return cached
       
-      return this.store.updateHighlightedKeysCache(currentChar, [])
+      const keys = this.store.updateHighlightedKeysCache(currentChar, [])
+      this.highlightedKeysCache.addToCache(cacheKey, keys)
+      return keys
     },
 
     isPartiallyCorrect() {
@@ -246,6 +258,8 @@ export default {
     }
     this.clearDebounces()
     this.store.reset()
+    this.highlightedKeysCache.clearCache()
+    motCache.cacheManager.cleanOldEntries()
   }
 }
 </script>

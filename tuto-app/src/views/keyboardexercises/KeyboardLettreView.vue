@@ -75,22 +75,26 @@ import { storeToRefs } from 'pinia'
 import { LetterGenerator } from '@/services/letterGenerator'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
+import { useCacheManager } from '@/composables/useCacheManager'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 
-// Cache pour les lettres générées
+// Cache pour les lettres générées avec gestionnaire de cache
 const letterCache = {
-  cachedLetters: null,
+  cacheManager: useCacheManager(50),
   getCachedLetters() {
-    if (!this.cachedLetters) {
-      this.cachedLetters = LetterGenerator.generateRandomLetters()
-    }
-    return [...this.cachedLetters] // Retourne une copie pour éviter les modifications accidentelles
+    const cached = this.cacheManager.getFromCache('letters')
+    if (cached) return [...cached]
+    
+    const letters = LetterGenerator.generateRandomLetters()
+    this.cacheManager.addToCache('letters', letters)
+    return [...letters]
   },
   refreshCache() {
-    this.cachedLetters = LetterGenerator.generateRandomLetters()
-    return [...this.cachedLetters]
+    const letters = LetterGenerator.generateRandomLetters()
+    this.cacheManager.addToCache('letters', letters)
+    return [...letters]
   }
 }
 
@@ -108,6 +112,7 @@ export default {
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
+    const highlightedKeysCache = useCacheManager(20)
 
     return {
       store,
@@ -115,7 +120,8 @@ export default {
       animationClasses,
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkLetter(input), 100),
-      clearDebounces
+      clearDebounces,
+      highlightedKeysCache
     }
   },
 
@@ -171,11 +177,13 @@ export default {
       const letter = this.currentLetter
       if (!letter?.char) return []
       
-      if (!this.shouldUpdateHighlightedKeys) {
-        return this.cachedHighlightedKeys.keys
-      }
+      const cacheKey = `${letter.char}-${letter.modifiers?.join(',') || ''}`
+      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
+      if (cached) return cached
       
-      return this.store.updateHighlightedKeysCache(letter.char, letter.modifiers)
+      const keys = this.store.updateHighlightedKeysCache(letter.char, letter.modifiers)
+      this.highlightedKeysCache.addToCache(cacheKey, keys)
+      return keys
     }
   },
 
@@ -248,6 +256,8 @@ export default {
     }
     this.clearDebounces()
     this.store.reset()
+    this.highlightedKeysCache.clearCache()
+    letterCache.cacheManager.cleanOldEntries()
   }
 }
 </script>
