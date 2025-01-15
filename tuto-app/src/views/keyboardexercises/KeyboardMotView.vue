@@ -46,17 +46,16 @@
           </div>
         </RestartModal>
 
-        <div v-show="!isExerciseComplete">
-          <textarea 
-            v-model="textContent"
-            class="modern-textarea"
-            :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
-            placeholder="Recopiez le mot ici..."
-            rows="3"
-            @input="checkMot"
-            @keydown.enter.prevent
-          ></textarea>
-        </div>
+        <textarea 
+          v-show="!isExerciseComplete"
+          v-model="textContent"
+          class="modern-textarea"
+          :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
+          placeholder="Recopiez le mot ici..."
+          rows="5"
+          @input="checkMot"
+          @keydown.enter.prevent
+        ></textarea>
         
         <div v-show="validationMessage" class="validation-message" :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }">
           {{ validationMessage }}
