@@ -47,20 +47,15 @@
           </div>
         </RestartModal>
 
-        <textarea 
-          v-show="!isExerciseComplete"
+        <KeyboardTextArea
           v-model="textContent"
-          class="modern-textarea"
-          :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }"
+          :is-complete="isExerciseComplete"
+          :is-correct="isCorrect"
+          :is-incorrect="isIncorrect"
+          :message="validationMessage"
           placeholder="Recopiez le mot ici..."
-          rows="5"
           @input="debouncedCheck(this, $event.target.value)"
-          @keydown.enter.prevent
-        ></textarea>
-        
-        <div v-show="validationMessage" class="validation-message" :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }">
-          {{ validationMessage }}
-        </div>
+        />
       </div>
     </div>
   </div>
@@ -74,9 +69,11 @@ import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
 import { useValidation } from '@/composables/useValidation'
+import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
+import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 
 // Cache pour les mots avec gestionnaire de cache
 const motCache = {
@@ -109,7 +106,8 @@ export default {
   components: {
     GlobalKeyboard,
     ProgressBar,
-    RestartModal
+    RestartModal,
+    KeyboardTextArea
   },
 
   setup() {
@@ -119,6 +117,7 @@ export default {
     const { debounce, clearDebounces } = useDebounce()
     const highlightedKeysCache = useCacheManager(20)
     const validation = useValidation({ maxCacheSize: 50 })
+    const keyboardEvents = useKeyboardEvents()
 
     return {
       store,
@@ -128,6 +127,7 @@ export default {
       debouncedCheck: debounce((vm, input) => vm.checkMot(input), 100),
       clearDebounces,
       highlightedKeysCache,
+      keyboardEvents,
       ...validation
     }
   },
@@ -141,8 +141,7 @@ export default {
         char: null,
         modifiers: null,
         keys: []
-      },
-      enterKeyListener: null
+      }
     }
   },
 
@@ -203,30 +202,15 @@ export default {
       })
 
       if (result.isCorrect && !result.isComplete) {
-        this.addEnterKeyListener()
-      }
-    },
-
-    addEnterKeyListener() {
-      if (this.enterKeyListener) {
-        document.removeEventListener('keydown', this.enterKeyListener)
-      }
-      
-      this.enterKeyListener = (event) => {
-        if (event.key === 'Enter') {
-          if (this.isCorrect && this.currentMotIndex < this.motsExemple.length - 1) {
+        this.keyboardEvents.addEnterKeyListener(() => {
+          if (this.currentMotIndex < this.motsExemple.length - 1) {
             this.currentMotIndex++
             this.isCorrect = false
             this.validationMessage = ''
+            this.textContent = ''
           }
-          this.textContent = ''
-          this.isIncorrect = false
-          document.removeEventListener('keydown', this.enterKeyListener)
-          this.enterKeyListener = null
-        }
+        })
       }
-      
-      document.addEventListener('keydown', this.enterKeyListener, { passive: true })
     },
 
     restartExercise() {
@@ -243,9 +227,6 @@ export default {
   },
 
   beforeUnmount() {
-    if (this.enterKeyListener) {
-      document.removeEventListener('keydown', this.enterKeyListener)
-    }
     this.clearDebounces()
     this.store.reset()
     this.highlightedKeysCache.clearCache()
