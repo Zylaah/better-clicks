@@ -7,7 +7,7 @@
       :highlighted-keys="highlightedKeys"
     />
 
-    <div v-if="typingSpeed > 0" class="typing-speed fade-in">
+    <div v-show="typingSpeed > 0" class="typing-speed fade-in">
       Vitesse de frappe : {{ typingSpeed }} frappes/minute
     </div>
 
@@ -45,7 +45,8 @@
             </button>
           </div>
         </RestartModal>
-        <template v-if="!isExerciseComplete">
+
+        <div v-show="!isExerciseComplete">
           <textarea 
             v-model="textContent"
             class="modern-textarea"
@@ -55,14 +56,14 @@
             @input="checkPhrase"
             @keydown.enter.prevent
           ></textarea>
-        </template>
-        <div class="validation-message" :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }" v-if="validationMessage">
-            {{ validationMessage }}
+        </div>
+
+        <div v-show="validationMessage" class="validation-message" :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }">
+          {{ validationMessage }}
         </div>
       </div>
     </div>
   </div>
-  
 </template>
 
 <script>
@@ -73,6 +74,24 @@ import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
+
+// Cache pour les phrases
+const phraseCache = {
+  allPhrases: [],
+  getRandomPhrases(count) {
+    if (this.allPhrases.length === 0) {
+      this.allPhrases = [...phrases.phrases]
+    }
+    return this.shuffleArray([...this.allPhrases]).slice(0, count)
+  },
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+  }
+}
 
 export default {
   name: 'KeyboardPhraseView',
@@ -104,21 +123,13 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       isExerciseComplete: false,
-      phrasesExemple: this.getRandomPhrases(phrases.phrases, 15)
+      phrasesExemple: phraseCache.getRandomPhrases(15)
     }
   },
 
   methods: {
-    getRandomPhrases(phrases, count) {
-      return this.shuffleArray([...phrases]).slice(0, count);
-    },
-
-    shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
+    getRandomPhrases(count) {
+      return phraseCache.getRandomPhrases(count)
     },
 
     checkPhrase() {
@@ -150,15 +161,14 @@ export default {
     },
 
     restartExercise() {
-      const allPhrases = this.phrasesExemple.concat(/* ... copier toutes les phrases ici ... */);
-      this.phrasesExemple = this.getRandomPhrases(allPhrases, 15);
-      this.currentPhraseIndex = 0;
-      this.isExerciseComplete = false;
-      this.isCorrect = false;
-      this.isIncorrect = false;
-      this.textContent = '';
-      this.validationMessage = '';
-      this.store.reset();
+      this.phrasesExemple = this.getRandomPhrases(15)
+      this.currentPhraseIndex = 0
+      this.isExerciseComplete = false
+      this.isCorrect = false
+      this.isIncorrect = false
+      this.textContent = ''
+      this.validationMessage = ''
+      this.store.reset()
     },
 
     handleEnterKey(event) {

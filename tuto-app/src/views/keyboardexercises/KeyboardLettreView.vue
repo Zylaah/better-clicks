@@ -7,7 +7,7 @@
       :highlighted-keys="highlightedKeys"
     />
 
-    <div v-if="typingSpeed > 0" class="typing-speed fade-in">
+    <div v-show="typingSpeed > 0" class="typing-speed fade-in">
       Vitesse de frappe : {{ typingSpeed }} frappes/minute
     </div>
 
@@ -18,7 +18,7 @@
           <div class="lettre-and-symbols-item current">
             {{ currentLetter.display }}
           </div>
-          <div v-if="isNaN(currentLetter.display)" class="case-info">
+          <div v-show="isNaN(currentLetter.display)" class="case-info">
             {{ currentLetter.display === currentLetter.display.toUpperCase() ? 'Majuscule' : 'Minuscule' }}
           </div>
           <ProgressBar 
@@ -49,7 +49,7 @@
           </div>
         </RestartModal>
 
-        <template v-if="!isExerciseComplete">
+        <div v-show="!isExerciseComplete">
           <textarea 
             v-model="userInput"
             class="modern-textarea"
@@ -59,8 +59,9 @@
             @input="checkLetter"
             @keydown.enter.prevent
           ></textarea>
-        </template>
-        <div class="validation-message" v-if="validationMessage">
+        </div>
+
+        <div v-show="validationMessage" class="validation-message">
           {{ validationMessage }}
         </div>
       </div>
@@ -76,6 +77,21 @@ import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
+
+// Cache pour les lettres générées
+const letterCache = {
+  cachedLetters: null,
+  getCachedLetters() {
+    if (!this.cachedLetters) {
+      this.cachedLetters = LetterGenerator.generateRandomLetters()
+    }
+    return [...this.cachedLetters] // Retourne une copie pour éviter les modifications accidentelles
+  },
+  refreshCache() {
+    this.cachedLetters = LetterGenerator.generateRandomLetters()
+    return [...this.cachedLetters]
+  }
+}
 
 export default {
   name: 'KeyboardLettreView',
@@ -106,7 +122,7 @@ export default {
       isCorrect: false,
       isIncorrect: false,
       validationMessage: '',
-      letters: LetterGenerator.generateRandomLetters(),
+      letters: letterCache.getCachedLetters(),
       isExerciseComplete: false,
       cachedHighlightedKeys: {
         char: null,
@@ -173,7 +189,7 @@ export default {
     },
 
     restartExercise() {
-      this.letters = LetterGenerator.generateRandomLetters()
+      this.letters = letterCache.refreshCache()
       this.currentIndex = 0
       this.isExerciseComplete = false
       this.isCorrect = false

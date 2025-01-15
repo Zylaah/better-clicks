@@ -7,7 +7,7 @@
       :highlighted-keys="highlightedKeys"
     />
 
-    <div v-if="typingSpeed > 0" class="typing-speed fade-in">
+    <div v-show="typingSpeed > 0" class="typing-speed fade-in">
       Vitesse de frappe : {{ typingSpeed }} frappes/minute
     </div>
 
@@ -45,7 +45,8 @@
             </button>
           </div>
         </RestartModal>
-        <template v-if="!isExerciseComplete">
+
+        <div v-show="!isExerciseComplete">
           <textarea 
             v-model="textContent"
             class="modern-textarea"
@@ -55,8 +56,9 @@
             @input="checkMot"
             @keydown.enter.prevent
           ></textarea>
-        </template>
-        <div class="validation-message" :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }" v-if="validationMessage">
+        </div>
+        
+        <div v-show="validationMessage" class="validation-message" :class="{ 'correct': isCorrect, 'incorrect': isIncorrect }">
           {{ validationMessage }}
         </div>
       </div>
@@ -72,6 +74,24 @@ import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
+
+// Cache pour les mots
+const motCache = {
+  allMots: [],
+  getRandomMots(count) {
+    if (this.allMots.length === 0) {
+      this.allMots = [...mots.mots]
+    }
+    return this.shuffleArray([...this.allMots]).slice(0, count)
+  },
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+  }
+}
 
 export default {
   name: 'KeyboardMotView',
@@ -103,21 +123,13 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       isExerciseComplete: false,
-      motsExemple: this.getRandomMots(mots.mots, 20)
+      motsExemple: motCache.getRandomMots(20)
     }
   },
 
   methods: {
-    getRandomMots(mots, count) {
-      return this.shuffleArray([...mots]).slice(0, count)
-    },
-
-    shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[array[i], array[j]] = [array[j], array[i]]
-      }
-      return array
+    getRandomMots(count) {
+      return motCache.getRandomMots(count)
     },
 
     checkMot() {
@@ -162,7 +174,7 @@ export default {
     },
 
     restartExercise() {
-      this.motsExemple = this.getRandomMots(mots.mots, 20)
+      this.motsExemple = this.getRandomMots(20)
       this.currentMotIndex = 0
       this.isExerciseComplete = false
       this.isCorrect = false

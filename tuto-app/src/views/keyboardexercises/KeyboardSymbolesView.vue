@@ -7,7 +7,7 @@
       :highlighted-keys="highlightedKeys"
     />
 
-    <div v-if="typingSpeed > 0" class="typing-speed fade-in">
+    <div v-show="typingSpeed > 0" class="typing-speed fade-in">
       Vitesse de frappe : {{ typingSpeed }} frappes/minute
     </div>
 
@@ -45,7 +45,8 @@
             </button>
           </div>
         </RestartModal>
-        <template v-if="!isExerciseComplete">
+
+        <div v-show="!isExerciseComplete">
           <textarea 
             v-model="userInput"
             class="modern-textarea"
@@ -55,8 +56,9 @@
             @input="checkSymbol"
             @keydown.enter.prevent
           ></textarea>
-        </template>
-        <div class="validation-message" v-if="validationMessage">
+        </div>
+
+        <div v-show="validationMessage" class="validation-message">
           {{ validationMessage }}
         </div>
       </div>
@@ -72,67 +74,12 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 
-export default {
-  name: 'KeyboardSymbolesView',
-  
-  components: {
-    GlobalKeyboard,
-    ProgressBar,
-    RestartModal
-  },
-
-  setup() {
-    const store = useKeyboardStore()
-    const { typingSpeed } = storeToRefs(store)
-    const { animationClasses, animateIfPossible } = useOptimizedAnimations()
-
-    return {
-      store,
-      typingSpeed,
-      animationClasses,
-      animateIfPossible
-    }
-  },
-
-  data() {
-    return {
-      userInput: '',
-      currentIndex: 0,
-      isCorrect: false,
-      isIncorrect: false,
-      validationMessage: '',
-      symbols: this.generateSymbolsList(),
-      isExerciseComplete: false,
-      modifierKeys: [],
-      cachedHighlightedKeys: {
-        char: null,
-        modifiers: null,
-        keys: []
-      }
-    }
-  },
-
-  computed: {
-    currentSymbol() {
-      return this.symbols[this.currentIndex] || { char: '', display: '', modifiers: [] }
-    },
-
-    highlightedKeys() {
-      const symbol = this.currentSymbol
-      if (!symbol?.char) return []
-      
-      if (this.cachedHighlightedKeys.char === symbol.char && 
-          this.cachedHighlightedKeys.modifiers === symbol.modifiers) {
-        return this.cachedHighlightedKeys.keys
-      }
-      
-      return this.store.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
-    }
-  },
-
-  methods: {
-    generateSymbolsList() {
-      const symbols = [
+// Cache pour les symboles
+const symbolCache = {
+  allSymbols: null,
+  getSymbols() {
+    if (!this.allSymbols) {
+      this.allSymbols = [
         { char: 'é', display: 'é', modifiers: [] },
         { char: 'è', display: 'è', modifiers: [] },
         { char: 'à', display: 'à', modifiers: [] },
@@ -164,15 +111,79 @@ export default {
         { char: ']', display: ']', modifiers: ['AltRight'], keyCode: 'Minus' },
         { char: '}', display: '}', modifiers: ['AltRight'], keyCode: 'Equal' }
       ]
-      return this.shuffleArray(symbols)
+    }
+    return this.shuffleArray([...this.allSymbols])
+  },
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[array[i], array[j]] = [array[j], array[i]]
+    }
+    return array
+  }
+}
+
+export default {
+  name: 'KeyboardSymbolesView',
+  
+  components: {
+    GlobalKeyboard,
+    ProgressBar,
+    RestartModal
+  },
+
+  setup() {
+    const store = useKeyboardStore()
+    const { typingSpeed } = storeToRefs(store)
+    const { animationClasses, animateIfPossible } = useOptimizedAnimations()
+
+    return {
+      store,
+      typingSpeed,
+      animationClasses,
+      animateIfPossible
+    }
+  },
+
+  data() {
+    return {
+      userInput: '',
+      currentIndex: 0,
+      isCorrect: false,
+      isIncorrect: false,
+      validationMessage: '',
+      symbols: symbolCache.getSymbols(),
+      isExerciseComplete: false,
+      modifierKeys: [],
+      cachedHighlightedKeys: {
+        char: null,
+        modifiers: null,
+        keys: []
+      }
+    }
+  },
+
+  computed: {
+    currentSymbol() {
+      return this.symbols[this.currentIndex] || { char: '', display: '', modifiers: [] }
     },
 
-    shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[array[i], array[j]] = [array[j], array[i]]
+    highlightedKeys() {
+      const symbol = this.currentSymbol
+      if (!symbol?.char) return []
+      
+      if (this.cachedHighlightedKeys.char === symbol.char && 
+          this.cachedHighlightedKeys.modifiers === symbol.modifiers) {
+        return this.cachedHighlightedKeys.keys
       }
-      return array
+      
+      return this.store.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
+    }
+  },
+
+  methods: {
+    generateSymbolsList() {
+      return symbolCache.getSymbols()
     },
 
     checkSymbol() {
