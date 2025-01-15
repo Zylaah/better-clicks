@@ -46,7 +46,7 @@ export default {
           route: "keyboard-lettre"
         },
         {
-          title: "symboles et accents",
+          title: "Symboles et accents",
           difficulty: "Moyen",
           route: "keyboard-symboles"
         },

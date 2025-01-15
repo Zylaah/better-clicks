@@ -601,38 +601,64 @@ export default {
 </script>
 
 <style scoped>
+/* Variables CSS locales */
+:root {
+  --keyboard-padding: clamp(0.5rem, 1vw, 1rem);
+  --keyboard-gap: clamp(0.125rem, 0.25vw, 0.25rem);
+  --keyboard-radius: clamp(0.5rem, 1vw, 1rem);
+  --keyboard-margin: clamp(1rem, 1vh, 2rem);
+}
+
+/* Base */
 .keyboard {
-  margin: clamp(1rem, 1vh, 2rem) auto 0;
+  margin: var(--keyboard-margin) auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   transform-origin: top center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.keyboard.is-disabled {
-  opacity: 0.7;
-  pointer-events: none;
-  filter: grayscale(0.5);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .keyboard-container {
   background: var(--bg-secondary);
-  padding: clamp(0.5rem, 1vw, 1rem);
-  border-radius: clamp(0.5rem, 1vw, 1rem);
+  padding: var(--keyboard-padding);
+  border-radius: var(--keyboard-radius);
   box-shadow: 
-    0px -4px 10px -3px rgba(255, 255, 255, 0.05),
-    0px 4px 10px -3px var(--accent-color);
+    0 -4px 10px -3px rgba(255, 255, 255, 0.05),
+    0 4px 10px -3px var(--accent-color);
   border: 1px solid var(--hover-color);
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.25rem, 0.5vw, 0.5rem);
+  gap: var(--keyboard-gap);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+/* Rangées */
+.key-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--keyboard-gap);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.key-row:has(.keyboard-key.is-pressed) {
+  transform: translateY(1px);
+}
+
+/* États */
+.keyboard.is-disabled {
+  opacity: 0.7;
+  pointer-events: none;
+  filter: grayscale(0.5);
 }
 
 /* Thèmes */
@@ -653,43 +679,17 @@ export default {
 }
 
 /* Tailles */
-.size-small {
-  transform: scale(0.8);
+.size-small { transform: scale(0.8); }
+.size-large { transform: scale(1.2); }
+
+/* États des modificateurs */
+.caps-locked .keyboard-key[data-key="CapsLock"],
+.num-locked .keyboard-key[data-key="NumLock"] {
+  background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
+  border-color: var(--accent-color);
 }
 
-.size-large {
-  transform: scale(1.2);
-}
-
-.key-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: clamp(0.125rem, 0.25vw, 0.25rem);
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 100%;
-  transition: transform 0.3s ease;
-}
-
-/* Animation des rangées lors de la frappe */
-.key-row:has(.keyboard-key.is-pressed) {
-  transform: translateY(1px);
-}
-
-/* Support des préférences de mouvement réduit */
-@media (prefers-reduced-motion: reduce) {
-  .keyboard,
-  .key-row {
-    transition: none;
-  }
-  
-  .key-row:has(.keyboard-key.is-pressed) {
-    transform: none;
-  }
-}
-
-/* Responsive design amélioré */
+/* Responsive */
 @media (max-width: 1180px) {
   .keyboard {
     transform: scale(0.9);
@@ -701,29 +701,26 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .keyboard {
-    transform: scale(0.8);
-  }
+  .keyboard { transform: scale(0.8); }
 }
 
 @media (max-width: 480px) {
-  .keyboard {
-    transform: scale(0.7);
+  .keyboard { transform: scale(0.7); }
+}
+
+/* Réduction des animations */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard,
+  .key-row {
+    transition: none;
+  }
+  
+  .key-row:has(.keyboard-key.is-pressed) {
+    transform: none;
   }
 }
 
-/* État des modificateurs */
-.caps-locked .keyboard-key[data-key="CapsLock"] {
-  background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
-  border-color: var(--accent-color);
-}
-
-.num-locked .keyboard-key[data-key="NumLock"] {
-  background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
-  border-color: var(--accent-color);
-}
-
-/* Animations de transition */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -739,11 +736,12 @@ export default {
   animation: fadeIn 0.3s ease-out;
 }
 
-/* Styles pour le journal d'événements et le débogage */
+/* Journal et débogage */
 .event-log,
 .debug-log {
+  --log-padding: 1.5rem;
   margin-top: 2rem;
-  padding: 1.5rem;
+  padding: var(--log-padding);
   background: var(--bg-secondary);
   border-radius: 12px;
   box-shadow: 
@@ -764,6 +762,7 @@ export default {
   scrollbar-color: var(--accent-color) var(--bg-secondary);
 }
 
+/* Scrollbar personnalisée */
 .log-container::-webkit-scrollbar {
   width: 6px;
 }

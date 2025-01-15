@@ -102,6 +102,9 @@ h1 {
   background-color: rgba(var(--accent-color-rgb), 0.1);
   font-size: 1.5rem;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lettre-and-symbols-container {
@@ -231,16 +234,10 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
 }
 
 .restart-button:hover {
-  transform: translateY(-2px);
   background-color: var(--accent-color-hover, #357b5e);
-}
-
-.restart-button:active {
-  transform: translateY(0);
 }
 
 .next-button {
@@ -257,16 +254,10 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
 }
 
 .next-button:hover {
-  transform: translateY(-2px);
   background-color: var(--accent-color-hover, #357b5e);
-}
-
-.next-button:active {
-  transform: translateY(0);
 }
 
 .modal-overlay {

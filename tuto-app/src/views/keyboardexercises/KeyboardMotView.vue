@@ -117,7 +117,7 @@ export default {
       isIncorrect: false,
       validationMessage: '',
       isExerciseComplete: false,
-      motsExemple: this.getRandomMots(mots.mots, 2),
+      motsExemple: this.getRandomMots(mots.mots, 20),
       debouncedKeyPress: null,
       debouncedKeyRelease: null
     }
