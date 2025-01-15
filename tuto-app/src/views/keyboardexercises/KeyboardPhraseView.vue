@@ -192,9 +192,9 @@ export default {
     checkPhrase() {
       const result = this.validateInput(this.textContent, this.currentPhrase, {
         isLastItem: this.isLastPhrase,
-        successMessage: 'Parfait !',
-        completeMessage: 'Parfait ! Vous avez terminé toutes les phrases !',
-        nextMessage: 'Appuyez sur Entrée pour passer à la phrase suivante.'
+        successMessage: '',
+        completeMessage: '',
+        nextMessage: ''
       })
 
       if (result.isCorrect && !result.isComplete) {

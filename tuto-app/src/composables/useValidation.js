@@ -16,9 +16,9 @@ export function useValidation(options = {}) {
   const validateInput = (input, expected, options = {}) => {
     const {
       isLastItem = false,
-      successMessage = 'Parfait !',
-      completeMessage = 'Parfait ! Vous avez terminé !',
-      nextMessage = 'Appuyez sur Entrée pour continuer.'
+      successMessage = '',
+      completeMessage = '',
+      nextMessage = ''
     } = options
 
     const cacheKey = `${input}-${expected}`

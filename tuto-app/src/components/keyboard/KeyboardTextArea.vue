@@ -10,9 +10,10 @@
       @input="onInput"
       @keydown.enter.prevent
     ></textarea>
-
-    <div v-show="message" class="validation-message" :class="validationClasses">
-      {{ message }}
+    <div class="validation-message-container">
+      <div v-show="message" class="validation-message" :class="validationClasses">
+        {{ message }}
+      </div>
     </div>
   </div>
 </template>
@@ -78,6 +79,7 @@ export default {
   padding-inline: 1rem;
   max-width: 100%;
   box-sizing: border-box;
+  padding-bottom: 2rem;
 }
 
 .modern-textarea {
@@ -105,6 +107,17 @@ export default {
 
 .modern-textarea::placeholder {
   color: rgba(var(--text-color-rgb), 0.5);
+}
+
+.validation-message-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2rem; /* Hauteur fixe pour le message */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .validation-message {

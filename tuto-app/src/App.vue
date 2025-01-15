@@ -97,7 +97,7 @@ export default {
     });
 
     const isExerciseActive = computed(() => {
-      return route.path === '/file-tree' || route.path === '/le-clavier' || route.path.startsWith('/exercise/'); // Ajustez selon vos routes
+      return route.path === '/file-tree' || route.path === '/keyboard' || route.path.startsWith('/exercise/'); // Ajustez selon vos routes
     });
 
     const showBackButton = computed(() => {

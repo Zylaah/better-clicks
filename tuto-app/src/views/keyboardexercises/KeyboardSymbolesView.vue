@@ -224,9 +224,9 @@ export default {
 
       const result = this.validateInput(this.currentInput, this.currentCharToType, {
         isLastItem: this.isLastSymbol,
-        successMessage: 'Parfait !',
-        completeMessage: 'Parfait ! Vous avez terminé tous les symboles !',
-        nextMessage: 'Appuyez sur Entrée pour passer au symbole suivant.'
+        successMessage: '',
+        completeMessage: '',
+        nextMessage: ''
       })
 
       if (result.isCorrect && !result.isComplete) {

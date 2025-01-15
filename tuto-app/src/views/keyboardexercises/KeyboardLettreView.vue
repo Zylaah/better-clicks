@@ -186,9 +186,9 @@ export default {
       const input = this.userInput.charAt(0)
       const result = this.validateInput(input, this.currentCharToType, {
         isLastItem: this.currentIndex === this.letters.length - 1,
-        successMessage: 'Parfait !',
-        completeMessage: 'Parfait ! Vous avez terminé toutes les lettres !',
-        nextMessage: 'Appuyez sur Entrée pour passer à la lettre suivante.'
+        successMessage: '',
+        completeMessage: '',
+        nextMessage: ''
       })
 
       if (result.isCorrect && !result.isComplete) {

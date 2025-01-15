@@ -192,9 +192,9 @@ export default {
     checkMot() {
       const result = this.validateInput(this.textContent, this.currentMot, {
         isLastItem: this.isLastMot,
-        successMessage: 'Parfait !',
-        completeMessage: 'Parfait ! Vous avez terminé tous les mots !',
-        nextMessage: 'Appuyez sur Entrée pour passer au mot suivant.'
+        successMessage: '',
+        completeMessage: '',
+        nextMessage: ''
       })
 
       if (result.isCorrect && !result.isComplete) {
