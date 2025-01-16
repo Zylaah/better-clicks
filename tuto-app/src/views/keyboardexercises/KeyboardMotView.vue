@@ -4,7 +4,6 @@
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
-      :highlighted-keys="highlightedKeys"
     />
 
     <div class="example-phrase-container slide-up">
@@ -12,7 +11,7 @@
         <h3 v-once>Mot à recopier :</h3>
         <div class="phrases-container">
           <div class="phrase-item current">
-            {{ motsExemple[currentMotIndex] }}
+            {{ currentMot }}
           </div>
           <ProgressBar 
             v-memo="[currentMotIndex]"
@@ -60,12 +59,12 @@
 <script>
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
-import mots from '@/data/mots.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
 import { useValidation } from '@/composables/useValidation'
 import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+import { WordGenerator } from '@/services/wordGenerator'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -74,25 +73,14 @@ import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 // Cache pour les mots avec gestionnaire de cache
 const motCache = {
   cacheManager: useCacheManager(100),
-  getRandomMots(count) {
-    const cacheKey = `mots-${count}`
+  getRandomMots(count, difficulty = 'MEDIUM') {
+    const cacheKey = `mots-${difficulty}-${count}`
     const cached = this.cacheManager.getFromCache(cacheKey)
     if (cached) return [...cached]
-
-    if (!this.cacheManager.getFromCache('allMots')) {
-      this.cacheManager.addToCache('allMots', [...mots.mots])
-    }
     
-    const randomMots = this.shuffleArray([...this.cacheManager.getFromCache('allMots')]).slice(0, count)
+    const randomMots = WordGenerator.generateRandomWords(count, difficulty)
     this.cacheManager.addToCache(cacheKey, randomMots)
     return [...randomMots]
-  },
-  shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[array[i], array[j]] = [array[j], array[i]]
-    }
-    return array
   }
 }
 
@@ -111,7 +99,6 @@ export default {
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
-    const highlightedKeysCache = useCacheManager(20)
     const validation = useValidation({ maxCacheSize: 50 })
     const keyboardEvents = useKeyboardEvents()
 
@@ -122,7 +109,6 @@ export default {
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkMot(input), 100),
       clearDebounces,
-      highlightedKeysCache,
       keyboardEvents,
       ...validation
     }
@@ -132,45 +118,28 @@ export default {
     return {
       textContent: '',
       currentMotIndex: 0,
-      motsExemple: motCache.getRandomMots(20),
-      cachedHighlightedKeys: {
-        char: null,
-        modifiers: null,
-        keys: []
-      }
+      currentDifficulty: 'MEDIUM',
+      motsExemple: motCache.getRandomMots(20, 'MEDIUM'),
+      deadKeyActive: false,
+      lastDeadKey: null
     }
   },
 
   computed: {
     currentMot() {
-      return this.motsExemple[this.currentMotIndex] || ''
+      const motObj = this.motsExemple[this.currentMotIndex]
+      return motObj ? motObj.word : ''
+    },
+
+    currentChar() {
+      const motObj = this.motsExemple[this.currentMotIndex]
+      if (!motObj || !motObj.chars) return null
+      const charIndex = this.textContent.length
+      return charIndex < motObj.chars.length ? motObj.chars[charIndex] : null
     },
 
     isLastMot() {
       return this.currentMotIndex === this.motsExemple.length - 1
-    },
-
-    currentCharToType() {
-      const mot = this.currentMot
-      if (!mot) return ''
-      return this.textContent.length < mot.length ? mot[this.textContent.length] : ''
-    },
-
-    shouldUpdateHighlightedKeys() {
-      return this.cachedHighlightedKeys.char !== this.currentCharToType
-    },
-
-    highlightedKeys() {
-      const currentChar = this.currentCharToType
-      if (!currentChar) return []
-      
-      const cacheKey = currentChar
-      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
-      if (cached) return cached
-      
-      const keys = this.store.updateHighlightedKeysCache(currentChar, [])
-      this.highlightedKeysCache.addToCache(cacheKey, keys)
-      return keys
     },
 
     isPartiallyCorrect() {
@@ -185,11 +154,41 @@ export default {
   },
 
   methods: {
-    getRandomMots(count) {
-      return motCache.getRandomMots(count)
+    getRandomMots(count, difficulty = 'MEDIUM') {
+      return motCache.getRandomMots(count, difficulty)
     },
 
     checkMot() {
+      const charInfo = this.currentChar
+      if (!charInfo) return
+
+      // Si c'est une touche morte
+      if (charInfo.isDeadKey) {
+        if (this.textContent === charInfo.char) {
+          this.deadKeyActive = true
+          this.lastDeadKey = charInfo.char
+          this.isCorrect = true
+          this.validationMessage = ''
+          return
+        }
+      }
+      // Si c'est un caractère composé
+      else if (charInfo.isComposed) {
+        if (this.deadKeyActive) {
+          this.deadKeyActive = false
+          this.lastDeadKey = null
+          
+          // On met à jour le texte avec le caractère composé
+          const oldLength = this.textContent.length
+          const previousText = this.textContent.slice(0, oldLength - 1)
+          this.textContent = previousText + charInfo.display
+
+          this.isCorrect = true
+          this.validationMessage = ''
+          return
+        }
+      }
+
       const result = this.validateInput(this.textContent, this.currentMot, {
         isLastItem: this.isLastMot,
         successMessage: '',
@@ -204,17 +203,21 @@ export default {
             this.isCorrect = false
             this.validationMessage = ''
             this.textContent = ''
+            this.deadKeyActive = false
+            this.lastDeadKey = null
           }
         })
       }
     },
 
     restartExercise() {
-      this.motsExemple = this.getRandomMots(20)
+      this.motsExemple = this.getRandomMots(20, this.currentDifficulty)
       this.currentMotIndex = 0
       this.textContent = ''
       this.resetValidation()
       this.store.reset()
+      this.deadKeyActive = false
+      this.lastDeadKey = null
     },
 
     goNext() {
@@ -225,7 +228,6 @@ export default {
   beforeUnmount() {
     this.clearDebounces()
     this.store.reset()
-    this.highlightedKeysCache.clearCache()
     motCache.cacheManager.cleanOldEntries()
   }
 }

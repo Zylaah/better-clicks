@@ -423,7 +423,7 @@ export default {
         'ù': 'Quote',
         '*': 'Backslash',
         '<': 'IntlBackslash',
-        '>': 'IntlBackslash'  // Ajout du chevron fermant
+        '>': 'IntlBackslash'
       },
     }
   },
