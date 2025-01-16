@@ -193,7 +193,6 @@ h1 {
   justify-content: center;
   gap: 0.5rem;
   contain: content;
-  transition: background-color 0.2s ease;
 }
 
 .next-button {

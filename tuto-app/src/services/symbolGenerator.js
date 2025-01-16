@@ -15,7 +15,7 @@ export class SymbolGenerator {
     // Symboles avec Shift
     ['°', ['ShiftLeft']], ['+', ['ShiftLeft']],
     ['¨', ['ShiftLeft']], ['£', ['ShiftLeft']], ['%', ['ShiftLeft']],
-    ['µ', ['ShiftLeft']], ['M', ['ShiftLeft']], ['?', ['ShiftLeft']],
+    ['µ', ['ShiftLeft']], ['?', ['ShiftLeft']],
     ['.', ['ShiftLeft']], ['/', ['ShiftLeft']], ['§', ['ShiftLeft']],
     ['>', ['ShiftLeft']]
   ])

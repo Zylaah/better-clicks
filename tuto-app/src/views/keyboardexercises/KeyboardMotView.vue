@@ -73,12 +73,12 @@ import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 // Cache pour les mots avec gestionnaire de cache
 const motCache = {
   cacheManager: useCacheManager(100),
-  getRandomMots(count, difficulty = 'MEDIUM') {
-    const cacheKey = `mots-${difficulty}-${count}`
+  getRandomMots(count) {
+    const cacheKey = `mots-${count}`
     const cached = this.cacheManager.getFromCache(cacheKey)
     if (cached) return [...cached]
     
-    const randomMots = WordGenerator.generateRandomWords(count, difficulty)
+    const randomMots = WordGenerator.generateRandomWords(count)
     this.cacheManager.addToCache(cacheKey, randomMots)
     return [...randomMots]
   }
@@ -118,10 +118,7 @@ export default {
     return {
       textContent: '',
       currentMotIndex: 0,
-      currentDifficulty: 'MEDIUM',
-      motsExemple: motCache.getRandomMots(20, 'MEDIUM'),
-      deadKeyActive: false,
-      lastDeadKey: null
+      motsExemple: motCache.getRandomMots(20)
     }
   },
 
@@ -154,41 +151,11 @@ export default {
   },
 
   methods: {
-    getRandomMots(count, difficulty = 'MEDIUM') {
-      return motCache.getRandomMots(count, difficulty)
+    getRandomMots(count) {
+      return motCache.getRandomMots(count)
     },
 
     checkMot() {
-      const charInfo = this.currentChar
-      if (!charInfo) return
-
-      // Si c'est une touche morte
-      if (charInfo.isDeadKey) {
-        if (this.textContent === charInfo.char) {
-          this.deadKeyActive = true
-          this.lastDeadKey = charInfo.char
-          this.isCorrect = true
-          this.validationMessage = ''
-          return
-        }
-      }
-      // Si c'est un caractère composé
-      else if (charInfo.isComposed) {
-        if (this.deadKeyActive) {
-          this.deadKeyActive = false
-          this.lastDeadKey = null
-          
-          // On met à jour le texte avec le caractère composé
-          const oldLength = this.textContent.length
-          const previousText = this.textContent.slice(0, oldLength - 1)
-          this.textContent = previousText + charInfo.display
-
-          this.isCorrect = true
-          this.validationMessage = ''
-          return
-        }
-      }
-
       const result = this.validateInput(this.textContent, this.currentMot, {
         isLastItem: this.isLastMot,
         successMessage: '',
@@ -203,21 +170,17 @@ export default {
             this.isCorrect = false
             this.validationMessage = ''
             this.textContent = ''
-            this.deadKeyActive = false
-            this.lastDeadKey = null
           }
         })
       }
     },
 
     restartExercise() {
-      this.motsExemple = this.getRandomMots(20, this.currentDifficulty)
+      this.motsExemple = this.getRandomMots(20)
       this.currentMotIndex = 0
       this.textContent = ''
       this.resetValidation()
       this.store.reset()
-      this.deadKeyActive = false
-      this.lastDeadKey = null
     },
 
     goNext() {

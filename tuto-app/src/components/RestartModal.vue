@@ -83,7 +83,7 @@ export default {
 /* Animation de transition */
 .modal-enter-active,
 .modal-leave-active {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.1s ease;
 }
   
 .modal-enter-from,
