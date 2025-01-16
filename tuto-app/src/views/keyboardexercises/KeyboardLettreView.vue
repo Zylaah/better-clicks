@@ -53,7 +53,7 @@
           :is-incorrect="isIncorrect"
           :message="validationMessage"
           placeholder="Tapez la lettre ici..."
-          @input="debouncedCheck(this, $event.target.value)"
+          @input="debouncedCheck"
         />
       </div>
     </div>
@@ -69,7 +69,7 @@ import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
 import { useValidation } from '@/composables/useValidation'
 import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
-import { onBeforeMount, getCurrentInstance } from 'vue'
+import { onBeforeMount, getCurrentInstance, ref, computed } from 'vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -130,6 +130,25 @@ export default {
     const highlightedKeysCache = useCacheManager(50)
     const { proxy: app } = getCurrentInstance()
     
+    const userInput = ref('')
+    const currentIndex = ref(0)
+    const letters = ref(letterCache.getCachedLetters())
+    const cachedHighlightedKeys = ref({
+      char: null,
+      modifiers: null,
+      keys: []
+    })
+
+    const currentLetter = computed(() => {
+      return letters.value[currentIndex.value] || { char: '', display: '', modifiers: [] }
+    })
+
+    const currentCharToType = computed(() => {
+      const letter = currentLetter.value
+      if (!letter?.char) return ''
+      return letter.char
+    })
+    
     // Chargement des icônes nécessaires
     onBeforeMount(async () => {
       await Promise.all([
@@ -138,41 +157,70 @@ export default {
       ])
     })
 
+    const checkLetter = () => {
+      const input = userInput.value.charAt(0)
+      const result = validation.validateInput(input, currentCharToType.value, {
+        isLastItem: currentIndex.value === letters.value.length - 1,
+        successMessage: '',
+        completeMessage: '',
+        nextMessage: ''
+      })
+
+      if (result.isCorrect && !result.isComplete) {
+        keyboardEvents.addEnterKeyListener(() => {
+          if (currentIndex.value < letters.value.length - 1) {
+            currentIndex.value++
+            validation.isCorrect.value = false
+            validation.validationMessage.value = ''
+            userInput.value = ''
+          }
+        })
+      }
+    }
+
+    const restartExercise = () => {
+      letters.value = letterCache.refreshCache()
+      currentIndex.value = 0
+      userInput.value = ''
+      validation.resetValidation()
+      store.reset()
+    }
+
+    const goNext = () => {
+      router.push({ name: 'keyboard-symboles' })
+    }
+
     return {
       store,
       typingSpeed,
       animationClasses,
       debouncedCheck: debounce((event) => {
-        if (event && event.target) {
-          validation.validateInput(event.target.value)
-        }
+        userInput.value = event.target.value
+        checkLetter()
       }, 100),
       clearDebounces,
       keyboardEvents,
       router,
       highlightedKeysCache,
+      userInput,
+      currentIndex,
+      letters,
+      cachedHighlightedKeys,
+      currentLetter,
+      currentCharToType,
+      checkLetter,
+      restartExercise,
+      goNext,
       ...validation
     }
   },
 
   data() {
     return {
-      userInput: '',
-      currentIndex: 0,
-      letters: letterCache.getCachedLetters(),
-      cachedHighlightedKeys: {
-        char: null,
-        modifiers: null,
-        keys: []
-      }
     }
   },
 
   computed: {
-    currentLetter() {
-      return this.letters[this.currentIndex] || { char: '', display: '', modifiers: [] }
-    },
-
     shouldShowCaseInfo() {
       return isNaN(this.currentLetter.display)
     },
@@ -184,12 +232,6 @@ export default {
 
     isValidInput() {
       return this.userInput.length > 0
-    },
-
-    currentCharToType() {
-      const letter = this.currentLetter
-      if (!letter?.char) return ''
-      return letter.char
     },
 
     shouldUpdateHighlightedKeys() {
@@ -209,41 +251,6 @@ export default {
       const keys = this.store.updateHighlightedKeysCache(letter.char, letter.modifiers)
       this.highlightedKeysCache.addToCache(cacheKey, keys)
       return keys
-    }
-  },
-
-  methods: {
-    checkLetter() {
-      const input = this.userInput.charAt(0)
-      const result = this.validateInput(input, this.currentCharToType, {
-        isLastItem: this.currentIndex === this.letters.length - 1,
-        successMessage: '',
-        completeMessage: '',
-        nextMessage: ''
-      })
-
-      if (result.isCorrect && !result.isComplete) {
-        this.keyboardEvents.addEnterKeyListener(() => {
-          if (this.currentIndex < this.letters.length - 1) {
-            this.currentIndex++
-            this.isCorrect = false
-            this.validationMessage = ''
-            this.userInput = ''
-          }
-        })
-      }
-    },
-
-    restartExercise() {
-      this.letters = letterCache.refreshCache()
-      this.currentIndex = 0
-      this.userInput = ''
-      this.resetValidation()
-      this.store.reset()
-    },
-
-    goNext() {
-      this.router.push({ name: 'keyboard-symboles' })
     }
   },
 
