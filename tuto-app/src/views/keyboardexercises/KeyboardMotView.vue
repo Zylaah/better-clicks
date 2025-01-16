@@ -66,9 +66,9 @@ import { useValidation } from '@/composables/useValidation'
 import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
 import { WordGenerator } from '@/services/wordGenerator'
 import ProgressBar from '@/components/ProgressBar.vue'
-import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
+import { defineAsyncComponent } from 'vue'
 
 // Cache pour les mots avec gestionnaire de cache
 const motCache = {
@@ -83,6 +83,21 @@ const motCache = {
     return [...randomMots]
   }
 }
+
+const RestartModal = defineAsyncComponent({
+  loader: () => import('@/components/RestartModal.vue'),
+  loadingComponent: null, // Composant à afficher pendant le chargement
+  delay: 200, // Délai avant d'afficher le composant de chargement
+  timeout: 3000, // Temps maximum de chargement
+  errorComponent: null, // Composant à afficher en cas d'erreur
+  onError(error, retry, fail, attempts) {
+    if (attempts <= 3) {
+      retry()
+    } else {
+      fail()
+    }
+  }
+})
 
 export default {
   name: 'KeyboardMotView',
