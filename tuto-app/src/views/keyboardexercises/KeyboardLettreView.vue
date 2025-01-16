@@ -73,6 +73,7 @@ import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
+import { useRouter } from 'vue-router'
 
 // Cache pour les lettres générées avec gestionnaire de cache
 const letterCache = {
@@ -105,21 +106,24 @@ export default {
   setup() {
     const store = useKeyboardStore()
     const { typingSpeed } = storeToRefs(store)
-    const { animationClasses, animateIfPossible } = useOptimizedAnimations()
+    const { animationClasses } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
-    const highlightedKeysCache = useCacheManager(20)
-    const validation = useValidation({ maxCacheSize: 30 })
+    const validation = useValidation({ maxCacheSize: 50 })
     const keyboardEvents = useKeyboardEvents()
+    const router = useRouter()
 
     return {
       store,
       typingSpeed,
       animationClasses,
-      animateIfPossible,
-      debouncedCheck: debounce((vm, input) => vm.checkLetter(input), 100),
+      debouncedCheck: debounce((event) => {
+        if (event && event.target) {
+          validation.validateInput(event.target.value)
+        }
+      }, 100),
       clearDebounces,
-      highlightedKeysCache,
       keyboardEvents,
+      router,
       ...validation
     }
   },
@@ -212,7 +216,7 @@ export default {
     },
 
     goNext() {
-      this.$router.push({ name: 'keyboard-symboles' })
+      this.router.push({ name: 'keyboard-symboles' })
     }
   },
 
