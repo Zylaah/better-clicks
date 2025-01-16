@@ -68,7 +68,7 @@ import { WordGenerator } from '@/services/wordGenerator'
 import ProgressBar from '@/components/ProgressBar.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, onBeforeMount } from 'vue'
 
 // Cache pour les mots avec gestionnaire de cache
 const motCache = {
@@ -116,6 +116,14 @@ export default {
     const { debounce, clearDebounces } = useDebounce()
     const validation = useValidation({ maxCacheSize: 50 })
     const keyboardEvents = useKeyboardEvents()
+    const { proxy: app } = getCurrentInstance()
+
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('rotateRight'),
+        app.$loadIcon('arrowRight')
+      ])
+    })
 
     return {
       store,

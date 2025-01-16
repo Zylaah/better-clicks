@@ -36,7 +36,7 @@
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <font-awesome-icon icon="computer" />
+            <font-awesome-icon icon="desktop" />
           </div>
           <h3>Les Bases de Windows</h3>
           <p>Découvrez comment utiliser votre ordinateur : bureau, fichiers, programmes et paramètres essentiels</p>
@@ -104,8 +104,28 @@
 </template>
 
 <script>
+import { onBeforeMount, getCurrentInstance } from 'vue'
+
 export default {
-  name: 'HomeView'
+  name: 'HomeView',
+  
+  setup() {
+    const { proxy: app } = getCurrentInstance()
+    
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('graduationCap'),
+        app.$loadIcon('book'),
+        app.$loadIcon('desktop'),
+        app.$loadIcon('globe'),
+        app.$loadIcon('shieldHalved'),
+        app.$loadIcon('clock'),
+        app.$loadIcon('star'),
+        app.$loadIcon('keyboard'),
+        app.$loadIcon('wifi')
+      ])
+    })
+  }
 }
 </script>
 

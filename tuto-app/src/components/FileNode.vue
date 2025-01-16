@@ -73,6 +73,7 @@
 <script>
 import ContextMenu from './ContextMenu.vue'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
+import { onBeforeMount, getCurrentInstance } from 'vue'
 
 export default {
   name: 'FileNode',
@@ -269,6 +270,19 @@ export default {
       this.isEditing = false
       this.editedName = ''
     }
+  },
+  setup() {
+    const { proxy: app } = getCurrentInstance()
+    
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('folder'),
+        app.$loadIcon('folderOpen'),
+        app.$loadIcon('file'),
+        app.$loadIcon('chevronRight'),
+        app.$loadIcon('chevronDown')
+      ])
+    })
   }
 }
 </script>

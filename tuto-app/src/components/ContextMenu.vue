@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick, onBeforeMount, getCurrentInstance } from 'vue'
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -103,6 +103,17 @@ watch(() => props.show, (newValue) => {
   if (newValue) {
     nextTick(adjustMenuPosition)
   }
+})
+
+const { proxy: app } = getCurrentInstance()
+
+onBeforeMount(async () => {
+  await Promise.all([
+    app.$loadIcon('file'),
+    app.$loadIcon('folder'),
+    app.$loadIcon('edit'),
+    app.$loadIcon('trash')
+  ])
 })
 </script>
 

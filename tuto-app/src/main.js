@@ -4,151 +4,96 @@ import App from './App.vue'
 import router from './router'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// Icônes essentielles pour le chargement initial
 import { 
     faHome,
-    faCode,
-    faInfoCircle,
-    faFolderTree,
-    faSearch,
-    faComputer,
-    faGlobe,
-    faShieldHalved,
-    faKeyboard,
-    faWifi,
-    faClock,
-    faUser,
-    faSun,
-    faMoon,
-    faLightbulb,
-    faCheckCircle,
-    faCircle,
     faArrowLeft,
-    faArrowRight,
-    faFolder,
-    faStar,
-    faLaptopCode,
-    faMobile,
-    faDatabase,
-    faRoad,
-    faSignal,
-    faGraduationCap,
     faBook,
-    faFolderOpen,
-    faFile,
-    faEdit,
-    faTrash,
-    faChevronRight,
-    faChevronDown,
-    faBullseye,
-    faUsers,
-    faEnvelope,
-    faMinus,
-    faExpand,
-    faTimes,
+    faFolderTree,
+    faCode,
+    faKeyboard,
+    faInfoCircle,
+    faDesktop,
     faWindowMinimize,
     faWindowMaximize,
     faWindowClose,
-    faCheck,
-    faXmark,
-    faTools,
-    faHardHat,
-    faFileWord,
-    faMusic,
-    faImage,
-    faFilm,
-    faHandshakeAngle,
-    faBroom,
-    faImages,
-    faLayerGroup,
-    faWandMagicSparkles,
-    faRotateRight
+    faGraduationCap,
+    faGlobe,
+    faShieldHalved,
+    faClock,
+    faStar,
+    faWifi,
+    faSun
 } from '@fortawesome/free-solid-svg-icons'
 
-import {
-    faTwitter,
-    faGithub,
-    faLinkedin,
-    faInstagram,
-    faYoutube
-} from '@fortawesome/free-brands-svg-icons'
-
-import { preloadCriticalResources } from '@/utils/preloader'
-
+// Ajout des icônes essentielles
 library.add(
     faHome,
-    faCode,
-    faInfoCircle,
-    faFolderTree,
-    faSearch,
-    faComputer,
-    faGlobe,
-    faShieldHalved,
-    faKeyboard,
-    faWifi,
-    faClock,
-    faUser,
-    faSun,
-    faMoon,
-    faLightbulb,
-    faCheckCircle,
-    faCircle,
     faArrowLeft,
-    faArrowRight,
-    faFolder,
-    faStar,
-    faLaptopCode,
-    faMobile,
-    faDatabase,
-    faRoad,
-    faSignal,
-    faGraduationCap,
     faBook,
-    faFolderOpen,
-    faFile,
-    faEdit,
-    faTrash,
-    faChevronRight,
-    faChevronDown,
-    faBullseye,
-    faUsers,
-    faEnvelope,
-    faMinus,
-    faExpand,
-    faTimes,
-    faTwitter,
-    faGithub,
-    faLinkedin,
-    faInstagram,
-    faYoutube,
+    faFolderTree,
+    faCode,
+    faKeyboard,
+    faInfoCircle,
+    faDesktop,
     faWindowMinimize,
     faWindowMaximize,
     faWindowClose,
-    faCheck,
-    faXmark,
-    faTools,
-    faHardHat,
-    faFileWord,
-    faMusic,
-    faImage,
-    faFilm,
-    faHandshakeAngle,
-    faBroom,
-    faImages,
-    faLayerGroup,
-    faWandMagicSparkles,
-    faRotateRight
+    faGraduationCap,
+    faGlobe,
+    faShieldHalved,
+    faClock,
+    faStar,
+    faWifi,
+    faSun
 )
+
+// Fonction pour charger dynamiquement les icônes
+const loadIcon = async (iconName) => {
+    try {
+        const iconModule = await import('@fortawesome/free-solid-svg-icons');
+        const iconKey = `fa${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`;
+        if (iconModule[iconKey]) {
+            library.add(iconModule[iconKey]);
+        } else {
+            console.warn(`L'icône ${iconName} n'existe pas dans free-solid-svg-icons`);
+        }
+    } catch (error) {
+        console.warn(`Impossible de charger l'icône ${iconName}:`, error);
+    }
+};
+
+// Fonction pour charger les icônes de marques
+const loadBrandIcon = async (iconName) => {
+    try {
+        const iconModule = await import('@fortawesome/free-brands-svg-icons');
+        const iconKey = `fa${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`;
+        if (iconModule[iconKey]) {
+            library.add(iconModule[iconKey]);
+        } else {
+            console.warn(`L'icône ${iconName} n'existe pas dans free-brands-svg-icons`);
+        }
+    } catch (error) {
+        console.warn(`Impossible de charger l'icône de marque ${iconName}:`, error);
+    }
+};
 
 const app = createApp(App)
 const pinia = createPinia()
+
+// Rendre les fonctions de chargement d'icônes disponibles globalement
+app.config.globalProperties.$loadIcon = loadIcon;
+app.config.globalProperties.$loadBrandIcon = loadBrandIcon;
 
 app.use(pinia)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 
 // Préchargement des ressources critiques
+import { preloadCriticalResources } from '@/utils/preloader'
+
 preloadCriticalResources().then(() => {
-  // S'assurer que l'application démarre sur la page d'accueil
   router.isReady().then(() => {
     if (router.currentRoute.value.path !== '/') {
       router.push('/')

@@ -104,8 +104,26 @@
 </template>
 
 <script>
+import { onBeforeMount, getCurrentInstance } from 'vue'
+
 export default {
   name: 'AboutView',
+  
+  setup() {
+    const { proxy: app } = getCurrentInstance()
+    
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('graduationCap'),
+        app.$loadIcon('wandMagicSparkles'),
+        app.$loadIcon('shieldHalved'),
+        app.$loadIcon('envelope'),
+        app.$loadBrandIcon('github'),
+        app.$loadBrandIcon('twitter')
+      ])
+    })
+  },
+
   mounted() {
     const mobileMessage = document.querySelector('.mobile-message');
     if (mobileMessage) {

@@ -69,6 +69,7 @@ import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
 import { useValidation } from '@/composables/useValidation'
 import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+import { onBeforeMount, getCurrentInstance } from 'vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -127,7 +128,15 @@ export default {
     const keyboardEvents = useKeyboardEvents()
     const router = useRouter()
     const highlightedKeysCache = useCacheManager(50)
-  
+    const { proxy: app } = getCurrentInstance()
+    
+    // Chargement des icônes nécessaires
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('rotateRight'),
+        app.$loadIcon('arrowRight')
+      ])
+    })
 
     return {
       store,

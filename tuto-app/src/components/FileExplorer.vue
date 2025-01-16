@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, onBeforeMount, getCurrentInstance } from 'vue'
 import FileNode from './FileNode.vue'
 
 export default defineComponent({
@@ -191,6 +191,24 @@ export default defineComponent({
   beforeUnmount() {
     document.removeEventListener('mousemove', this.resize);
     document.removeEventListener('mouseup', this.stopResize);
+  },
+  setup() {
+    const { proxy: app } = getCurrentInstance()
+    
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('folder'),
+        app.$loadIcon('home'),
+        app.$loadIcon('file'),
+        app.$loadIcon('folderOpen'),
+        app.$loadIcon('edit'),
+        app.$loadIcon('trash')
+      ])
+    })
+
+    return {
+      // ... existing return ...
+    }
   }
 })
 </script>

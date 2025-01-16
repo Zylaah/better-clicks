@@ -65,7 +65,7 @@ import { useValidation } from '@/composables/useValidation'
 import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
 import { PhraseGenerator } from '@/services/phraseGenerator'
 import ProgressBar from '@/components/ProgressBar.vue'
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, onBeforeMount } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 
@@ -101,6 +101,14 @@ export default {
     const { debounce, clearDebounces } = useDebounce()
     const validation = useValidation({ maxCacheSize: 50 })
     const keyboardEvents = useKeyboardEvents()
+    const { proxy: app } = getCurrentInstance()
+
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('rotateRight'),
+        app.$loadIcon('arrowRight')
+      ])
+    })
 
     return {
       store,

@@ -3,19 +3,21 @@
       <div class="title"><i>v0.2.0</i></div>
       <div class="titlebar-controls">
         <button class="titlebar-button minimize" @click="minimize">
-          <span><font-awesome-icon icon="minus" /></span>
+          <span><font-awesome-icon icon="window-minimize" /></span>
         </button>
         <button class="titlebar-button maximize" @click="maximize">
-          <span><font-awesome-icon icon="expand" /></span>
+          <span><font-awesome-icon icon="window-maximize" /></span>
         </button>
         <button class="titlebar-button close" @click="close">
-          <span><font-awesome-icon icon="times" /></span>
+          <span><font-awesome-icon icon="window-close" /></span>
         </button>
       </div>
     </div>
   </template>
   
   <script>
+  import { onBeforeMount, getCurrentInstance } from 'vue'
+  
   export default {
     name: 'TitleBar',
     methods: {
@@ -30,6 +32,18 @@
       close() {
         window.electronAPI.closeWindow()
       }
+    },
+    
+    setup() {
+      const { proxy: app } = getCurrentInstance()
+      
+      onBeforeMount(async () => {
+        await Promise.all([
+          app.$loadIcon('windowMinimize'),
+          app.$loadIcon('windowMaximize'),
+          app.$loadIcon('windowClose')
+        ])
+      })
     }
   }
   </script>

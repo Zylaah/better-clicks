@@ -5,6 +5,8 @@
   </template>
   
   <script>
+  import { onBeforeMount, getCurrentInstance } from 'vue'
+
   export default {
     name: 'ThemeToggle',
     data() {
@@ -23,6 +25,16 @@
       const savedTheme = localStorage.getItem('theme') || 'dark'
       this.isDark = savedTheme === 'dark'
       document.documentElement.setAttribute('data-theme', savedTheme)
+    },
+    setup() {
+      const { proxy: app } = getCurrentInstance()
+      
+      onBeforeMount(async () => {
+        await Promise.all([
+          app.$loadIcon('sun'),
+          app.$loadIcon('moon')
+        ])
+      })
     }
   }
   </script>
