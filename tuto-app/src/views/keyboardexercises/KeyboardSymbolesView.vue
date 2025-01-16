@@ -65,6 +65,7 @@ import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
 import { useValidation } from '@/composables/useValidation'
 import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+import { SymbolGenerator } from '@/services/symbolGenerator'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -76,49 +77,15 @@ const symbolCache = {
   getSymbols() {
     const cached = this.cacheManager.getFromCache('symbols')
     if (cached) return [...cached]
-
-    const symbols = [
-      { char: 'é', display: 'é', modifiers: [] },
-      { char: 'è', display: 'è', modifiers: [] },
-      { char: 'à', display: 'à', modifiers: [] },
-      { char: 'ù', display: 'ù', modifiers: [] },
-      { char: 'ç', display: 'ç', modifiers: [] },
-      { char: '&', display: '&', modifiers: [] },
-      { char: '"', display: '"', modifiers: [] },
-      { char: "'", display: "'", modifiers: [] },
-      { char: '(', display: '(', modifiers: [] },
-      { char: ')', display: ')', modifiers: [] },
-      { char: '-', display: '-', modifiers: [] },
-      { char: '_', display: '_', modifiers: [] },
-      { char: '^', display: '^', modifiers: [] },
-      { char: '$', display: '$', modifiers: [] },
-      { char: '*', display: '*', modifiers: [] },
-      { char: ',', display: ',', modifiers: [] },
-      { char: ';', display: ';', modifiers: [] },
-      { char: ':', display: ':', modifiers: [] },
-      { char: '!', display: '!', modifiers: [] },
-      { char: '²', display: '²', modifiers: [] },
-      { char: '~', display: '~', modifiers: ['AltRight'], keyCode: 'Digit2' },
-      { char: '#', display: '#', modifiers: ['AltRight'], keyCode: 'Digit3' },
-      { char: '{', display: '{', modifiers: ['AltRight'], keyCode: 'Digit4' },
-      { char: '[', display: '[', modifiers: ['AltRight'], keyCode: 'Digit5' },
-      { char: '|', display: '|', modifiers: ['AltRight'], keyCode: 'Digit6' },
-      { char: '`', display: '`', modifiers: ['AltRight'], keyCode: 'Digit7' },
-      { char: '\\', display: '\\', modifiers: ['AltRight'], keyCode: 'Digit8' },
-      { char: '@', display: '@', modifiers: ['AltRight'], keyCode: 'Digit0' },
-      { char: ']', display: ']', modifiers: ['AltRight'], keyCode: 'Minus' },
-      { char: '}', display: '}', modifiers: ['AltRight'], keyCode: 'Equal' }
-    ]
     
+    const symbols = SymbolGenerator.generateRandomSymbols(30)
     this.cacheManager.addToCache('symbols', symbols)
-    return this.shuffleArray([...symbols])
+    return [...symbols]
   },
-  shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[array[i], array[j]] = [array[j], array[i]]
-    }
-    return array
+  refreshCache() {
+    const symbols = SymbolGenerator.generateRandomSymbols(30)
+    this.cacheManager.addToCache('symbols', symbols)
+    return [...symbols]
   }
 }
 
@@ -213,7 +180,7 @@ export default {
 
   methods: {
     generateSymbolsList() {
-      return symbolCache.getSymbols()
+      return symbolCache.refreshCache()
     },
 
     checkSymbol() {
