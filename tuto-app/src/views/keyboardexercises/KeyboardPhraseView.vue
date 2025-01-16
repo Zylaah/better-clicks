@@ -4,7 +4,6 @@
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
-      :highlighted-keys="highlightedKeys"
     />
 
     <div class="example-phrase-container slide-up">
@@ -12,7 +11,7 @@
         <h3 v-once>Phrase à recopier :</h3>
         <div class="phrases-container">
           <div class="phrase-item current">
-            {{ phrasesExemple[currentPhraseIndex] }}
+            {{ currentPhrase }}
           </div>
           <ProgressBar 
             v-memo="[currentPhraseIndex]"
@@ -60,66 +59,15 @@
 <script>
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
-import phrases from '@/data/phrases.json'
 import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
 import { useDebounce } from '@/composables/useDebounce'
-import { useCacheManager } from '@/composables/useCacheManager'
 import { useValidation } from '@/composables/useValidation'
 import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+import { PhraseGenerator } from '@/services/phraseGenerator'
 import ProgressBar from '@/components/ProgressBar.vue'
 import RestartModal from '@/components/RestartModal.vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
-
-// Map des caractères avec leurs modifiers pour AZERTY
-const AZERTY_CHAR_MODIFIERS = new Map([
-  // Chiffres (tous avec Shift sur AZERTY)
-  ['1', ['Shift']], ['2', ['Shift']], ['3', ['Shift']], ['4', ['Shift']], 
-  ['5', ['Shift']], ['6', ['Shift']], ['7', ['Shift']], ['8', ['Shift']], 
-  ['9', ['Shift']], ['0', ['Shift']],
-  
-  // Ponctuation haute
-  ['!', ['Shift']], ['/', ['Shift']], ['\\', ['AltGr']], ['|', ['AltGr']],
-  ['@', ['AltGr']], ['#', ['AltGr']], ['$', ['Shift']], ['€', ['AltGr']],
-  ['£', ['Shift']], ['%', ['Shift']], ['?', ['Shift']], ['.', ['Shift']],
-  ['/', ['Shift']], ['§', ['Shift']], ['&', ['Shift']], ['"', ['Shift']],
-  ['\'', ['Shift']], ['(', ['Shift']], [')', ['Shift']], ['[', ['AltGr']],
-  [']', ['AltGr']], ['{', ['AltGr']], ['}', ['AltGr']], ['<', ['Shift']],
-  ['>', ['Shift']], ['°', ['Shift']], ['+', ['Shift']], ['=', ['Shift']],
-  ['_', ['Shift']], ['µ', ['Shift']], ['*', ['Shift']], ['¨', ['Shift']],
-  ['`', ['AltGr']], ['~', ['AltGr']], ['^', ['Shift']], ['¤', ['Shift']],
-  [':', ['Shift']], [';', ['Shift']]
-])
-
-// Fonction pour détecter les majuscules
-function isUpperCase(char) {
-  return char === char.toUpperCase() && char !== char.toLowerCase()
-}
-
-// Cache pour les phrases avec gestionnaire de cache
-const phraseCache = {
-  cacheManager: useCacheManager(100),
-  getRandomPhrases(count) {
-    const cacheKey = `phrases-${count}`
-    const cached = this.cacheManager.getFromCache(cacheKey)
-    if (cached) return [...cached]
-
-    if (!this.cacheManager.getFromCache('allPhrases')) {
-      this.cacheManager.addToCache('allPhrases', [...phrases.phrases])
-    }
-    
-    const randomPhrases = this.shuffleArray([...this.cacheManager.getFromCache('allPhrases')]).slice(0, count)
-    this.cacheManager.addToCache(cacheKey, randomPhrases)
-    return [...randomPhrases]
-  },
-  shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[array[i], array[j]] = [array[j], array[i]]
-    }
-    return array
-  }
-}
 
 export default {
   name: 'KeyboardPhraseView',
@@ -136,7 +84,6 @@ export default {
     const { typingSpeed } = storeToRefs(store)
     const { animationClasses, animateIfPossible } = useOptimizedAnimations()
     const { debounce, clearDebounces } = useDebounce()
-    const highlightedKeysCache = useCacheManager(20)
     const validation = useValidation({ maxCacheSize: 50 })
     const keyboardEvents = useKeyboardEvents()
 
@@ -147,7 +94,6 @@ export default {
       animateIfPossible,
       debouncedCheck: debounce((vm, input) => vm.checkPhrase(input), 100),
       clearDebounces,
-      highlightedKeysCache,
       keyboardEvents,
       ...validation
     }
@@ -157,54 +103,19 @@ export default {
     return {
       textContent: '',
       currentPhraseIndex: 0,
-      phrasesExemple: phraseCache.getRandomPhrases(15),
-      cachedHighlightedKeys: {
-        char: null,
-        modifiers: null,
-        keys: []
-      }
+      currentDifficulty: 'MEDIUM',
+      phrasesExemple: []
     }
   },
 
   computed: {
     currentPhrase() {
-      return this.phrasesExemple[this.currentPhraseIndex] || ''
+      const phraseObj = this.phrasesExemple[this.currentPhraseIndex]
+      return phraseObj ? phraseObj.text : ''
     },
 
     isLastPhrase() {
       return this.currentPhraseIndex === this.phrasesExemple.length - 1
-    },
-
-    currentCharToType() {
-      const phrase = this.currentPhrase
-      if (!phrase) return { char: '', display: '', modifiers: [] }
-      const char = this.textContent.length < phrase.length ? phrase[this.textContent.length] : ''
-      
-      let modifiers = []
-
-
-      if (char === ' ') {
-        modifiers.push('Space')
-      }
-      // Vérifier si c'est une majuscule
-      if (isUpperCase(char)) {
-        modifiers.push('ShiftLeft')
-      }
-      // Vérifier si le caractère a des modifiers spéciaux
-      const specialModifiers = AZERTY_CHAR_MODIFIERS.get(char)
-      if (specialModifiers) {
-        modifiers = [...new Set([...modifiers, ...specialModifiers])]
-      }
-      
-      return {
-        char,
-        display: char,
-        modifiers
-      }
-    },
-
-    highlightedKeys() {
-      return this.cachedHighlightedKeys.keys
     },
 
     isPartiallyCorrect() {
@@ -218,43 +129,11 @@ export default {
     }
   },
 
-  watch: {
-  currentCharToType: {
-    handler(current) {
-      if (!current.char) {
-        this.cachedHighlightedKeys = { char: null, modifiers: null, keys: [] }
-        return
-      }
-
-      // Check if the current character is a space
-      if (current.char === ' ') {
-        this.cachedHighlightedKeys = {
-          char: current.char,
-          modifiers: current.modifiers,
-          keys: ['Space'] // Highlight the spacebar
-        }
-        return
-      }
-
-      if (this.cachedHighlightedKeys.char !== current.char || 
-          !this.arraysEqual(this.cachedHighlightedKeys.modifiers, current.modifiers)) {
-        const keys = this.store.updateHighlightedKeysCache(current.char, current.modifiers)
-        this.cachedHighlightedKeys = {
-          char: current.char,
-          modifiers: current.modifiers,
-          keys: [...keys, ...current.modifiers]
-        }
-      }
-    },
-    immediate: true
-  }
-},
+  created() {
+    this.phrasesExemple = PhraseGenerator.generateRandomPhrases(15, this.currentDifficulty)
+  },
 
   methods: {
-    getRandomPhrases(count) {
-      return phraseCache.getRandomPhrases(count)
-    },
-
     checkPhrase() {
       const result = this.validateInput(this.textContent, this.currentPhrase, {
         isLastItem: this.isLastPhrase,
@@ -276,7 +155,7 @@ export default {
     },
 
     restartExercise() {
-      this.phrasesExemple = this.getRandomPhrases(15)
+      this.phrasesExemple = PhraseGenerator.generateRandomPhrases(15, this.currentDifficulty)
       this.currentPhraseIndex = 0
       this.textContent = ''
       this.resetValidation()
@@ -285,20 +164,12 @@ export default {
 
     goNext() {
       this.$router.push({ name: 'keyboard-menu' })
-    },
-
-    arraysEqual(a, b) {
-      if (!Array.isArray(a) || !Array.isArray(b)) return false
-      if (a.length !== b.length) return false
-      return a.every((val, index) => val === b[index])
     }
   },
 
   beforeUnmount() {
     this.clearDebounces()
     this.store.reset()
-    this.highlightedKeysCache.clearCache()
-    phraseCache.cacheManager.cleanOldEntries()
   }
 }
 </script>
