@@ -22,7 +22,7 @@
           <p>Factures, lettres, contrats</p>
         </div>
         <div class="example-card">
-          <font-awesome-icon icon="images" class="icon green" />
+          <font-awesome-icon icon="image" class="icon green" />
           <h3>Photos</h3>
           <p>Vacances, famille, événements</p>
         </div>
@@ -32,7 +32,7 @@
           <p>Fichiers récupérés d'Internet</p>
         </div>
         <div class="example-card">
-          <font-awesome-icon icon="folder-tree" class="icon red" />
+          <font-awesome-icon icon="sitemap" class="icon red" />
           <h3>Sous-dossiers</h3>
           <p>Organisation par catégories</p>
         </div>
@@ -74,7 +74,7 @@
       <h2>✨ Bonnes Pratiques</h2>
       <div class="practices-grid">
         <div class="practice-card">
-          <font-awesome-icon icon="check-circle" class="icon green" />
+          <font-awesome-icon icon="check" class="icon green" />
           <h4>Nommage Clair</h4>
           <p>Utilisez des noms descriptifs pour vos dossiers</p>
           <div class="example-box">
@@ -98,7 +98,7 @@
           <p>Triez et nettoyez vos dossiers régulièrement</p>
         </div>
         <div class="practice-card">
-          <font-awesome-icon icon="handshake-angle" class="icon orange" />
+          <font-awesome-icon icon="handshake" class="icon orange" />
           <h4>Besoin d'aide ?</h4>
           <p>N'hésitez pas à demander conseil à un proche ou un conseiller numérique.</p>
         </div>
@@ -108,13 +108,27 @@
 </template>
 
 <script>
+import { onBeforeMount, getCurrentInstance } from 'vue'
+
 export default {
-  name: 'ExplorerChapterTwo',
-  props: {
-    chapterData: {
-      type: Object,
-      required: true
-    }
+  name: 'ChapterTwo',
+  
+  setup() {
+    const { proxy: app } = getCurrentInstance()
+    
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('folder'),
+        app.$loadIcon('image'),
+        app.$loadIcon('folder-open'),
+        app.$loadIcon('sitemap'),
+        app.$loadIcon('lightbulb'),
+        app.$loadIcon('check'),
+        app.$loadIcon('layer-group'),
+        app.$loadIcon('broom'),
+        app.$loadIcon('handshake')
+      ])
+    })
   }
 }
 </script>

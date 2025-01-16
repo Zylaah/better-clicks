@@ -39,6 +39,8 @@
   </template>
   
   <script>
+  import { onBeforeMount, getCurrentInstance } from 'vue'
+
   export default {
     name: 'KeyboardOnboarding',
     data() {
@@ -57,6 +59,15 @@
       if (!hasSeenOnboarding) {
         this.isVisible = true
       }
+    },
+    setup() {
+      const { proxy: app } = getCurrentInstance()
+      
+      onBeforeMount(async () => {
+        await Promise.all([
+          app.$loadIcon('lightbulb')
+        ])
+      })
     }
   }
   </script>

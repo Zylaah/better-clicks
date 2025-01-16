@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, onBeforeMount, getCurrentInstance } from 'vue'
 import ExerciseTypeA from '@/components/ExerciseTypeA.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faFolder, faFolderTree, faFile, faHome, faFolderOpen, faChevronRight, faChevronDown, faCompass, faFolderPlus, faSort, faSearch, faLock, faProjectDiagram, faDesktop, faCode, faStar } from '@fortawesome/free-solid-svg-icons'
@@ -63,6 +63,30 @@ export default defineComponent({
         params: { exercise: JSON.stringify(exercise) }
       })
     }
+  },
+  setup() {
+    const { proxy: app } = getCurrentInstance()
+    
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('folder'),
+        app.$loadIcon('folderTree'),
+        app.$loadIcon('file'),
+        app.$loadIcon('home'),
+        app.$loadIcon('folderOpen'),
+        app.$loadIcon('chevronRight'),
+        app.$loadIcon('chevronDown'),
+        app.$loadIcon('compass'),
+        app.$loadIcon('folderPlus'),
+        app.$loadIcon('sort'),
+        app.$loadIcon('search'),
+        app.$loadIcon('lock'),
+        app.$loadIcon('projectDiagram'),
+        app.$loadIcon('desktop'),
+        app.$loadIcon('code'),
+        app.$loadIcon('star')
+      ])
+    })
   }
 })
 </script>

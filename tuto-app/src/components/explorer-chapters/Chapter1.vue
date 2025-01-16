@@ -17,7 +17,7 @@
 
       <div class="example-grid">
         <div class="example-card">
-          <font-awesome-icon icon="file-word" class="icon blue" />
+          <font-awesome-icon icon="file" class="icon blue" />
           <h3>Documents</h3>
           <p>Lettres, rapports, notes</p>
         </div>
@@ -75,7 +75,7 @@
       <h2>✨ Bonnes Pratiques</h2>
       <div class="practices-grid">
         <div class="practice-card">
-          <font-awesome-icon icon="check-circle" class="icon green" />
+          <font-awesome-icon icon="check" class="icon green" />
           <h4>Nommage Clair</h4>
           <p>Utilisez des noms descriptifs et datés</p>
           <div class="example-box">
@@ -84,7 +84,7 @@
           </div>
         </div>
         <div class="practice-card">
-          <font-awesome-icon icon="folder-tree" class="icon blue" />
+          <font-awesome-icon icon="sitemap" class="icon blue" />
           <h4>Organisation</h4>
           <p>Rangez vos fichiers dans des dossiers thématiques</p>
           <div class="example-box-grid">
@@ -100,12 +100,12 @@
           </div>
         </div>
         <div class="practice-card">
-          <font-awesome-icon icon="shield-alt" class="icon purple" />
+          <font-awesome-icon icon="shield" class="icon purple" />
           <h4>Sauvegarde</h4>
           <p>Faites des copies de vos fichiers importants</p>
         </div>
         <div class="practice-card">
-          <font-awesome-icon icon="handshake-angle" class="icon orange" />
+          <font-awesome-icon icon="handshake" class="icon orange" />
           <h4>Si c'est trop difficile</h4>
           <p>Faites vous aider par un membre de vote famille ou un conseiller numériques.</p>
         </div>
@@ -258,13 +258,27 @@ h4 {
 </style>
 
 <script>
+import { onBeforeMount, getCurrentInstance } from 'vue'
+
 export default {
-  name: 'ExplorerChapterOne',
-  props: {
-    chapterData: {
-      type: Object,
-      required: true
-    }
+  name: 'ChapterOne',
+  
+  setup() {
+    const { proxy: app } = getCurrentInstance()
+    
+    onBeforeMount(async () => {
+      await Promise.all([
+        app.$loadIcon('file'),
+        app.$loadIcon('image'),
+        app.$loadIcon('music'),
+        app.$loadIcon('film'),
+        app.$loadIcon('lightbulb'),
+        app.$loadIcon('check'),
+        app.$loadIcon('sitemap'),
+        app.$loadIcon('shield'),
+        app.$loadIcon('handshake')
+      ])
+    })
   }
 }
 </script>

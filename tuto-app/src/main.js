@@ -24,7 +24,25 @@ import {
     faClock,
     faStar,
     faWifi,
-    faSun
+    faSun,
+    faMoon,
+    faImage,
+    faMusic,
+    faFilm,
+    faLightbulb,
+    faCheck,
+    faSitemap,
+    faShield,
+    faHandshake,
+    faFolder,
+    faFolderOpen,
+    faFile,
+    faLayerGroup,
+    faBroom,
+    faChevronRight,
+    faChevronDown,
+    faEdit,
+    faTrash
 } from '@fortawesome/free-solid-svg-icons'
 
 // Ajout des icônes essentielles
@@ -46,7 +64,25 @@ library.add(
     faClock,
     faStar,
     faWifi,
-    faSun
+    faSun,
+    faMoon,
+    faImage,
+    faMusic,
+    faFilm,
+    faLightbulb,
+    faCheck,
+    faSitemap,
+    faShield,
+    faHandshake,
+    faFolder,
+    faFolderOpen,
+    faFile,
+    faLayerGroup,
+    faBroom,
+    faChevronRight,
+    faChevronDown,
+    faEdit,
+    faTrash
 )
 
 // Fonction pour charger dynamiquement les icônes
