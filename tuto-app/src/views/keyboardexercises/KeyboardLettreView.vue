@@ -111,6 +111,8 @@ export default {
     const validation = useValidation({ maxCacheSize: 50 })
     const keyboardEvents = useKeyboardEvents()
     const router = useRouter()
+    const highlightedKeysCache = useCacheManager(50)
+  
 
     return {
       store,
@@ -124,6 +126,7 @@ export default {
       clearDebounces,
       keyboardEvents,
       router,
+      highlightedKeysCache,
       ...validation
     }
   },
