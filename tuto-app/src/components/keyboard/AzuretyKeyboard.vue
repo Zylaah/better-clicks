@@ -159,6 +159,7 @@
           :is-special="true"
           key-code="Space"
           data-key="Space"
+          :is-highlighted="highlightedKeys.includes('Space')"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />

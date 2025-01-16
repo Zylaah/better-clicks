@@ -181,6 +181,11 @@ export default {
       const char = this.textContent.length < phrase.length ? phrase[this.textContent.length] : ''
       
       let modifiers = []
+
+
+      if (char === ' ') {
+        modifiers.push('Space')
+      }
       // Vérifier si c'est une majuscule
       if (isUpperCase(char)) {
         modifiers.push('ShiftLeft')
@@ -214,26 +219,36 @@ export default {
   },
 
   watch: {
-    currentCharToType: {
-      handler(current) {
-        if (!current.char) {
-          this.cachedHighlightedKeys = { char: null, modifiers: null, keys: [] }
-          return
-        }
+  currentCharToType: {
+    handler(current) {
+      if (!current.char) {
+        this.cachedHighlightedKeys = { char: null, modifiers: null, keys: [] }
+        return
+      }
 
-        if (this.cachedHighlightedKeys.char !== current.char || 
-            !this.arraysEqual(this.cachedHighlightedKeys.modifiers, current.modifiers)) {
-          const keys = this.store.updateHighlightedKeysCache(current.char, current.modifiers)
-          this.cachedHighlightedKeys = {
-            char: current.char,
-            modifiers: current.modifiers,
-            keys: [...keys, ...current.modifiers]
-          }
+      // Check if the current character is a space
+      if (current.char === ' ') {
+        this.cachedHighlightedKeys = {
+          char: current.char,
+          modifiers: current.modifiers,
+          keys: ['Space'] // Highlight the spacebar
         }
-      },
-      immediate: true
-    }
-  },
+        return
+      }
+
+      if (this.cachedHighlightedKeys.char !== current.char || 
+          !this.arraysEqual(this.cachedHighlightedKeys.modifiers, current.modifiers)) {
+        const keys = this.store.updateHighlightedKeysCache(current.char, current.modifiers)
+        this.cachedHighlightedKeys = {
+          char: current.char,
+          modifiers: current.modifiers,
+          keys: [...keys, ...current.modifiers]
+        }
+      }
+    },
+    immediate: true
+  }
+},
 
   methods: {
     getRandomPhrases(count) {
