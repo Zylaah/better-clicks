@@ -54,8 +54,8 @@
         <KeyboardKey 
           label="µ"
           :sub-label="'*'"
-          :key-code="keyCodes['*']"
-          :is-highlighted="highlightedKeys.includes('*')"
+          :key-code="keyCodes['µ']"
+          :is-highlighted="highlightedKeys.includes('µ') || highlightedKeys.includes('*')"
           @key-press="logKeyPress"
           @key-release="logKeyRelease"
         />
@@ -350,7 +350,7 @@ export default {
           { main: 'K', normal: 'k', alt: '' },
           { main: 'L', normal: 'l', alt: '' },
           { main: 'M', normal: 'm', alt: '' },
-          { main: '%', normal: 'ù', alt: '' }
+          { main: '%', normal: 'ù', alt: '' },
         ],
         // Quatrième rangée
         [
@@ -422,6 +422,7 @@ export default {
         '$': 'BracketRight',
         'ù': 'Quote',
         '*': 'Backslash',
+        'µ': 'Backslash',
         '<': 'IntlBackslash',
         '>': 'IntlBackslash'
       },

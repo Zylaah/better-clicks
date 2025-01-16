@@ -13,10 +13,7 @@ export class SymbolGenerator {
     ['}', ['AltRight']], ['€', ['AltRight']],
 
     // Symboles avec Shift
-    ['1', ['ShiftLeft']], ['2', ['ShiftLeft']], ['3', ['ShiftLeft']], 
-    ['4', ['ShiftLeft']], ['5', ['ShiftLeft']], ['6', ['ShiftLeft']], 
-    ['7', ['ShiftLeft']], ['8', ['ShiftLeft']], ['9', ['ShiftLeft']], 
-    ['0', ['ShiftLeft']], ['°', ['ShiftLeft']], ['+', ['ShiftLeft']],
+    ['°', ['ShiftLeft']], ['+', ['ShiftLeft']],
     ['¨', ['ShiftLeft']], ['£', ['ShiftLeft']], ['%', ['ShiftLeft']],
     ['µ', ['ShiftLeft']], ['M', ['ShiftLeft']], ['?', ['ShiftLeft']],
     ['.', ['ShiftLeft']], ['/', ['ShiftLeft']], ['§', ['ShiftLeft']],
