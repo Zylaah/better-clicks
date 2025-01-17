@@ -2,11 +2,12 @@ import mots from '@/data/mots.json'
 
 export class WordGenerator {
   static generateRandomWords(count = 20) {
-    // Mélanger et sélectionner le nombre de mots demandé
-    const selectedWords = this.shuffleArray(mots.mots).slice(0, count)
+    // Créer une copie du tableau original pour ne pas le modifier
+    const wordsCopy = [...mots.mots]
+    // Mélanger la copie
+    const selectedWords = this.shuffleArray(wordsCopy).slice(0, count)
     const words = []
 
-    // Convertir les mots en objets simples
     for (const word of selectedWords) {
       words.push({
         word,

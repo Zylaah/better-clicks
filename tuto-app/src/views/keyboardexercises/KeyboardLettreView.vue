@@ -65,7 +65,6 @@ import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
 import { LetterGenerator } from '@/services/letterGenerator'
 import { useCacheManager } from '@/composables/useCacheManager'
 import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
-import ProgressBar from '@/components/ProgressBar.vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
@@ -91,6 +90,21 @@ const letterCache = {
 
 const RestartModal = defineAsyncComponent({
   loader: () => import('@/components/RestartModal.vue'),
+  loadingComponent: null,
+  delay: 200,
+  timeout: 3000,
+  errorComponent: null,
+  onError(error, retry, fail, attempts) {
+    if (attempts <= 3) {
+      retry()
+    } else {
+      fail()
+    }
+  }
+})
+
+const ProgressBar = defineAsyncComponent({
+  loader: () => import('@/components/ProgressBar.vue'),
   loadingComponent: null,
   delay: 200,
   timeout: 3000,

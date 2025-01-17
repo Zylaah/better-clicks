@@ -33,7 +33,9 @@ export default {
   },
   setup() {
     onMounted(() => {
-      import('@/components/keyboard/AzuretyKeyboard.vue')
+      import('@/components/keyboard/AzuretyKeyboard.vue');
+      import('@/components/RestartModal.vue');
+      import('@/components/ProgressBar.vue');
     })
   },
   

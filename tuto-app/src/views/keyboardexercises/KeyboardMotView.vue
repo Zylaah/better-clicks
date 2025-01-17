@@ -61,7 +61,6 @@ import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
 import { WordGenerator } from '@/services/wordGenerator'
 import { useCacheManager } from '@/composables/useCacheManager'
 import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
-import ProgressBar from '@/components/ProgressBar.vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
@@ -70,10 +69,12 @@ import { useRouter } from 'vue-router'
 // Cache pour les mots avec gestionnaire de cache
 const motCache = {
   cacheManager: useCacheManager(100),
-  getRandomMots(count) {
+  getRandomMots(count, forceRefresh = false) {
     const cacheKey = `mots-${count}`
-    const cached = this.cacheManager.getFromCache(cacheKey)
-    if (cached) return [...cached]
+    if (!forceRefresh) {
+      const cached = this.cacheManager.getFromCache(cacheKey)
+      if (cached) return [...cached]
+    }
     
     const randomMots = WordGenerator.generateRandomWords(count)
     this.cacheManager.addToCache(cacheKey, randomMots)
@@ -83,6 +84,21 @@ const motCache = {
 
 const RestartModal = defineAsyncComponent({
   loader: () => import('@/components/RestartModal.vue'),
+  loadingComponent: null,
+  delay: 200,
+  timeout: 3000,
+  errorComponent: null,
+  onError(error, retry, fail, attempts) {
+    if (attempts <= 3) {
+      retry()
+    } else {
+      fail()
+    }
+  }
+})
+
+const ProgressBar = defineAsyncComponent({
+  loader: () => import('@/components/ProgressBar.vue'),
   loadingComponent: null,
   delay: 200,
   timeout: 3000,
@@ -153,7 +169,7 @@ export default {
     }
 
     const restartExerciseHandler = () => {
-      resetExercise(motCache.getRandomMots(20))
+      resetExercise(motCache.getRandomMots(20, true))
     }
 
     const goNext = () => {

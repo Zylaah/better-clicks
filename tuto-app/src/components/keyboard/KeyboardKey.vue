@@ -308,7 +308,6 @@ export default {
 }
 
 .keyboard-key:hover {
-  transform: translateY(-2px);
   box-shadow: 
     -6px -6px 12px -3px rgba(255, 255, 255, 0.07),
     6px 6px 12px -3px rgba(0, 0, 0, 0.25),
@@ -541,7 +540,6 @@ export default {
 }
 
 .keyboard-key[data-key="ShiftLeft"]:hover {
-  transform: translateY(-1px);
   box-shadow: 
     -6px -6px 12px -3px rgba(255, 255, 255, 0.07),
     6px 6px 12px -3px rgba(0, 0, 0, 0.25),
@@ -550,7 +548,6 @@ export default {
 }
 
 .keyboard-key[data-key="ShiftRight"]:hover {
-  transform: translateY(-1px);
   box-shadow: 
     -6px -6px 12px -3px rgba(255, 255, 255, 0.07),
     6px 6px 12px -3px rgba(0, 0, 0, 0.25),
@@ -594,7 +591,6 @@ export default {
 }
 
 .keyboard-key.is-highlighted:hover {
-  transform: translateY(-2px);
   background: linear-gradient(145deg, rgba(76, 175, 80, 0.4), rgba(76, 175, 80, 0.2));
   box-shadow: 
     0 0 20px rgba(76, 175, 80, 0.4),

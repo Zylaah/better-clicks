@@ -1,15 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import FileTreeView from '../views/explorerexercises/FileTreeView.vue'
-import ExerciseView from '../views/explorerexercises/ExerciseView.vue'
-import AboutView from '../views/AboutView.vue'
-import UnderConstructionView from '../views/UnderConstructionView.vue'
-import GuideExplorerView from '../views/GuideExplorerView.vue'
-import KeyboardPhraseView from '../views/keyboardexercises/KeyboardPhraseView.vue'
-import KeyboardExerciseMenu from '../views/keyboardexercises/KeyboardExerciseMenu.vue'
-import KeyboardLettreView from '../views/keyboardexercises/KeyboardLettreView.vue'
-import KeyboardSymbolesView from '../views/keyboardexercises/KeyboardSymbolesView.vue'
-import KeyboardMotView from '../views/keyboardexercises/KeyboardMotView.vue'
 
 const routes = [
   {
@@ -20,53 +10,53 @@ const routes = [
   {
     path: '/file-tree',
     name: 'file-tree',
-    component: FileTreeView
+    component: () => import('../views/explorerexercises/FileTreeView.vue')
   },
   {
     path: '/exercise/:exercise',
     name: 'exercise',
-    component: ExerciseView,
+    component: () => import('../views/explorerexercises/ExerciseView.vue'),
     props: route => ({ exercise: JSON.parse(route.params.exercise) })
   },
   {
     path: '/about',
     name: 'about',
-    component: AboutView
+    component: () => import('../views/AboutView.vue')
   },
   {
     path: '/construction',
     name: 'construction',
-    component: UnderConstructionView
+    component: () => import('../views/UnderConstructionView.vue')
   },
   {
     path: '/guide-explorer',
     name: 'guide-explorer',
-    component: GuideExplorerView
+    component: () => import('../views/GuideExplorerView.vue')
   },
   {
     path: '/keyboard',
     name: 'keyboard-menu',
-    component: KeyboardExerciseMenu
+    component: () => import('../views/keyboardexercises/KeyboardExerciseMenu.vue')
   },
   {
     path: '/keyboard',
     name: 'keyboard-phrase',
-    component: KeyboardPhraseView
+    component: () => import('../views/keyboardexercises/KeyboardPhraseView.vue')
   },
   {
     path: '/keyboard',
     name: 'keyboard-lettre',
-    component: KeyboardLettreView
+    component: () => import('../views/keyboardexercises/KeyboardLettreView.vue')
   },
   {
     path: '/keyboard',
     name: 'keyboard-symboles',
-    component: KeyboardSymbolesView
+    component: () => import('../views/keyboardexercises/KeyboardSymbolesView.vue')
   },
   {
     path: '/keyboard',
     name: 'keyboard-mots',
-    component: KeyboardMotView
+    component: () => import('../views/keyboardexercises/KeyboardMotView.vue')
   }
 ]
 
