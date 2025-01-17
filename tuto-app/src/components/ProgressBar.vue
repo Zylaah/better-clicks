@@ -2,7 +2,7 @@
     <div class="progress-info">
       <span v-if="showLabel">{{ currentValue }} sur {{ totalValue }}</span>
       <div class="progress-bar">
-        <div 
+        <div
           class="progress-fill"
           :style="{ width: `${(currentValue / totalValue) * 100}%` }"
         ></div>

@@ -3,9 +3,9 @@
         <Transition name="modal">
             <div v-if="modelValue" class="modal-overlay">
                 <div class="modal-content">
-                    <slot name="header"></slot>
-                    <slot></slot>
-                    <slot name="footer"></slot>
+                    <slot name="header" v-once></slot>
+                    <slot v-once></slot>
+                    <slot name="footer" v-once></slot>
                 </div>
             </div>
         </Transition>

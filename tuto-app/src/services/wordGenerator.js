@@ -1,12 +1,18 @@
-import mots from '@/data/mots.json'
+import mots from '@/data/mots.json';
 
 export class WordGenerator {
   static generateRandomWords(count = 20) {
-    // Créer une copie du tableau original pour ne pas le modifier
-    const wordsCopy = [...mots.mots]
-    // Mélanger la copie
-    const selectedWords = this.shuffleArray(wordsCopy).slice(0, count)
-    const words = []
+    const wordsCopy = [...mots.mots];
+    const shuffledWords = this.shuffleArray(wordsCopy);
+    const selectedWordsSet = new Set();
+
+    while (selectedWordsSet.size < count && shuffledWords.length > 0) {
+      const word = shuffledWords.pop();
+      selectedWordsSet.add(word);
+    }
+
+    const selectedWords = Array.from(selectedWordsSet);
+    const words = [];
 
     for (const word of selectedWords) {
       words.push({
@@ -16,18 +22,18 @@ export class WordGenerator {
           display: char,
           modifiers: char === char.toUpperCase() && char !== char.toLowerCase() ? ['ShiftLeft'] : []
         }))
-      })
+      });
     }
 
-    return words
+    return words;
   }
 
   static shuffleArray(array) {
-    const newArray = [...array]
+    const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]]
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
-    return newArray
+    return newArray;
   }
 } 
