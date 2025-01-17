@@ -14,9 +14,9 @@
             {{ currentPhrase }}
           </div>
           <ProgressBar 
-            v-memo="[currentPhraseIndex]"
-            :current-value="currentPhraseIndex + 1"
-            :total-value="phrasesExemple.length"
+            v-memo="[currentIndex]"
+            :current-value="currentIndex + 1"
+            :total-value="phrases.length"
           />
         </div>
       </div>
@@ -43,13 +43,13 @@
         </RestartModal>
 
         <KeyboardTextArea
-          v-model="textContent"
+          v-model="userInput"
           :is-complete="isExerciseComplete"
           :is-correct="isCorrect"
           :is-incorrect="isIncorrect"
           :message="validationMessage"
           placeholder="Recopiez la phrase ici..."
-          @input="debouncedCheck(this, $event.target.value)"
+          @input="debouncedCheck"
         />
       </div>
     </div>
@@ -57,24 +57,21 @@
 </template>
 
 <script>
-import { useKeyboardStore } from '@/stores/keyboard'
-import { storeToRefs } from 'pinia'
-import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
-import { useDebounce } from '@/composables/useDebounce'
-import { useValidation } from '@/composables/useValidation'
-import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
 import { PhraseGenerator } from '@/services/phraseGenerator'
+import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
 import ProgressBar from '@/components/ProgressBar.vue'
-import { defineAsyncComponent, getCurrentInstance, onBeforeMount } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
+import { useRouter } from 'vue-router'
 
 const RestartModal = defineAsyncComponent({
   loader: () => import('@/components/RestartModal.vue'),
-  loadingComponent: null, // Composant à afficher pendant le chargement
-  delay: 200, // Délai avant d'afficher le composant de chargement
-  timeout: 3000, // Temps maximum de chargement
-  errorComponent: null, // Composant à afficher en cas d'erreur
+  loadingComponent: null,
+  delay: 200,
+  timeout: 3000,
+  errorComponent: null,
   onError(error, retry, fail, attempts) {
     if (attempts <= 3) {
       retry()
@@ -95,14 +92,36 @@ export default {
   },
 
   setup() {
-    const store = useKeyboardStore()
-    const { typingSpeed } = storeToRefs(store)
-    const { animationClasses, animateIfPossible } = useOptimizedAnimations()
-    const { debounce, clearDebounces } = useDebounce()
-    const validation = useValidation({ maxCacheSize: 50 })
-    const keyboardEvents = useKeyboardEvents()
+    const router = useRouter()
     const { proxy: app } = getCurrentInstance()
+    
+    const {
+      userInput,
+      currentIndex,
+      items: phrases,
+      currentItem,
+      isLastItem,
+      typingSpeed,
+      animationClasses,
+      isCorrect,
+      isIncorrect,
+      isExerciseComplete,
+      validationMessage,
+      debounce,
+      checkInput,
+      resetExercise,
+      cleanup: cleanupExercise
+    } = useKeyboardExercise()
 
+    // Initialize phrases with medium difficulty
+    const currentDifficulty = 'MEDIUM'
+    phrases.value = PhraseGenerator.generateRandomPhrases(15, currentDifficulty)
+
+    const currentPhrase = computed(() => {
+      return currentItem.value?.text || ''
+    })
+    
+    // Load icons
     onBeforeMount(async () => {
       await Promise.all([
         app.$loadIcon('rotateRight'),
@@ -110,89 +129,59 @@ export default {
       ])
     })
 
-    return {
-      store,
-      typingSpeed,
-      animationClasses,
-      animateIfPossible,
-      debouncedCheck: debounce((vm, input) => vm.checkPhrase(input), 100),
-      clearDebounces,
-      keyboardEvents,
-      ...validation
-    }
-  },
-
-  data() {
-    return {
-      textContent: '',
-      currentPhraseIndex: 0,
-      currentDifficulty: 'MEDIUM',
-      phrasesExemple: []
-    }
-  },
-
-  computed: {
-    currentPhrase() {
-      const phraseObj = this.phrasesExemple[this.currentPhraseIndex]
-      return phraseObj ? phraseObj.text : ''
-    },
-
-    isLastPhrase() {
-      return this.currentPhraseIndex === this.phrasesExemple.length - 1
-    },
-
-    isPartiallyCorrect() {
-      return this.currentPhrase.startsWith(this.textContent)
-    },
-
-    validationErrorMessage() {
-      if (!this.textContent || this.isPartiallyCorrect) return ''
-      return `Vous avez écrit : "${this.textContent}"
-      Attendu : "${this.currentPhrase.slice(0, Math.max(this.textContent.length, 0))}"`
-    }
-  },
-
-  created() {
-    this.phrasesExemple = PhraseGenerator.generateRandomPhrases(15, this.currentDifficulty)
-  },
-
-  methods: {
-    checkPhrase() {
-      const result = this.validateInput(this.textContent, this.currentPhrase, {
-        isLastItem: this.isLastPhrase,
+    const checkPhrase = () => {
+      checkInput(userInput.value, currentPhrase.value, {
+        isLastItem: isLastItem.value,
         successMessage: '',
         completeMessage: '',
         nextMessage: ''
       })
-
-      if (result.isCorrect && !result.isComplete) {
-        this.keyboardEvents.addEnterKeyListener(() => {
-          if (this.currentPhraseIndex < this.phrasesExemple.length - 1) {
-            this.currentPhraseIndex++
-            this.isCorrect = false
-            this.validationMessage = ''
-            this.textContent = ''
-          }
-        })
-      }
-    },
-
-    restartExercise() {
-      this.phrasesExemple = PhraseGenerator.generateRandomPhrases(15, this.currentDifficulty)
-      this.currentPhraseIndex = 0
-      this.textContent = ''
-      this.resetValidation()
-      this.store.reset()
-    },
-
-    goNext() {
-      this.$router.push({ name: 'keyboard-menu' })
     }
-  },
 
-  beforeUnmount() {
-    this.clearDebounces()
-    this.store.reset()
+    const restartExerciseHandler = () => {
+      resetExercise(PhraseGenerator.generateRandomPhrases(15, currentDifficulty))
+    }
+
+    const goNext = () => {
+      router.push({ name: 'keyboard-menu' })
+    }
+
+    const debouncedCheck = debounce((event) => {
+      userInput.value = event.target.value
+      checkPhrase()
+    }, 100)
+
+    onBeforeUnmount(() => {
+      cleanupExercise()
+    })
+
+    return {
+      // State
+      userInput,
+      currentIndex,
+      phrases,
+      
+      // Computed
+      currentPhrase,
+      
+      // Validation state
+      isCorrect,
+      isIncorrect,
+      isExerciseComplete,
+      validationMessage,
+      
+      // Methods
+      debouncedCheck,
+      restartExercise: restartExerciseHandler,
+      goNext,
+      cleanupExercise,
+      
+      // Animation
+      animationClasses,
+      
+      // Store
+      typingSpeed
+    }
   }
 }
 </script>

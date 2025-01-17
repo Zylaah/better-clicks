@@ -50,7 +50,7 @@
           :is-incorrect="isIncorrect"
           :message="validationMessage"
           placeholder="Tapez le symbole ici..."
-          @input="debouncedCheck(this, $event.target.value)"
+          @input="debouncedCheck"
         />
       </div>
     </div>
@@ -58,18 +58,15 @@
 </template>
 
 <script>
-import { useKeyboardStore } from '@/stores/keyboard'
-import { storeToRefs } from 'pinia'
-import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
-import { useDebounce } from '@/composables/useDebounce'
-import { useCacheManager } from '@/composables/useCacheManager'
-import { useValidation } from '@/composables/useValidation'
-import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
 import { SymbolGenerator } from '@/services/symbolGenerator'
+import { useCacheManager } from '@/composables/useCacheManager'
+import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
 import ProgressBar from '@/components/ProgressBar.vue'
-import { defineAsyncComponent, getCurrentInstance, onBeforeMount } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
+import { useRouter } from 'vue-router'
 
 // Cache pour les symboles avec gestionnaire de cache
 const symbolCache = {
@@ -91,10 +88,10 @@ const symbolCache = {
 
 const RestartModal = defineAsyncComponent({
   loader: () => import('@/components/RestartModal.vue'),
-  loadingComponent: null, // Composant à afficher pendant le chargement
-  delay: 200, // Délai avant d'afficher le composant de chargement
-  timeout: 3000, // Temps maximum de chargement
-  errorComponent: null, // Composant à afficher en cas d'erreur
+  loadingComponent: null,
+  delay: 200,
+  timeout: 3000,
+  errorComponent: null,
   onError(error, retry, fail, attempts) {
     if (attempts <= 3) {
       retry()
@@ -115,15 +112,55 @@ export default {
   },
 
   setup() {
-    const store = useKeyboardStore()
-    const { typingSpeed } = storeToRefs(store)
-    const { animationClasses, animateIfPossible } = useOptimizedAnimations()
-    const { debounce, clearDebounces } = useDebounce()
-    const highlightedKeysCache = useCacheManager(20)
-    const validation = useValidation({ maxCacheSize: 30 })
-    const keyboardEvents = useKeyboardEvents()
+    const router = useRouter()
     const { proxy: app } = getCurrentInstance()
+    
+    const {
+      userInput,
+      currentIndex,
+      items: symbols,
+      currentItem,
+      isLastItem,
+      typingSpeed,
+      animationClasses,
+      highlightedKeysCache,
+      isCorrect,
+      isIncorrect,
+      isExerciseComplete,
+      validationMessage,
+      debounce,
+      checkInput,
+      resetExercise,
+      cleanup: cleanupExercise
+    } = useKeyboardExercise()
 
+    // Initialize symbols
+    symbols.value = symbolCache.getSymbols()
+
+    const currentSymbol = computed(() => {
+      return currentItem.value || { char: '', display: '', modifiers: [] }
+    })
+
+    const currentCharToType = computed(() => {
+      const symbol = currentSymbol.value
+      if (!symbol?.char) return ''
+      return symbol.char
+    })
+
+    const highlightedKeys = computed(() => {
+      const symbol = currentSymbol.value
+      if (!symbol?.char) return []
+      
+      const cacheKey = `${symbol.char}-${symbol.modifiers?.join(',') || ''}`
+      const cached = highlightedKeysCache.getFromCache(cacheKey)
+      if (cached) return cached
+      
+      const keys = [symbol.char, ...(symbol.modifiers || [])]
+      highlightedKeysCache.addToCache(cacheKey, keys)
+      return keys
+    })
+    
+    // Load icons
     onBeforeMount(async () => {
       await Promise.all([
         app.$loadIcon('rotateRight'),
@@ -131,133 +168,63 @@ export default {
       ])
     })
 
-    return {
-      store,
-      typingSpeed,
-      animationClasses,
-      animateIfPossible,
-      debouncedCheck: debounce((vm, input) => vm.checkSymbol(input), 100),
-      clearDebounces,
-      highlightedKeysCache,
-      keyboardEvents,
-      ...validation
-    }
-  },
-
-  data() {
-    return {
-      userInput: '',
-      currentIndex: 0,
-      symbols: symbolCache.getSymbols(),
-      modifierKeys: [],
-      cachedHighlightedKeys: {
-        char: null,
-        modifiers: null,
-        keys: []
-      }
-    }
-  },
-
-  computed: {
-    currentSymbol() {
-      return this.symbols[this.currentIndex] || { char: '', display: '', modifiers: [] }
-    },
-
-    isLastSymbol() {
-      return this.currentIndex === this.symbols.length - 1
-    },
-
-    currentCharToType() {
-      const symbol = this.currentSymbol
-      if (!symbol?.char) return ''
-      return symbol.char
-    },
-
-    shouldUpdateHighlightedKeys() {
-      const symbol = this.currentSymbol
-      return this.cachedHighlightedKeys.char !== symbol.char || 
-             this.cachedHighlightedKeys.modifiers !== symbol.modifiers
-    },
-
-    highlightedKeys() {
-      const symbol = this.currentSymbol
-      if (!symbol?.char) return []
-      
-      const cacheKey = `${symbol.char}-${symbol.modifiers?.join(',') || ''}`
-      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
-      if (cached) return cached
-      
-      const keys = this.store.updateHighlightedKeysCache(symbol.char, symbol.modifiers)
-      this.highlightedKeysCache.addToCache(cacheKey, keys)
-      return keys
-    },
-
-    isValidInput() {
-      return this.userInput.length > 0
-    },
-
-    currentInput() {
-      return this.userInput.charAt(0)
-    }
-  },
-
-  methods: {
-    generateSymbolsList() {
-      return symbolCache.refreshCache()
-    },
-
-    checkSymbol() {
-      if (!this.isValidInput) {
-        this.resetValidation()
-        return
-      }
-
-      const result = this.validateInput(this.currentInput, this.currentCharToType, {
-        isLastItem: this.isLastSymbol,
+    const checkSymbol = () => {
+      const input = userInput.value.charAt(0)
+      checkInput(input, currentCharToType.value, {
+        isLastItem: isLastItem.value,
         successMessage: '',
         completeMessage: '',
         nextMessage: ''
       })
-
-      if (result.isCorrect && !result.isComplete) {
-        this.keyboardEvents.addEnterKeyListener(() => {
-          if (this.currentIndex < this.symbols.length - 1) {
-            this.currentIndex++
-            this.isCorrect = false
-            this.validationMessage = ''
-            this.userInput = ''
-          }
-        })
-      }
-    },
-
-    restartExercise() {
-      this.symbols = this.generateSymbolsList()
-      this.currentIndex = 0
-      this.userInput = ''
-      this.resetValidation()
-      this.store.reset()
-    },
-
-    goNext() {
-      this.$router.push({ name: 'keyboard-mots' })
-    },
-
-    updateHighlightedKeysCache(char, modifiers) {
-      this.cachedHighlightedKeys = {
-        char,
-        modifiers,
-        keys: [char, ...(modifiers || [])]
-      }
-      return this.cachedHighlightedKeys.keys
     }
-  },
 
-  beforeUnmount() {
-    this.clearDebounces()
-    this.store.reset()
-    this.highlightedKeysCache.clearCache()
-    symbolCache.cacheManager.cleanOldEntries()
+    const restartExerciseHandler = () => {
+      resetExercise(symbolCache.refreshCache())
+    }
+
+    const goNext = () => {
+      router.push({ name: 'keyboard-mots' })
+    }
+
+    const debouncedCheck = debounce((event) => {
+      userInput.value = event.target.value
+      checkSymbol()
+    }, 100)
+
+    onBeforeUnmount(() => {
+      cleanupExercise()
+      symbolCache.cacheManager.cleanOldEntries()
+    })
+
+    return {
+      // State
+      userInput,
+      currentIndex,
+      symbols,
+      
+      // Computed
+      currentSymbol,
+      currentCharToType,
+      highlightedKeys,
+      
+      // Validation state
+      isCorrect,
+      isIncorrect,
+      isExerciseComplete,
+      validationMessage,
+      
+      // Methods
+      debouncedCheck,
+      restartExercise: restartExerciseHandler,
+      goNext,
+      cleanupExercise,
+      
+      // Animation
+      animationClasses,
+      
+      // Store
+      typingSpeed
+    }
   }
 }
 </script>
