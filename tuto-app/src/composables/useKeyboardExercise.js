@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, shallowRef, markRaw } from 'vue'
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
 import { useOptimizedAnimations } from './useOptimizedAnimations'
@@ -9,35 +9,64 @@ import { useCacheManager } from './useCacheManager'
 
 export function useKeyboardExercise(options = {}) {
   const {
-    cacheSize = 50
+    cacheSize = 50,
+    preloadCount = 5, // Number of items to preload
+    batchSize = 20 // Number of items to process at once
   } = options
 
   // Store setup
   const store = useKeyboardStore()
   const { typingSpeed } = storeToRefs(store)
 
-  // Composables
+  // Composables with performance optimizations
   const { animationClasses } = useOptimizedAnimations()
   const { debounce, clearDebounces } = useDebounce()
-  const validation = useValidation({ maxCacheSize: cacheSize })
-  const keyboardEvents = useKeyboardEvents()
-  const highlightedKeysCache = useCacheManager(20)
+  const validation = markRaw(useValidation({ maxCacheSize: cacheSize }))
+  const keyboardEvents = markRaw(useKeyboardEvents())
+  const highlightedKeysCache = markRaw(useCacheManager(20))
 
-  // Common state
+  // Common state with optimizations
   const userInput = ref('')
   const currentIndex = ref(0)
-  const items = ref([])
+  const items = shallowRef([]) // Using shallowRef for better performance with large arrays
+  const processedItems = shallowRef([]) // Store processed items for better performance
 
-  // Computed properties
+  // Memoized computed properties
   const currentItem = computed(() => {
-    return items.value[currentIndex.value] || null
+    const index = currentIndex.value
+    if (!processedItems.value[index]) {
+      processedItems.value[index] = markRaw(items.value[index] || null)
+    }
+    return processedItems.value[index]
   })
 
   const isLastItem = computed(() => {
     return currentIndex.value === items.value.length - 1
   })
 
-  // Methods
+  // Preload next batch of items
+  const preloadNextItems = () => {
+    const start = currentIndex.value + 1
+    const end = Math.min(start + preloadCount, items.value.length)
+    
+    for (let i = start; i < end; i++) {
+      if (!processedItems.value[i]) {
+        processedItems.value[i] = markRaw(items.value[i])
+      }
+    }
+  }
+
+  // Process items in batches for better performance
+  const processBatch = (startIndex) => {
+    const endIndex = Math.min(startIndex + batchSize, items.value.length)
+    for (let i = startIndex; i < endIndex; i++) {
+      if (!processedItems.value[i]) {
+        processedItems.value[i] = markRaw(items.value[i])
+      }
+    }
+  }
+
+  // Optimized input checking
   const checkInput = (input, expected, options = {}) => {
     const result = validation.validateInput(input, expected, {
       isLastItem: isLastItem.value,
@@ -51,6 +80,8 @@ export function useKeyboardExercise(options = {}) {
           validation.isCorrect.value = false
           validation.validationMessage.value = ''
           userInput.value = ''
+          // Preload next items when moving forward
+          preloadNextItems()
         }
       })
     }
@@ -58,18 +89,28 @@ export function useKeyboardExercise(options = {}) {
     return result
   }
 
+  // Optimized exercise reset
   const resetExercise = (newItems) => {
     items.value = newItems
+    processedItems.value = []
     currentIndex.value = 0
     userInput.value = ''
     validation.resetValidation()
     store.reset()
+    
+    // Process first batch of items
+    processBatch(0)
   }
 
+  // Enhanced cleanup
   const cleanup = () => {
     clearDebounces()
     store.reset()
     highlightedKeysCache.clearCache()
+    items.value = []
+    processedItems.value = []
+    userInput.value = ''
+    currentIndex.value = 0
   }
 
   return {
