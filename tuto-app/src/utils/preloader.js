@@ -27,3 +27,25 @@ export const preloadCriticalResources = async () => {
     preloadAssets()
   ])
 } 
+
+export const preloadExercise = async (type) => {
+  const component = {
+    'mots': () => import('@/components/keyboard/AzuretyKeyboard.vue'),
+    'lettres': () => import('@/components/keyboard/AzuretyKeyboard.vue'),
+    'phrases': () => import('@/components/keyboard/AzuretyKeyboard.vue'),
+    'symboles': () => import('@/components/keyboard/AzuretyKeyboard.vue')
+  }
+  try {
+    await Promise.all([
+      component[type](),
+      import('@/components/RestartModal.vue'),
+      import('@/components/ProgressBar.vue'),
+      import('@/assets/styles/keyboard-exercises.css')
+    ])
+    console.log(`${type} préchargé avec succès`)
+  } catch (error) {
+    console.error(`Erreur lors du préchargement de ${type}:`, error)
+  }
+}
+
+

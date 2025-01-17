@@ -70,24 +70,6 @@ import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
 
-// Cache pour les lettres générées avec gestionnaire de cache
-const letterCache = {
-  cacheManager: useCacheManager(50),
-  getCachedLetters() {
-    const cached = this.cacheManager.getFromCache('letters')
-    if (cached) return [...cached]
-    
-    const letters = LetterGenerator.generateRandomLetters()
-    this.cacheManager.addToCache('letters', letters)
-    return [...letters]
-  },
-  refreshCache() {
-    const letters = LetterGenerator.generateRandomLetters()
-    this.cacheManager.addToCache('letters', letters)
-    return [...letters]
-  }
-}
-
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
   loadingComponent: null,
@@ -123,6 +105,23 @@ export default {
   setup() {
     const router = useRouter()
     const { proxy: app } = getCurrentInstance()
+    const cacheManager = useCacheManager(50)
+    
+    const letterCache = {
+      getCachedLetters() {
+        const cached = cacheManager.getFromCache('letters')
+        if (cached) return [...cached]
+        
+        const letters = LetterGenerator.generateRandomLetters()
+        cacheManager.addToCache('letters', letters)
+        return [...letters]
+      },
+      refreshCache() {
+        const letters = LetterGenerator.generateRandomLetters()
+        cacheManager.addToCache('letters', letters)
+        return [...letters]
+      }
+    }
     
     const {
       userInput,
@@ -211,7 +210,8 @@ export default {
 
     onBeforeUnmount(() => {
       cleanupExercise()
-      letterCache.cacheManager.cleanOldEntries()
+      cacheManager.stopCleanupInterval()
+      cacheManager.cleanOldEntries()
     })
 
     return {

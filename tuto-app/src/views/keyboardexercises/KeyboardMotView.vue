@@ -66,22 +66,6 @@ import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
 
-// Cache pour les mots avec gestionnaire de cache
-const motCache = {
-  cacheManager: useCacheManager(100),
-  getRandomMots(count, forceRefresh = false) {
-    const cacheKey = `mots-${count}`
-    if (!forceRefresh) {
-      const cached = this.cacheManager.getFromCache(cacheKey)
-      if (cached) return [...cached]
-    }
-    
-    const randomMots = WordGenerator.generateRandomWords(count)
-    this.cacheManager.addToCache(cacheKey, randomMots)
-    return [...randomMots]
-  }
-}
-
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
   loadingComponent: null,
@@ -135,6 +119,22 @@ export default {
       cleanup: cleanupExercise
     } = useKeyboardExercise()
 
+    const cacheManager = useCacheManager(100)
+    
+    const motCache = {
+      getRandomMots(count, forceRefresh = false) {
+        const cacheKey = `mots-${count}`
+        if (!forceRefresh) {
+          const cached = cacheManager.getFromCache(cacheKey)
+          if (cached) return [...cached]
+        }
+        
+        const randomMots = WordGenerator.generateRandomWords(count)
+        cacheManager.addToCache(cacheKey, randomMots)
+        return [...randomMots]
+      }
+    }
+
     // Initialize words
     mots.value = motCache.getRandomMots(20)
 
@@ -174,7 +174,8 @@ export default {
 
     onBeforeUnmount(() => {
       cleanupExercise()
-      motCache.cacheManager.cleanOldEntries()
+      cacheManager.stopCleanupInterval()
+      cacheManager.cleanOldEntries()
     })
 
     return {

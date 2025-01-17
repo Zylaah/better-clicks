@@ -67,24 +67,6 @@ import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
 
-// Cache pour les symboles avec gestionnaire de cache
-const symbolCache = {
-  cacheManager: useCacheManager(50),
-  getSymbols() {
-    const cached = this.cacheManager.getFromCache('symbols')
-    if (cached) return [...cached]
-    
-    const symbols = SymbolGenerator.generateRandomSymbols(30)
-    this.cacheManager.addToCache('symbols', symbols)
-    return [...symbols]
-  },
-  refreshCache() {
-    const symbols = SymbolGenerator.generateRandomSymbols(30)
-    this.cacheManager.addToCache('symbols', symbols)
-    return [...symbols]
-  }
-}
-
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
   loadingComponent: null,
@@ -119,6 +101,23 @@ export default {
   setup() {
     const router = useRouter()
     const { proxy: app } = getCurrentInstance()
+    const cacheManager = useCacheManager(50)
+    
+    const symbolCache = {
+      getCachedSymbols() {
+        const cached = cacheManager.getFromCache('symbols')
+        if (cached) return [...cached]
+        
+        const symbols = SymbolGenerator.generateRandomSymbols()
+        cacheManager.addToCache('symbols', symbols)
+        return [...symbols]
+      },
+      refreshCache() {
+        const symbols = SymbolGenerator.generateRandomSymbols()
+        cacheManager.addToCache('symbols', symbols)
+        return [...symbols]
+      }
+    }
     
     const {
       userInput,
@@ -128,11 +127,11 @@ export default {
       isLastItem,
       typingSpeed,
       animationClasses,
-      highlightedKeysCache,
       isCorrect,
       isIncorrect,
       isExerciseComplete,
       validationMessage,
+      highlightedKeysCache,
       debounce,
       checkInput,
       resetExercise,
@@ -140,7 +139,7 @@ export default {
     } = useKeyboardExercise()
 
     // Initialize symbols
-    symbols.value = symbolCache.getSymbols()
+    symbols.value = symbolCache.getCachedSymbols()
 
     const currentSymbol = computed(() => {
       return currentItem.value || { char: '', display: '', modifiers: [] }
@@ -198,7 +197,8 @@ export default {
 
     onBeforeUnmount(() => {
       cleanupExercise()
-      symbolCache.cacheManager.cleanOldEntries()
+      cacheManager.stopCleanupInterval()
+      cacheManager.cleanOldEntries()
     })
 
     return {

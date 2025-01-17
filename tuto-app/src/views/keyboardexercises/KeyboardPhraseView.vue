@@ -64,6 +64,7 @@ import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
+import { useCacheManager } from '@/composables/useCacheManager'
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -99,6 +100,25 @@ export default {
   setup() {
     const router = useRouter()
     const { proxy: app } = getCurrentInstance()
+    const cacheManager = useCacheManager(30) // Moins d'entrées car les phrases sont plus longues
+    
+    const phraseCache = {
+      getCachedPhrases(count = 10) {
+        const cacheKey = `phrases-${count}`
+        const cached = cacheManager.getFromCache(cacheKey)
+        if (cached) return [...cached]
+        
+        const phrases = PhraseGenerator.generateRandomPhrases(count)
+        cacheManager.addToCache(cacheKey, phrases)
+        return [...phrases]
+      },
+      refreshCache(count = 10) {
+        const cacheKey = `phrases-${count}`
+        const phrases = PhraseGenerator.generateRandomPhrases(count)
+        cacheManager.addToCache(cacheKey, phrases)
+        return [...phrases]
+      }
+    }
     
     const {
       userInput,
@@ -118,9 +138,14 @@ export default {
       cleanup: cleanupExercise
     } = useKeyboardExercise()
 
-    // Initialize phrases with medium difficulty
-    const currentDifficulty = 'MEDIUM'
-    phrases.value = PhraseGenerator.generateRandomPhrases(15, currentDifficulty)
+    // Initialize phrases
+    phrases.value = phraseCache.getCachedPhrases()
+
+    onBeforeUnmount(() => {
+      cleanupExercise()
+      cacheManager.stopCleanupInterval()
+      cacheManager.cleanOldEntries()
+    })
 
     const currentPhrase = computed(() => {
       return currentItem.value?.text || ''
@@ -144,7 +169,7 @@ export default {
     }
 
     const restartExerciseHandler = () => {
-      resetExercise(PhraseGenerator.generateRandomPhrases(15, currentDifficulty))
+      resetExercise(PhraseGenerator.generateRandomPhrases(15))
     }
 
     const goNext = () => {
@@ -155,10 +180,6 @@ export default {
       userInput.value = event.target.value
       checkPhrase()
     }, 100)
-
-    onBeforeUnmount(() => {
-      cleanupExercise()
-    })
 
     return {
       // State

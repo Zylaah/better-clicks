@@ -1,10 +1,10 @@
-import { ref, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
 
 export function useCacheManager(maxEntries = 100) {
   const cache = ref(new Map())
   const accessTimes = ref(new Map())
+  let cleanupInterval = null
   
-  // Limiter la taille du cache
   const enforceMaxEntries = () => {
     if (cache.value.size > maxEntries) {
       // Supprimer les entrées les plus anciennes
@@ -16,6 +16,17 @@ export function useCacheManager(maxEntries = 100) {
         cache.value.delete(key)
         accessTimes.value.delete(key)
       })
+    }
+  }
+
+  const startCleanupInterval = () => {
+    cleanupInterval = setInterval(() => cleanOldEntries(), 5 * 60 * 1000)
+  }
+
+  const stopCleanupInterval = () => {
+    if (cleanupInterval) {
+      clearInterval(cleanupInterval)
+      cleanupInterval = null
     }
   }
 
@@ -33,7 +44,7 @@ export function useCacheManager(maxEntries = 100) {
     return value
   }
 
-  const cleanOldEntries = (maxAge = 5 * 60 * 1000) => { // 5 minutes par défaut
+  const cleanOldEntries = (maxAge = 5 * 60 * 1000) => {
     const now = Date.now()
     for (const [key, time] of accessTimes.value.entries()) {
       if (now - time > maxAge) {
@@ -43,27 +54,19 @@ export function useCacheManager(maxEntries = 100) {
     }
   }
 
-  // Nettoyage automatique périodique
-  let cleanupInterval
-  
-  onBeforeUnmount(() => {
-    if (cleanupInterval) {
-      clearInterval(cleanupInterval)
-    }
+  const clearCache = () => {
     cache.value.clear()
     accessTimes.value.clear()
-  })
+    stopCleanupInterval()
+  }
 
-  // Nettoyer le cache toutes les 5 minutes
-  cleanupInterval = setInterval(cleanOldEntries, 5 * 60 * 1000)
+  startCleanupInterval()
 
   return {
     addToCache,
     getFromCache,
     cleanOldEntries,
-    clearCache: () => {
-      cache.value.clear()
-      accessTimes.value.clear()
-    }
+    clearCache,
+    stopCleanupInterval
   }
 } 
