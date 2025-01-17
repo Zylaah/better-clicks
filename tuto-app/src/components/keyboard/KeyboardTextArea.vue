@@ -79,7 +79,7 @@ export default {
   padding-inline: 1rem;
   max-width: 100%;
   box-sizing: border-box;
-  padding-bottom: 2rem;
+  padding-bottom: 3rem;
 }
 
 .modern-textarea {
@@ -114,7 +114,7 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 2rem; /* Hauteur fixe pour le message */
+  height: 3rem; /* Hauteur fixe pour le message */
   display: flex;
   justify-content: center;
   align-items: center;

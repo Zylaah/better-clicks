@@ -37,7 +37,7 @@
             </button>
             <button class="next-button" @click="goNext">
               <font-awesome-icon v-once icon="arrow-right" />
-              <span v-once>Passer à l'exercice suivant</span>
+              <span v-once>Retourner au menu</span>
             </button>
           </div>
         </RestartModal>
