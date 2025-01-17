@@ -61,15 +61,10 @@
 </template>
 
 <script>
-import { useKeyboardStore } from '@/stores/keyboard'
-import { storeToRefs } from 'pinia'
+import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
 import { LetterGenerator } from '@/services/letterGenerator'
-import { useOptimizedAnimations } from '@/composables/useOptimizedAnimations'
-import { useDebounce } from '@/composables/useDebounce'
 import { useCacheManager } from '@/composables/useCacheManager'
-import { useValidation } from '@/composables/useValidation'
-import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
-import { onBeforeMount, getCurrentInstance, ref, computed } from 'vue'
+import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
 import ProgressBar from '@/components/ProgressBar.vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
@@ -96,10 +91,10 @@ const letterCache = {
 
 const RestartModal = defineAsyncComponent({
   loader: () => import('@/components/RestartModal.vue'),
-  loadingComponent: null, // Composant à afficher pendant le chargement
-  delay: 200, // Délai avant d'afficher le composant de chargement
-  timeout: 3000, // Temps maximum de chargement
-  errorComponent: null, // Composant à afficher en cas d'erreur
+  loadingComponent: null,
+  delay: 200,
+  timeout: 3000,
+  errorComponent: null,
   onError(error, retry, fail, attempts) {
     if (attempts <= 3) {
       retry()
@@ -120,27 +115,33 @@ export default {
   },
 
   setup() {
-    const store = useKeyboardStore()
-    const { typingSpeed } = storeToRefs(store)
-    const { animationClasses } = useOptimizedAnimations()
-    const { debounce, clearDebounces } = useDebounce()
-    const validation = useValidation({ maxCacheSize: 50 })
-    const keyboardEvents = useKeyboardEvents()
     const router = useRouter()
-    const highlightedKeysCache = useCacheManager(50)
     const { proxy: app } = getCurrentInstance()
     
-    const userInput = ref('')
-    const currentIndex = ref(0)
-    const letters = ref(letterCache.getCachedLetters())
-    const cachedHighlightedKeys = ref({
-      char: null,
-      modifiers: null,
-      keys: []
-    })
+    const {
+      userInput,
+      currentIndex,
+      items: letters,
+      currentItem,
+      isLastItem,
+      typingSpeed,
+      animationClasses,
+      highlightedKeysCache,
+      isCorrect,
+      isIncorrect,
+      isExerciseComplete,
+      validationMessage,
+      debounce,
+      checkInput,
+      resetExercise,
+      cleanup: cleanupExercise
+    } = useKeyboardExercise()
+
+    // Initialize letters
+    letters.value = letterCache.getCachedLetters()
 
     const currentLetter = computed(() => {
-      return letters.value[currentIndex.value] || { char: '', display: '', modifiers: [] }
+      return currentItem.value || { char: '', display: '', modifiers: [] }
     })
 
     const currentCharToType = computed(() => {
@@ -148,8 +149,30 @@ export default {
       if (!letter?.char) return ''
       return letter.char
     })
+
+    const shouldShowCaseInfo = computed(() => {
+      return isNaN(currentLetter.value.display)
+    })
+
+    const caseInfoText = computed(() => {
+      if (!shouldShowCaseInfo.value) return ''
+      return currentLetter.value.display === currentLetter.value.display.toUpperCase() ? 'Majuscule' : 'Minuscule'
+    })
+
+    const highlightedKeys = computed(() => {
+      const letter = currentLetter.value
+      if (!letter?.char) return []
+      
+      const cacheKey = `${letter.char}-${letter.modifiers?.join(',') || ''}`
+      const cached = highlightedKeysCache.getFromCache(cacheKey)
+      if (cached) return cached
+      
+      const keys = [letter.char, ...(letter.modifiers || [])]
+      highlightedKeysCache.addToCache(cacheKey, keys)
+      return keys
+    })
     
-    // Chargement des icônes nécessaires
+    // Load icons
     onBeforeMount(async () => {
       await Promise.all([
         app.$loadIcon('rotateRight'),
@@ -159,106 +182,63 @@ export default {
 
     const checkLetter = () => {
       const input = userInput.value.charAt(0)
-      const result = validation.validateInput(input, currentCharToType.value, {
-        isLastItem: currentIndex.value === letters.value.length - 1,
+      checkInput(input, currentCharToType.value, {
+        isLastItem: isLastItem.value,
         successMessage: '',
         completeMessage: '',
         nextMessage: ''
       })
-
-      if (result.isCorrect && !result.isComplete) {
-        keyboardEvents.addEnterKeyListener(() => {
-          if (currentIndex.value < letters.value.length - 1) {
-            currentIndex.value++
-            validation.isCorrect.value = false
-            validation.validationMessage.value = ''
-            userInput.value = ''
-          }
-        })
-      }
     }
 
-    const restartExercise = () => {
-      letters.value = letterCache.refreshCache()
-      currentIndex.value = 0
-      userInput.value = ''
-      validation.resetValidation()
-      store.reset()
+    const restartExerciseHandler = () => {
+      resetExercise(letterCache.refreshCache())
     }
 
     const goNext = () => {
       router.push({ name: 'keyboard-symboles' })
     }
 
+    const debouncedCheck = debounce((event) => {
+      userInput.value = event.target.value
+      checkLetter()
+    }, 100)
+
+    onBeforeUnmount(() => {
+      cleanupExercise()
+      letterCache.cacheManager.cleanOldEntries()
+    })
+
     return {
-      store,
-      typingSpeed,
-      animationClasses,
-      debouncedCheck: debounce((event) => {
-        userInput.value = event.target.value
-        checkLetter()
-      }, 100),
-      clearDebounces,
-      keyboardEvents,
-      router,
-      highlightedKeysCache,
+      // State
       userInput,
       currentIndex,
       letters,
-      cachedHighlightedKeys,
+      
+      // Computed
       currentLetter,
       currentCharToType,
-      checkLetter,
-      restartExercise,
+      shouldShowCaseInfo,
+      caseInfoText,
+      highlightedKeys,
+      
+      // Validation state
+      isCorrect,
+      isIncorrect,
+      isExerciseComplete,
+      validationMessage,
+      
+      // Methods
+      debouncedCheck,
+      restartExercise: restartExerciseHandler,
       goNext,
-      ...validation
-    }
-  },
-
-  data() {
-    return {
-    }
-  },
-
-  computed: {
-    shouldShowCaseInfo() {
-      return isNaN(this.currentLetter.display)
-    },
-
-    caseInfoText() {
-      if (!this.shouldShowCaseInfo) return ''
-      return this.currentLetter.display === this.currentLetter.display.toUpperCase() ? 'Majuscule' : 'Minuscule'
-    },
-
-    isValidInput() {
-      return this.userInput.length > 0
-    },
-
-    shouldUpdateHighlightedKeys() {
-      const letter = this.currentLetter
-      return this.cachedHighlightedKeys.char !== letter.char || 
-             this.cachedHighlightedKeys.modifiers !== letter.modifiers
-    },
-
-    highlightedKeys() {
-      const letter = this.currentLetter
-      if (!letter?.char) return []
+      cleanupExercise,
       
-      const cacheKey = `${letter.char}-${letter.modifiers?.join(',') || ''}`
-      const cached = this.highlightedKeysCache.getFromCache(cacheKey)
-      if (cached) return cached
+      // Animation
+      animationClasses,
       
-      const keys = this.store.updateHighlightedKeysCache(letter.char, letter.modifiers)
-      this.highlightedKeysCache.addToCache(cacheKey, keys)
-      return keys
+      // Store
+      typingSpeed
     }
-  },
-
-  beforeUnmount() {
-    this.clearDebounces()
-    this.store.reset()
-    this.highlightedKeysCache.clearCache()
-    letterCache.cacheManager.cleanOldEntries()
   }
 }
 </script>
