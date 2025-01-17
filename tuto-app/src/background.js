@@ -15,17 +15,24 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1725,
-    height: 975,
+    paintWhenInitiallyHidden: true,
+    backgroundColor: '#1a1a1a',
     frame: false,
+    show: false,
     autoHideMenuBar: true,
     webPreferences: {
       
+      enablePreferredSizeMode: true,
+      backgroundThrottling: false,
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, process.env.WEBPACK_DEV_SERVER_URL ? '../src/preload.js' : 'preload.js')
     }
   })
+
+  win.webContents.on('dom-ready', () => {
+    win.show();
+  });
 
   win.webContents.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
@@ -50,13 +57,17 @@ async function createWindow() {
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    // Ajouter ces options pour le dev
+    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL, {
+      backgroundColor: '#1a1a1a'
+    })
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
-    // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    // Ajouter ces options pour la prod
+    win.loadURL('app://./index.html', {
+      backgroundColor: '#1a1a1a'
+    })
   }
 }
 
