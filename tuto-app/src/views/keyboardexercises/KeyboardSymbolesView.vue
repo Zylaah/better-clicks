@@ -85,8 +85,8 @@ const symbolCache = {
   }
 }
 
-const RestartModal = defineAsyncComponent({
-  loader: () => import('@/components/RestartModal.vue'),
+const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
+  loader,
   loadingComponent: null,
   delay: 200,
   timeout: 3000,
@@ -95,25 +95,16 @@ const RestartModal = defineAsyncComponent({
     if (attempts <= 3) {
       retry()
     } else {
+      console.error('Failed to load component:', error)
       fail()
     }
-  }
+  },
+  suspensible: true, // Permet une meilleure gestion de la mémoire avec Suspense
+  ...options
 })
 
-const ProgressBar = defineAsyncComponent({
-  loader: () => import('@/components/ProgressBar.vue'),
-  loadingComponent: null,
-  delay: 200,
-  timeout: 3000,
-  errorComponent: null,
-  onError(error, retry, fail, attempts) {
-    if (attempts <= 3) {
-      retry()
-    } else {
-      fail()
-    }
-  }
-})
+const RestartModal = createAsyncComponent(() => import('@/components/RestartModal.vue'))
+const ProgressBar = createAsyncComponent(() => import('@/components/ProgressBar.vue'))
 
 export default {
   name: 'KeyboardSymbolesView',
