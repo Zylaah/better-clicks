@@ -62,13 +62,12 @@
 
 <script>
 import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
-import { LetterGenerator } from '@/services/letterGenerator'
-import { useCacheManager } from '@/composables/useCacheManager'
 import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
+import { useExerciseCache } from '@/composables/useExerciseCache'
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -105,23 +104,7 @@ export default {
   setup() {
     const router = useRouter()
     const { proxy: app } = getCurrentInstance()
-    const cacheManager = useCacheManager(50)
-    
-    const letterCache = {
-      getCachedLetters() {
-        const cached = cacheManager.getFromCache('letters')
-        if (cached) return [...cached]
-        
-        const letters = LetterGenerator.generateRandomLetters()
-        cacheManager.addToCache('letters', letters)
-        return [...letters]
-      },
-      refreshCache() {
-        const letters = LetterGenerator.generateRandomLetters()
-        cacheManager.addToCache('letters', letters)
-        return [...letters]
-      }
-    }
+    const exerciseCache = useExerciseCache()
     
     const {
       userInput,
@@ -143,7 +126,7 @@ export default {
     } = useKeyboardExercise()
 
     // Initialize letters
-    letters.value = letterCache.getCachedLetters()
+    letters.value = exerciseCache.getItems('lettres')
 
     const currentLetter = computed(() => {
       return currentItem.value || { char: '', display: '', modifiers: [] }
@@ -196,7 +179,7 @@ export default {
     }
 
     const restartExerciseHandler = () => {
-      resetExercise(letterCache.refreshCache())
+      resetExercise(exerciseCache.refreshCache('lettres'))
     }
 
     const goNext = () => {
@@ -210,8 +193,7 @@ export default {
 
     onBeforeUnmount(() => {
       cleanupExercise()
-      cacheManager.stopCleanupInterval()
-      cacheManager.cleanOldEntries()
+      exerciseCache.cleanup()
     })
 
     return {

@@ -59,13 +59,12 @@
 
 <script>
 import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
-import { SymbolGenerator } from '@/services/symbolGenerator'
-import { useCacheManager } from '@/composables/useCacheManager'
 import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
+import { useExerciseCache } from '@/composables/useExerciseCache'
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -101,23 +100,9 @@ export default {
   setup() {
     const router = useRouter()
     const { proxy: app } = getCurrentInstance()
-    const cacheManager = useCacheManager(50)
+    const exerciseCache = useExerciseCache()
     
-    const symbolCache = {
-      getCachedSymbols() {
-        const cached = cacheManager.getFromCache('symbols')
-        if (cached) return [...cached]
-        
-        const symbols = SymbolGenerator.generateRandomSymbols()
-        cacheManager.addToCache('symbols', symbols)
-        return [...symbols]
-      },
-      refreshCache() {
-        const symbols = SymbolGenerator.generateRandomSymbols()
-        cacheManager.addToCache('symbols', symbols)
-        return [...symbols]
-      }
-    }
+    
     
     const {
       userInput,
@@ -139,7 +124,7 @@ export default {
     } = useKeyboardExercise()
 
     // Initialize symbols
-    symbols.value = symbolCache.getCachedSymbols()
+    symbols.value = exerciseCache.getItems('symboles')
 
     const currentSymbol = computed(() => {
       return currentItem.value || { char: '', display: '', modifiers: [] }
@@ -183,7 +168,7 @@ export default {
     }
 
     const restartExerciseHandler = () => {
-      resetExercise(symbolCache.refreshCache())
+      resetExercise(exerciseCache.refreshCache('symboles'))
     }
 
     const goNext = () => {
@@ -197,8 +182,7 @@ export default {
 
     onBeforeUnmount(() => {
       cleanupExercise()
-      cacheManager.stopCleanupInterval()
-      cacheManager.cleanOldEntries()
+      exerciseCache.cleanup()
     })
 
     return {

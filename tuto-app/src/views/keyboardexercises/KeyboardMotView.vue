@@ -58,13 +58,12 @@
 
 <script>
 import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
-import { WordGenerator } from '@/services/wordGenerator'
-import { useCacheManager } from '@/composables/useCacheManager'
 import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
+import { useExerciseCache } from '@/composables/useExerciseCache'
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -100,6 +99,7 @@ export default {
   setup() {
     const router = useRouter()
     const { proxy: app } = getCurrentInstance()
+    const exerciseCache = useExerciseCache()
     
     const {
       userInput,
@@ -119,24 +119,8 @@ export default {
       cleanup: cleanupExercise
     } = useKeyboardExercise()
 
-    const cacheManager = useCacheManager(100)
-    
-    const motCache = {
-      getRandomMots(count, forceRefresh = false) {
-        const cacheKey = `mots-${count}`
-        if (!forceRefresh) {
-          const cached = cacheManager.getFromCache(cacheKey)
-          if (cached) return [...cached]
-        }
-        
-        const randomMots = WordGenerator.generateRandomWords(count)
-        cacheManager.addToCache(cacheKey, randomMots)
-        return [...randomMots]
-      }
-    }
-
     // Initialize words
-    mots.value = motCache.getRandomMots(20)
+    mots.value = exerciseCache.getItems('mots', 20)
 
     const currentMot = computed(() => {
       return currentItem.value?.word || ''
@@ -160,7 +144,7 @@ export default {
     }
 
     const restartExerciseHandler = () => {
-      resetExercise(motCache.getRandomMots(20, true))
+      resetExercise(exerciseCache.refreshCache('mots', 20))
     }
 
     const goNext = () => {
@@ -174,8 +158,7 @@ export default {
 
     onBeforeUnmount(() => {
       cleanupExercise()
-      cacheManager.stopCleanupInterval()
-      cacheManager.cleanOldEntries()
+      exerciseCache.cleanup()
     })
 
     return {

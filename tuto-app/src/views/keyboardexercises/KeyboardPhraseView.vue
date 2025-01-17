@@ -58,13 +58,12 @@
 
 <script>
 import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
-import { PhraseGenerator } from '@/services/phraseGenerator'
 import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
-import { useCacheManager } from '@/composables/useCacheManager'
+import { useExerciseCache } from '@/composables/useExerciseCache'
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -100,25 +99,7 @@ export default {
   setup() {
     const router = useRouter()
     const { proxy: app } = getCurrentInstance()
-    const cacheManager = useCacheManager(30) // Moins d'entrées car les phrases sont plus longues
-    
-    const phraseCache = {
-      getCachedPhrases(count = 10) {
-        const cacheKey = `phrases-${count}`
-        const cached = cacheManager.getFromCache(cacheKey)
-        if (cached) return [...cached]
-        
-        const phrases = PhraseGenerator.generateRandomPhrases(count)
-        cacheManager.addToCache(cacheKey, phrases)
-        return [...phrases]
-      },
-      refreshCache(count = 10) {
-        const cacheKey = `phrases-${count}`
-        const phrases = PhraseGenerator.generateRandomPhrases(count)
-        cacheManager.addToCache(cacheKey, phrases)
-        return [...phrases]
-      }
-    }
+    const exerciseCache = useExerciseCache()
     
     const {
       userInput,
@@ -138,13 +119,12 @@ export default {
       cleanup: cleanupExercise
     } = useKeyboardExercise()
 
-    // Initialize phrases
-    phrases.value = phraseCache.getCachedPhrases()
+    // Initialize phrases avec un nombre plus petit car les phrases sont plus longues
+    phrases.value = exerciseCache.getItems('phrases', 10)
 
     onBeforeUnmount(() => {
       cleanupExercise()
-      cacheManager.stopCleanupInterval()
-      cacheManager.cleanOldEntries()
+      exerciseCache.cleanup()
     })
 
     const currentPhrase = computed(() => {
@@ -169,7 +149,7 @@ export default {
     }
 
     const restartExerciseHandler = () => {
-      resetExercise(PhraseGenerator.generateRandomPhrases(15))
+      resetExercise(exerciseCache.refreshCache('phrases', 10))
     }
 
     const goNext = () => {
