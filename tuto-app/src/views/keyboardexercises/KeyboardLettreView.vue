@@ -126,13 +126,8 @@ export default {
       debounce,
       checkInput,
       resetExercise,
-      cleanup: cleanupExercise,
-      progress,
-      stats,
-      currentState
-    } = useKeyboardExercise({
-      exerciseType: 'lettres'
-    })
+      cleanup: cleanupExercise
+    } = useKeyboardExercise()
 
     const currentLetter = computed(() => {
       return currentItem.value || { char: '', display: '', modifiers: [] }
@@ -177,14 +172,8 @@ export default {
     }, { immediate: true })
     
     onBeforeMount(async () => {
-      // Vérifier s'il y a un état sauvegardé
-      if (currentState.value) {
-        letters.value = currentState.value.items
-        currentIndex.value = currentState.value.currentIndex
-      } else {
-        // Sinon, initialiser avec de nouvelles lettres
-        letters.value = await exerciseCache.getItems('lettres')
-      }
+      // Initialize letters
+      letters.value = await exerciseCache.getItems('lettres')
       resetExercise(letters.value)
     })
 
@@ -212,12 +201,9 @@ export default {
     const restartExerciseHandler = async () => {
       keyboardEvents.removeEnterKeyListener()
       const newLetters = await exerciseCache.refreshCache('lettres')
-      letters.value = newLetters
-      await resetExercise(newLetters)
+      resetExercise(newLetters)
       userInput.value = ''
       validationMessage.value = ''
-      isCorrect.value = false
-      isIncorrect.value = false
     }
 
     const goNext = () => {
@@ -266,10 +252,6 @@ export default {
       isIncorrect,
       isExerciseComplete,
       validationMessage,
-      
-      // Progress data
-      progress,
-      stats,
       
       // Methods
       debouncedCheck,
