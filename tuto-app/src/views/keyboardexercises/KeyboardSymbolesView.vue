@@ -123,8 +123,13 @@ export default {
       debounce,
       checkInput,
       resetExercise,
-      cleanup: cleanupExercise
-    } = useKeyboardExercise()
+      cleanup: cleanupExercise,
+      progress,
+      stats,
+      currentState
+    } = useKeyboardExercise({
+      exerciseType: 'symboles'
+    })
 
     const currentSymbol = computed(() => {
       return currentItem.value || { char: '', display: '', modifiers: [] }
@@ -136,17 +141,11 @@ export default {
       return symbol.char
     })
 
-    const highlightedKeys = computed(() => {
-      return highlightedKeysRef.value
-    })
-    
-    // Mettre à jour les touches surlignées quand le symbole courant change
+    const highlightedKeys = computed(() => highlightedKeysRef.value)
+
     watch(() => currentSymbol.value, async (symbol) => {
-      if (!symbol?.char) {
-        highlightedKeysRef.value = []
-        return
-      }
-      
+      if (!symbol?.char) return
+
       const cacheKey = `${symbol.char}-${symbol.modifiers?.join(',') || ''}`
       const cached = await highlightedKeysCache.getFromCache(cacheKey)
       
@@ -160,8 +159,14 @@ export default {
     }, { immediate: true })
     
     onBeforeMount(async () => {
-      // Initialize symbols
-      symbols.value = await exerciseCache.getItems('symboles')
+      // Vérifier s'il y a un état sauvegardé
+      if (currentState.value) {
+        symbols.value = currentState.value.items
+        currentIndex.value = currentState.value.currentIndex
+      } else {
+        // Sinon, initialiser avec de nouveaux symboles
+        symbols.value = await exerciseCache.getItems('symboles')
+      }
       resetExercise(symbols.value)
     })
 
@@ -190,7 +195,7 @@ export default {
       keyboardEvents.removeEnterKeyListener()
       const newSymbols = await exerciseCache.refreshCache('symboles')
       symbols.value = newSymbols
-      resetExercise(newSymbols)
+      await resetExercise(newSymbols)
       userInput.value = ''
       validationMessage.value = ''
       isCorrect.value = false
@@ -241,6 +246,10 @@ export default {
       isIncorrect,
       isExerciseComplete,
       validationMessage,
+      
+      // Progress data
+      progress,
+      stats,
       
       // Methods
       debouncedCheck,

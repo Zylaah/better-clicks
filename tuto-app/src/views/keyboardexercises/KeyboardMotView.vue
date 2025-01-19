@@ -118,12 +118,23 @@ export default {
       debounce,
       checkInput,
       resetExercise,
-      cleanup: cleanupExercise
-    } = useKeyboardExercise()
+      cleanup: cleanupExercise,
+      progress,
+      stats,
+      currentState
+    } = useKeyboardExercise({
+      exerciseType: 'mots'
+    })
     
     onBeforeMount(async () => {
-      // Initialize mots
-      mots.value = await exerciseCache.getItems('mots', 20)
+      // Vérifier s'il y a un état sauvegardé
+      if (currentState.value) {
+        mots.value = currentState.value.items
+        currentIndex.value = currentState.value.currentIndex
+      } else {
+        // Sinon, initialiser avec de nouveaux mots
+        mots.value = await exerciseCache.getItems('mots', 20)
+      }
       resetExercise(mots.value)
     })
 
@@ -166,7 +177,7 @@ export default {
     const restartExerciseHandler = async () => {
       const newMots = await exerciseCache.refreshCache('mots', 20)
       mots.value = newMots
-      resetExercise(newMots)
+      await resetExercise(newMots)
       userInput.value = ''
       validationMessage.value = ''
       isCorrect.value = false
@@ -201,6 +212,10 @@ export default {
       isIncorrect,
       isExerciseComplete,
       validationMessage,
+      
+      // Progress data
+      progress,
+      stats,
       
       // Methods
       debouncedCheck,

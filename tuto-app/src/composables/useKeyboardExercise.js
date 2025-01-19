@@ -6,6 +6,7 @@ import { useDebounce } from './useDebounce'
 import { useValidation } from './useValidation'
 import { useKeyboardEvents } from './useKeyboardEvents'
 import { useIndexedDBCache } from './useIndexedDBCache'
+import { usePersistence } from './usePersistence'
 
 export function useKeyboardExercise(options = {}) {
   const {
@@ -28,6 +29,7 @@ export function useKeyboardExercise(options = {}) {
     syncInterval: 5000,
     maxAge: 5 * 60 * 1000
   }))
+  const persistence = markRaw(usePersistence(exerciseType))
 
   // Common state with optimizations
   const userInput = ref('')
@@ -82,6 +84,23 @@ export function useKeyboardExercise(options = {}) {
     })
 
     if (result.isCorrect) {
+      // Sauvegarder les statistiques
+      await persistence.saveStats({
+        input,
+        expected,
+        isCorrect: true,
+        timestamp: Date.now(),
+        typingSpeed: typingSpeed.value
+      })
+
+      // Mettre à jour la progression
+      const completionRate = ((currentIndex.value + 1) / items.value.length) * 100
+      await persistence.saveProgress({
+        completionRate,
+        currentIndex: currentIndex.value,
+        typingSpeed: typingSpeed.value
+      })
+
       if (isLastItem.value && input === expected) {
         validation.isExerciseComplete.value = true
         validation.validationMessage.value = options.completeMessage || 'Exercice terminé !'
@@ -101,6 +120,15 @@ export function useKeyboardExercise(options = {}) {
           }
         })
       }
+    } else {
+      // Sauvegarder les statistiques d'erreur
+      await persistence.saveStats({
+        input,
+        expected,
+        isCorrect: false,
+        timestamp: Date.now(),
+        typingSpeed: typingSpeed.value
+      })
     }
 
     return result
@@ -150,6 +178,9 @@ export function useKeyboardExercise(options = {}) {
     
     // Validation exports
     ...validation,
+    
+    // Persistence exports
+    ...persistence,
     
     // Methods
     checkInput,
