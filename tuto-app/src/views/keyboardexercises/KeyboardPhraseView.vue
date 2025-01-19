@@ -204,7 +204,7 @@ export default {
     }
 
     const goNext = () => {
-      router.push({ name: 'keyboard-exercise-menu' })
+      router.push({ name: 'keyboard-menu' })
     }
 
     const debouncedCheck = debounce((event) => {

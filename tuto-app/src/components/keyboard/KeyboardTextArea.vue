@@ -15,11 +15,10 @@
     ></textarea>
     <div class="validation-message-container">
       <div 
-        v-show="message" 
         class="validation-message" 
-        :class="validationClasses"
+        :class="[validationClasses, { 'message-visible': message }]"
       >
-        {{ message }}
+        <span>{{ message || '\u00A0' }}</span>
       </div>
     </div>
   </div>
@@ -125,31 +124,23 @@ export default defineComponent({
 
 <style scoped>
 .keyboard-textarea-wrapper {
-  width: 100%;
+  position: relative;
+  min-height: calc(5 * 1.5em + 3rem); /* 5 rows + message container */
   display: flex;
   flex-direction: column;
-  align-items: center;
   contain: content;
-  padding-inline: 1rem;
-  max-width: 100%;
-  box-sizing: border-box;
-  padding-bottom: 3rem;
-  will-change: transform;
 }
 
 .modern-textarea {
   width: 100%;
-  height: clamp(6rem, 10vh, 8rem);
   padding: 1rem;
-  border: 2px solid var(--accent-color);
+  border: 2px solid var(--border-color);
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-primary);
   color: var(--text-color);
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.5;
   resize: none;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  contain: content;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
   will-change: transform;
@@ -167,10 +158,7 @@ export default defineComponent({
 }
 
 .validation-message-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  position: relative;
   height: 3rem;
   display: flex;
   justify-content: center;
@@ -179,12 +167,18 @@ export default defineComponent({
 }
 
 .validation-message {
-  margin-block-start: clamp(0.25rem, 0.5vh, 0.5rem);
+  padding: 0.5rem;
   text-align: center;
-  color: var(--accent-color);
   font-size: 0.9rem;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
   contain: content;
-  will-change: transform, opacity;
+}
+
+.validation-message.message-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .validation-message.correct {
