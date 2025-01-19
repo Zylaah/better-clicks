@@ -34,10 +34,13 @@ export function useKeyboardExercise(options = {}) {
   // Memoized computed properties
   const currentItem = computed(() => {
     const index = currentIndex.value
-    if (!processedItems.value[index]) {
-      processedItems.value[index] = markRaw(items.value[index] || null)
+    const item = items.value[index]
+    
+    if (!processedItems.value[index] && item) {
+      processedItems.value[index] = markRaw(item)
     }
-    return processedItems.value[index]
+    
+    return processedItems.value[index] || null
   })
 
   const isLastItem = computed(() => {
@@ -50,8 +53,9 @@ export function useKeyboardExercise(options = {}) {
     const end = Math.min(start + preloadCount, items.value.length)
     
     for (let i = start; i < end; i++) {
-      if (!processedItems.value[i]) {
-        processedItems.value[i] = markRaw(items.value[i])
+      const item = items.value[i]
+      if (!processedItems.value[i] && item) {
+        processedItems.value[i] = markRaw(item)
       }
     }
   }
@@ -60,8 +64,9 @@ export function useKeyboardExercise(options = {}) {
   const processBatch = (startIndex) => {
     const endIndex = Math.min(startIndex + batchSize, items.value.length)
     for (let i = startIndex; i < endIndex; i++) {
-      if (!processedItems.value[i]) {
-        processedItems.value[i] = markRaw(items.value[i])
+      const item = items.value[i]
+      if (!processedItems.value[i] && item) {
+        processedItems.value[i] = markRaw(item)
       }
     }
   }
