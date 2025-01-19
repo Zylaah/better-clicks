@@ -1,6 +1,7 @@
 <template>
   <div class="keyboard-textarea-wrapper">
     <textarea 
+      ref="textareaRef"
       v-show="!isComplete"
       :value="modelValue"
       class="modern-textarea"
@@ -8,10 +9,16 @@
       :placeholder="placeholder"
       rows="5"
       @input="onInput"
+      @compositionstart="onCompositionStart"
+      @compositionend="onCompositionEnd"
       @keydown.enter.prevent
     ></textarea>
     <div class="validation-message-container">
-      <div v-show="message" class="validation-message" :class="validationClasses">
+      <div 
+        v-show="message" 
+        class="validation-message" 
+        :class="validationClasses"
+      >
         {{ message }}
       </div>
     </div>
@@ -19,7 +26,9 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, ref, computed, onMounted } from 'vue'
+
+export default defineComponent({
   name: 'KeyboardTextArea',
 
   props: {
@@ -51,22 +60,67 @@ export default {
 
   emits: ['update:modelValue', 'input'],
 
-  computed: {
-    validationClasses() {
-      return {
-        'correct': this.isCorrect,
-        'incorrect': this.isIncorrect
-      }
-    }
-  },
+  setup(props, { emit }) {
+    const textareaRef = ref(null)
+    const inputBuffer = ref('')
+    const lastInputTime = ref(0)
+    const isComposing = ref(false)
+    const inputThrottle = 16 // ~60fps
 
-  methods: {
-    onInput(event) {
-      this.$emit('update:modelValue', event.target.value)
-      this.$emit('input', event)
+    // Optimisation du rendu des classes
+    const validationClasses = computed(() => ({
+      'correct': props.isCorrect,
+      'incorrect': props.isIncorrect
+    }))
+
+    // Gestion optimisée de l'input avec throttling
+    const processInput = (event) => {
+      const now = performance.now()
+      if (now - lastInputTime.value < inputThrottle) {
+        return
+      }
+      
+      lastInputTime.value = now
+      const value = event.target.value
+      
+      // Mise à jour du buffer local
+      inputBuffer.value = value
+      
+      // Émission des événements
+      emit('update:modelValue', value)
+      emit('input', event)
+    }
+
+    const onInput = (event) => {
+      if (isComposing.value) return
+      processInput(event)
+    }
+
+    const onCompositionStart = () => {
+      isComposing.value = true
+    }
+
+    const onCompositionEnd = (event) => {
+      isComposing.value = false
+      processInput(event)
+    }
+
+    // Optimisation du focus
+    onMounted(() => {
+      if (textareaRef.value) {
+        textareaRef.value.focus()
+      }
+    })
+
+    return {
+      textareaRef,
+      validationClasses,
+      onInput,
+      onCompositionStart,
+      onCompositionEnd
     }
   }
-}
+})
 </script>
 
 <style scoped>
@@ -80,6 +134,7 @@ export default {
   max-width: 100%;
   box-sizing: border-box;
   padding-bottom: 3rem;
+  will-change: transform;
 }
 
 .modern-textarea {
@@ -97,6 +152,8 @@ export default {
   contain: content;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .modern-textarea:focus {
@@ -114,10 +171,11 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 3rem; /* Hauteur fixe pour le message */
+  height: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  contain: content;
 }
 
 .validation-message {
@@ -126,6 +184,7 @@ export default {
   color: var(--accent-color);
   font-size: 0.9rem;
   contain: content;
+  will-change: transform, opacity;
 }
 
 .validation-message.correct {
@@ -144,5 +203,13 @@ export default {
 .modern-textarea.incorrect {
   border-color: #f44336;
   background-color: rgba(244, 67, 54, 0.05);
+}
+
+/* Optimisations pour les appareils à faible puissance */
+@media (prefers-reduced-motion: reduce) {
+  .modern-textarea,
+  .validation-message {
+    transition: none;
+  }
 }
 </style> 
