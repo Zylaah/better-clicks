@@ -172,9 +172,9 @@ export default {
       const input = userInput.value.charAt(0)
       checkInput(input, currentCharToType.value, {
         isLastItem: isLastItem.value,
-        successMessage: '',
-        completeMessage: '',
-        nextMessage: ''
+        successMessage: 'Correct !',
+        completeMessage: 'Exercice terminé !',
+        nextMessage: 'Appuyez sur Entrée pour continuer'
       })
     }
 

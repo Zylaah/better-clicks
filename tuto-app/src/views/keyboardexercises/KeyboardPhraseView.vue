@@ -142,9 +142,9 @@ export default {
     const checkPhrase = () => {
       checkInput(userInput.value, currentPhrase.value, {
         isLastItem: isLastItem.value,
-        successMessage: '',
-        completeMessage: '',
-        nextMessage: ''
+        successMessage: 'Correct !',
+        completeMessage: 'Exercice terminé !',
+        nextMessage: 'Appuyez sur Entrée pour continuer'
       })
     }
 

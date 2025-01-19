@@ -137,9 +137,9 @@ export default {
     const checkMot = () => {
       checkInput(userInput.value, currentMot.value, {
         isLastItem: isLastItem.value,
-        successMessage: '',
-        completeMessage: '',
-        nextMessage: ''
+        successMessage: 'Correct !',
+        completeMessage: 'Exercice terminé !',
+        nextMessage: 'Appuyez sur Entrée pour continuer'
       })
     }
 
