@@ -1,4 +1,4 @@
-import { ref, computed, shallowRef, markRaw } from 'vue'
+import { ref, computed, shallowRef, markRaw, watchEffect, onBeforeUnmount } from 'vue'
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
 import { useOptimizedAnimations } from './useOptimizedAnimations'
@@ -10,15 +10,17 @@ import { useIndexedDBCache } from './useIndexedDBCache'
 export function useKeyboardExercise(options = {}) {
   const {
     cacheSize = 50,
-    preloadCount = 5, // Number of items to preload
-    batchSize = 20 // Number of items to process at once
+    preloadCount = 5,
+    batchSize = 20,
+    cleanupInterval = 30000, // 30 secondes
+    maxInactiveTime = 300000 // 5 minutes
   } = options
 
-  // Store setup
+  // Store setup avec cleanup automatique
   const store = useKeyboardStore()
   const { typingSpeed } = storeToRefs(store)
 
-  // Composables with performance optimizations
+  // Composables avec optimisations de performance
   const { animationClasses } = useOptimizedAnimations()
   const { debounce, clearDebounces } = useDebounce()
   const validation = markRaw(useValidation({ maxMemoryEntries: cacheSize }))
@@ -29,22 +31,95 @@ export function useKeyboardExercise(options = {}) {
     maxAge: 5 * 60 * 1000
   }))
 
-  // Common state with optimizations
+  // État commun avec optimisations
   const userInput = ref('')
   const currentIndex = ref(0)
-  const items = shallowRef([]) // Using shallowRef for better performance with large arrays
-  const processedItems = shallowRef([]) // Store processed items for better performance
+  const items = shallowRef([])
+  const processedItems = shallowRef([])
+  const lastActivityTime = ref(Date.now())
+  const memoryUsage = ref({
+    items: 0,
+    processedItems: 0,
+    cache: 0
+  })
 
-  // Memoized computed properties
+  // Surveillance de l'utilisation de la mémoire
+  const updateMemoryUsage = () => {
+    memoryUsage.value = {
+      items: items.value.length,
+      processedItems: processedItems.value.length,
+      cache: highlightedKeysCache.getCacheSize?.() || 0
+    }
+  }
+
+  // Nettoyage automatique des items non utilisés
+  const cleanupUnusedItems = () => {
+    const now = Date.now()
+    if (now - lastActivityTime.value > maxInactiveTime) {
+      processedItems.value = processedItems.value.filter((_, index) => {
+        const distance = Math.abs(index - currentIndex.value)
+        return distance <= preloadCount
+      })
+      updateMemoryUsage()
+    }
+  }
+
+  // Gestionnaire d'activité
+  const updateActivity = () => {
+    lastActivityTime.value = Date.now()
+  }
+
+  // Optimisation du traitement par lots
+  const processBatch = (startIndex) => {
+    const endIndex = Math.min(startIndex + batchSize, items.value.length)
+    const newProcessedItems = [...processedItems.value]
+    
+    for (let i = startIndex; i < endIndex; i++) {
+      if (!newProcessedItems[i] && items.value[i]) {
+        newProcessedItems[i] = markRaw(items.value[i])
+      }
+    }
+    
+    processedItems.value = newProcessedItems
+    updateMemoryUsage()
+  }
+
+  // Préchargement optimisé des items suivants
+  const preloadNextItems = () => {
+    const start = currentIndex.value + 1
+    const end = Math.min(start + preloadCount, items.value.length)
+    
+    // Nettoyer les items trop éloignés
+    processedItems.value = processedItems.value.map((item, index) => {
+      const distance = Math.abs(index - currentIndex.value)
+      return distance <= preloadCount * 2 ? item : null
+    })
+    
+    // Précharger les prochains items
+    for (let i = start; i < end; i++) {
+      if (!processedItems.value[i] && items.value[i]) {
+        processedItems.value[i] = markRaw(items.value[i])
+      }
+    }
+    
+    updateMemoryUsage()
+  }
+
+  // Item courant avec optimisation de mémoire
   const currentItem = computed(() => {
+    updateActivity()
     const index = currentIndex.value
-    if (!items.value || !items.value[index]) {
+    
+    if (!items.value?.[index]) {
       return null
     }
+    
     if (!processedItems.value[index]) {
       const item = items.value[index]
       processedItems.value[index] = item ? markRaw(item) : null
+      updateMemoryUsage()
     }
+    
     return processedItems.value[index]
   })
 
@@ -52,30 +127,9 @@ export function useKeyboardExercise(options = {}) {
     return currentIndex.value === (items.value?.length || 0) - 1
   })
 
-  // Preload next batch of items
-  const preloadNextItems = () => {
-    const start = currentIndex.value + 1
-    const end = Math.min(start + preloadCount, items.value.length)
-    
-    for (let i = start; i < end; i++) {
-      if (!processedItems.value[i]) {
-        processedItems.value[i] = markRaw(items.value[i])
-      }
-    }
-  }
-
-  // Process items in batches for better performance
-  const processBatch = (startIndex) => {
-    const endIndex = Math.min(startIndex + batchSize, items.value.length)
-    for (let i = startIndex; i < endIndex; i++) {
-      if (!processedItems.value[i]) {
-        processedItems.value[i] = markRaw(items.value[i])
-      }
-    }
-  }
-
-  // Optimized input checking
+  // Vérification optimisée des entrées
   const checkInput = async (input, expected, options = {}) => {
+    updateActivity()
     const result = await validation.validateInput(input, expected, {
       isLastItem: isLastItem.value,
       ...options
@@ -89,14 +143,13 @@ export function useKeyboardExercise(options = {}) {
         validation.isIncorrect.value = false
         keyboardEvents.removeEnterKeyListener()
       } else if (!isLastItem.value) {
-        keyboardEvents.removeEnterKeyListener() // Remove any existing listener first
+        keyboardEvents.removeEnterKeyListener()
         keyboardEvents.addEnterKeyListener(() => {
           if (currentIndex.value < items.value.length - 1) {
             currentIndex.value++
             userInput.value = ''
             validation.isCorrect.value = false
             validation.validationMessage.value = ''
-            // Preload next items when moving forward
             preloadNextItems()
           }
         })
@@ -106,20 +159,20 @@ export function useKeyboardExercise(options = {}) {
     return result
   }
 
-  // Optimized exercise reset
+  // Réinitialisation optimisée
   const resetExercise = (newItems) => {
     items.value = newItems
-    processedItems.value = []
+    processedItems.value = new Array(newItems.length)
     currentIndex.value = 0
     userInput.value = ''
     validation.resetValidation()
     store.reset()
     
-    // Process first batch of items
     processBatch(0)
+    updateMemoryUsage()
   }
 
-  // Enhanced cleanup
+  // Nettoyage amélioré
   const cleanup = () => {
     clearDebounces()
     store.reset()
@@ -128,13 +181,31 @@ export function useKeyboardExercise(options = {}) {
     processedItems.value = []
     userInput.value = ''
     currentIndex.value = 0
+    updateMemoryUsage()
   }
 
+  // Mise en place du nettoyage automatique
+  let cleanupTimer = setInterval(cleanupUnusedItems, cleanupInterval)
+
+  // Nettoyage des ressources
+  onBeforeUnmount(() => {
+    clearInterval(cleanupTimer)
+    cleanup()
+  })
+
+  // Surveillance des changements d'état pour la gestion de la mémoire
+  watchEffect(() => {
+    if (currentItem.value) {
+      updateActivity()
+    }
+  })
+
   return {
-    // State
+    // État
     userInput,
     currentIndex,
     items,
+    memoryUsage,
     
     // Computed
     currentItem,
