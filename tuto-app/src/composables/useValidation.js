@@ -126,8 +126,12 @@ export function useValidation(options = {}) {
     }
 
     if (result.isCorrect) {
-      result.message = isLastItem ? completeMessage : `${successMessage} ${nextMessage}`
-      result.isComplete = isLastItem
+      if (isLastItem) {
+        result.message = completeMessage
+        result.isComplete = true
+      } else {
+        result.message = `${successMessage} ${nextMessage}`
+      }
     } else {
       result.isIncorrect = !result.isPartiallyCorrect
       if (!result.isPartiallyCorrect && input) {

@@ -131,16 +131,23 @@ export default {
       return currentItem.value?.text || ''
     })
 
-    const checkPhrase = () => {
-      const result = checkInput(userInput.value, currentPhrase.value, {
+    const checkPhrase = async () => {
+      const result = await checkInput(userInput.value, currentPhrase.value, {
         isLastItem: isLastItem.value,
-        successMessage: '',
+        successMessage: 'Correct !',
         completeMessage: 'Félicitations ! Vous avez terminé cet exercice.',
         nextMessage: 'Appuyez sur Entrée pour passer à la phrase suivante'
       })
 
-      if (result && result.isCorrect && !result.isComplete) {
-        validationMessage.value = 'Appuyez sur Entrée pour continuer'
+      if (result) {
+        if (result.isCorrect && isLastItem.value && userInput.value === currentPhrase.value) {
+          isExerciseComplete.value = true
+          validationMessage.value = result.message
+        } else if (result.isCorrect && !isLastItem.value) {
+          validationMessage.value = 'Appuyez sur Entrée pour continuer'
+        } else if (result.isIncorrect) {
+          validationMessage.value = result.message
+        }
       }
     }
 
@@ -156,8 +163,14 @@ export default {
       }
     }
 
-    const restartExerciseHandler = () => {
-      resetExercise(exerciseCache.refreshCache('phrases', 10))
+    const restartExerciseHandler = async () => {
+      const newPhrases = await exerciseCache.refreshCache('phrases', 10)
+      phrases.value = newPhrases
+      resetExercise(newPhrases)
+      userInput.value = ''
+      validationMessage.value = ''
+      isCorrect.value = false
+      isIncorrect.value = false
     }
 
     const goNext = () => {

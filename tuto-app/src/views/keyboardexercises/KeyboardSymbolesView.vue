@@ -165,26 +165,36 @@ export default {
       resetExercise(symbols.value)
     })
 
-    const checkSymbol = () => {
+    const checkSymbol = async () => {
       const input = userInput.value.charAt(0)
-      const result = checkInput(input, currentCharToType.value, {
+      const result = await checkInput(input, currentCharToType.value, {
         isLastItem: isLastItem.value,
-        successMessage: '',
+        successMessage: 'Correct !',
         completeMessage: 'Félicitations ! Vous avez terminé cet exercice.',
         nextMessage: 'Appuyez sur Entrée pour passer au symbole suivant'
       })
 
-      if (result && result.isCorrect && !result.isComplete) {
-        validationMessage.value = 'Appuyez sur Entrée pour continuer'
+      if (result) {
+        if (result.isCorrect && isLastItem.value && input === currentCharToType.value) {
+          isExerciseComplete.value = true
+          validationMessage.value = result.message
+        } else if (result.isCorrect && !isLastItem.value) {
+          validationMessage.value = 'Appuyez sur Entrée pour continuer'
+        } else if (result.isIncorrect) {
+          validationMessage.value = result.message
+        }
       }
     }
 
     const restartExerciseHandler = async () => {
       keyboardEvents.removeEnterKeyListener()
       const newSymbols = await exerciseCache.refreshCache('symboles')
+      symbols.value = newSymbols
       resetExercise(newSymbols)
       userInput.value = ''
       validationMessage.value = ''
+      isCorrect.value = false
+      isIncorrect.value = false
     }
 
     const goNext = () => {

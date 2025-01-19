@@ -75,24 +75,32 @@ export function useKeyboardExercise(options = {}) {
   }
 
   // Optimized input checking
-  const checkInput = (input, expected, options = {}) => {
-    const result = validation.validateInput(input, expected, {
+  const checkInput = async (input, expected, options = {}) => {
+    const result = await validation.validateInput(input, expected, {
       isLastItem: isLastItem.value,
       ...options
     })
 
-    if (result.isCorrect && !result.isComplete) {
-      keyboardEvents.removeEnterKeyListener() // Remove any existing listener first
-      keyboardEvents.addEnterKeyListener(() => {
-        if (currentIndex.value < items.value.length - 1) {
-          currentIndex.value++
-          userInput.value = ''
-          validation.isCorrect.value = false
-          validation.validationMessage.value = ''
-          // Preload next items when moving forward
-          preloadNextItems()
-        }
-      })
+    if (result.isCorrect) {
+      if (isLastItem.value && input === expected) {
+        validation.isExerciseComplete.value = true
+        validation.validationMessage.value = options.completeMessage || 'Exercice terminé !'
+        validation.isCorrect.value = true
+        validation.isIncorrect.value = false
+        keyboardEvents.removeEnterKeyListener()
+      } else if (!isLastItem.value) {
+        keyboardEvents.removeEnterKeyListener() // Remove any existing listener first
+        keyboardEvents.addEnterKeyListener(() => {
+          if (currentIndex.value < items.value.length - 1) {
+            currentIndex.value++
+            userInput.value = ''
+            validation.isCorrect.value = false
+            validation.validationMessage.value = ''
+            // Preload next items when moving forward
+            preloadNextItems()
+          }
+        })
+      }
     }
 
     return result
