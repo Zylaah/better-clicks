@@ -1,11 +1,33 @@
+const CRITICAL_COMPONENTS = ['AzuretyKeyboard']
+const SECONDARY_COMPONENTS = ['RestartModal', 'ProgressBar']
+
 // Fonction pour précharger les composants critiques
 export const preloadComponents = async () => {
   try {
-    // Préchargement du clavier
-    await import('@/components/keyboard/AzuretyKeyboard.vue')
-    console.log('Clavier préchargé avec succès')
+    // Charger d'abord les composants critiques
+    await Promise.all(
+      CRITICAL_COMPONENTS.map(comp => 
+        import(`@/components/keyboard/${comp}.vue`)
+      )
+    )
+    
+    // Précharger les composants secondaires en background
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        SECONDARY_COMPONENTS.forEach(comp => {
+          import(`@/components/${comp}.vue`)
+        })
+      })
+    } else {
+      // Fallback pour les navigateurs qui ne supportent pas requestIdleCallback
+      setTimeout(() => {
+        SECONDARY_COMPONENTS.forEach(comp => {
+          import(`@/components/${comp}.vue`)
+        })
+      }, 1000)
+    }
   } catch (error) {
-    console.error('Erreur lors du préchargement des composants:', error)
+    console.error('Erreur de préchargement:', error)
   }
 }
 

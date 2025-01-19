@@ -6,6 +6,9 @@ import { SymbolGenerator } from '@/services/symbolGenerator'
 import { PhraseGenerator } from '@/services/phraseGenerator'
 import { ref } from 'vue'
 
+const MAX_CACHE_SIZE = 100
+const MAX_ITEMS_PER_TYPE = 50
+
 export function useExerciseCache() {
   const cacheManager = useCacheManager(200)
   const { isReady, hasError, getFromStore, setInStore, STORES } = useIndexedDB()
@@ -33,13 +36,20 @@ export function useExerciseCache() {
   }
 
   const getItems = async (type, count = 20, forceRefresh = false) => {
-    const cacheKey = `${type}-${count}`
+    // Nettoyer le cache si nécessaire
+    if (cacheManager.size > MAX_CACHE_SIZE) {
+      cacheManager.cleanup()
+    }
+    
+    // Limiter le nombre d'items par type
+    const safeCount = Math.min(count, MAX_ITEMS_PER_TYPE)
+    const cacheKey = `${type}-${safeCount}`
     
     try {
       // Vérifier d'abord le cache en mémoire pour une réponse rapide
       if (!forceRefresh) {
         const memoryCache = cacheManager.getFromCache(cacheKey)
-        if (memoryCache?.length === count) {
+        if (memoryCache?.length === safeCount) {
           return [...memoryCache]
         }
       }
@@ -48,7 +58,7 @@ export function useExerciseCache() {
       if (isReady.value && !hasError.value && !fallbackMode.value && !forceRefresh) {
         try {
           const dbCache = await getFromStore(STORES.exerciseCache, cacheKey)
-          if (dbCache?.items?.length === count) {
+          if (dbCache?.items?.length === safeCount) {
             // Mettre en cache mémoire pour les prochains accès
             cacheManager.addToCache(cacheKey, dbCache.items)
             return [...dbCache.items]
@@ -60,7 +70,7 @@ export function useExerciseCache() {
       }
 
       // Générer de nouveaux items
-      const items = generateItems(type, count)
+      const items = generateItems(type, safeCount)
       if (items.length === 0) {
         throw new Error(`Impossible de générer les items de type ${type}`)
       }

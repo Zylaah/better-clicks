@@ -1,4 +1,4 @@
-import { ref, computed, shallowRef, markRaw } from 'vue'
+import { ref, computed, shallowRef, markRaw, onBeforeUnmount } from 'vue'
 import { useKeyboardStore } from '@/stores/keyboard'
 import { storeToRefs } from 'pinia'
 import { useOptimizedAnimations } from './useOptimizedAnimations'
@@ -118,6 +118,40 @@ export function useKeyboardExercise(options = {}) {
     currentIndex.value = 0
   }
 
+  // Fonction de vérification
+  const checkPhrase = () => {
+    if (!currentItem.value) return
+    
+    const result = validation.validateInput(userInput.value, currentItem.value, {
+      isLastItem: isLastItem.value,
+      successMessage: 'Correct !',
+      completeMessage: 'Exercice terminé !',
+      nextMessage: 'Passez à la suite'
+    })
+
+    validation.isCorrect.value = result.isCorrect
+    validation.isIncorrect.value = result.isIncorrect
+    validation.validationMessage.value = result.message
+    validation.isExerciseComplete.value = result.isComplete
+  }
+
+  const debouncedCheck = computed(() => 
+    debounce((event) => {
+      if (!event?.target?.value) return
+      
+      // Éviter les mises à jour inutiles
+      if (userInput.value === event.target.value) return
+      
+      userInput.value = event.target.value
+      checkPhrase()
+    }, 100)
+  ).value // Accéder à la valeur directement
+
+  // Nettoyage
+  onBeforeUnmount(() => {
+    debouncedCheck.cancel && debouncedCheck.cancel()
+  })
+
   return {
     // State
     userInput,
@@ -145,6 +179,8 @@ export function useKeyboardExercise(options = {}) {
     cleanup,
     
     // Debounce helper
-    debounce
+    debounce,
+    checkPhrase,
+    debouncedCheck
   }
 } 
