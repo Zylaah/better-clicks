@@ -1,15 +1,20 @@
 import { ref, computed } from 'vue'
-import { useCacheManager } from './useCacheManager'
+import { useIndexedDBCache } from './useIndexedDBCache'
 
 export function useValidation(options = {}) {
   const {
-    maxCacheSize = 50,
+    maxMemoryEntries = 50,
     maxMessageLength = 100,
     batchSize = 5,  // Taille des lots pour la validation
     preloadDepth = 3  // Nombre de caractères à pré-charger
   } = options
 
-  const validationCache = useCacheManager(maxCacheSize)
+  const validationCache = useIndexedDBCache({
+    maxMemoryEntries,
+    syncInterval: 5000, // 5 secondes
+    maxAge: 5 * 60 * 1000 // 5 minutes
+  })
+  
   const memoCache = new Map() // Cache pour la memoization des calculs intermédiaires
   const isCorrect = ref(false)
   const isIncorrect = ref(false)
@@ -25,21 +30,23 @@ export function useValidation(options = {}) {
     isComplete: isExerciseComplete.value
   }))
 
-  const preloadValidations = (expected, currentInput) => {
+  const preloadValidations = async (expected, currentInput) => {
     // Pré-calcule les validations probables pour les prochains caractères
     for (let i = 1; i <= preloadDepth; i++) {
       const possibleInput = currentInput + expected.charAt(currentInput.length + i - 1)
-      const cacheKey = `${possibleInput}-${expected}`
+      const cacheKey = `validation-${possibleInput}-${expected}`
       
-      if (!validationCache.getFromCache(cacheKey)) {
+      const cached = await validationCache.getFromCache(cacheKey)
+      if (!cached) {
         const result = {
           isCorrect: possibleInput === expected,
           isIncorrect: false,
           isPartiallyCorrect: expected.startsWith(possibleInput),
           message: '',
-          isComplete: false
+          isComplete: false,
+          timestamp: Date.now()
         }
-        validationCache.addToCache(cacheKey, result)
+        await validationCache.addToCache(cacheKey, result)
       }
     }
   }
@@ -59,7 +66,7 @@ export function useValidation(options = {}) {
     return result
   }
 
-  const validateInput = (input, expected, options = {}) => {
+  const validateInput = async (input, expected, options = {}) => {
     const {
       isLastItem = false,
       successMessage = '',
@@ -72,8 +79,8 @@ export function useValidation(options = {}) {
       return memoizedValidation.value
     }
 
-    const cacheKey = `${input}-${expected}`
-    const cached = validationCache.getFromCache(cacheKey)
+    const cacheKey = `validation-${input}-${expected}`
+    const cached = await validationCache.getFromCache(cacheKey)
     
     if (cached) {
       isCorrect.value = cached.isCorrect
@@ -100,9 +107,10 @@ export function useValidation(options = {}) {
           isPartiallyCorrect: expected.startsWith(input),
           message: `Vous avez écrit : "${input.slice(0, maxMessageLength)}"
           Attendu : "${expected.slice(0, Math.min(input.length, maxMessageLength))}"`,
-          isComplete: false
+          isComplete: false,
+          timestamp: Date.now()
         }
-        validationCache.addToCache(cacheKey, result)
+        await validationCache.addToCache(cacheKey, result)
         updateState(result)
         return result
       }
@@ -113,7 +121,8 @@ export function useValidation(options = {}) {
       isIncorrect: false,
       isPartiallyCorrect: expected.startsWith(input),
       message: '',
-      isComplete: false
+      isComplete: false,
+      timestamp: Date.now()
     }
 
     if (result.isCorrect) {
@@ -128,13 +137,13 @@ export function useValidation(options = {}) {
     }
 
     // Mise à jour du cache et de l'état
-    validationCache.addToCache(cacheKey, result)
+    await validationCache.addToCache(cacheKey, result)
     updateState(result)
     lastValidInput.value = input
 
     // Pré-chargement des validations probables
     if (!result.isCorrect && result.isPartiallyCorrect) {
-      preloadValidations(expected, input)
+      await preloadValidations(expected, input)
     }
 
     return result
@@ -147,14 +156,14 @@ export function useValidation(options = {}) {
     isExerciseComplete.value = result.isComplete
   }
 
-  const resetValidation = () => {
+  const resetValidation = async () => {
     isCorrect.value = false
     isIncorrect.value = false
     validationMessage.value = ''
     isExerciseComplete.value = false
     lastValidInput.value = ''
     memoCache.clear()
-    validationCache.clearCache()
+    await validationCache.clearCache()
   }
 
   return {

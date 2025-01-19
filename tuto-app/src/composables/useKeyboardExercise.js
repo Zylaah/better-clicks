@@ -5,7 +5,7 @@ import { useOptimizedAnimations } from './useOptimizedAnimations'
 import { useDebounce } from './useDebounce'
 import { useValidation } from './useValidation'
 import { useKeyboardEvents } from './useKeyboardEvents'
-import { useCacheManager } from './useCacheManager'
+import { useIndexedDBCache } from './useIndexedDBCache'
 
 export function useKeyboardExercise(options = {}) {
   const {
@@ -21,9 +21,13 @@ export function useKeyboardExercise(options = {}) {
   // Composables with performance optimizations
   const { animationClasses } = useOptimizedAnimations()
   const { debounce, clearDebounces } = useDebounce()
-  const validation = markRaw(useValidation({ maxCacheSize: cacheSize }))
+  const validation = markRaw(useValidation({ maxMemoryEntries: cacheSize }))
   const keyboardEvents = markRaw(useKeyboardEvents())
-  const highlightedKeysCache = markRaw(useCacheManager(20))
+  const highlightedKeysCache = markRaw(useIndexedDBCache({
+    maxMemoryEntries: 20,
+    syncInterval: 5000,
+    maxAge: 5 * 60 * 1000
+  }))
 
   // Common state with optimizations
   const userInput = ref('')
@@ -34,14 +38,18 @@ export function useKeyboardExercise(options = {}) {
   // Memoized computed properties
   const currentItem = computed(() => {
     const index = currentIndex.value
+    if (!items.value || !items.value[index]) {
+      return null
+    }
     if (!processedItems.value[index]) {
-      processedItems.value[index] = markRaw(items.value[index] || null)
+      const item = items.value[index]
+      processedItems.value[index] = item ? markRaw(item) : null
     }
     return processedItems.value[index]
   })
 
   const isLastItem = computed(() => {
-    return currentIndex.value === items.value.length - 1
+    return currentIndex.value === (items.value?.length || 0) - 1
   })
 
   // Preload next batch of items
@@ -74,12 +82,13 @@ export function useKeyboardExercise(options = {}) {
     })
 
     if (result.isCorrect && !result.isComplete) {
+      keyboardEvents.removeEnterKeyListener() // Remove any existing listener first
       keyboardEvents.addEnterKeyListener(() => {
         if (currentIndex.value < items.value.length - 1) {
           currentIndex.value++
+          userInput.value = ''
           validation.isCorrect.value = false
           validation.validationMessage.value = ''
-          userInput.value = ''
           // Preload next items when moving forward
           preloadNextItems()
         }

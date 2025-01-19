@@ -15,6 +15,7 @@
             {{ currentSymbol.display }}
           </div>
           <ProgressBar 
+            v-if="symbols.length > 0"
             v-memo="[currentIndex]"
             :current-value="currentIndex + 1"
             :total-value="symbols.length"
@@ -51,6 +52,7 @@
           :message="validationMessage"
           placeholder="Tapez le symbole ici..."
           @input="debouncedCheck"
+          @enter="handleEnterPress"
         />
       </div>
     </div>
@@ -59,12 +61,17 @@
 
 <script>
 import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
-import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
+import { onBeforeMount, onBeforeUnmount, computed, ref, watch } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
 import { useExerciseCache } from '@/composables/useExerciseCache'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faRotateRight, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+
+library.add(faRotateRight, faArrowRight)
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -80,51 +87,44 @@ const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
       fail()
     }
   },
-  suspensible: true, // Permet une meilleure gestion de la mémoire avec Suspense
+  suspensible: true,
   ...options
 })
-
-const RestartModal = createAsyncComponent(() => import('@/components/RestartModal.vue'))
-const ProgressBar = createAsyncComponent(() => import('@/components/ProgressBar.vue'))
 
 export default {
   name: 'KeyboardSymbolesView',
   
   components: {
     GlobalKeyboard,
-    ProgressBar,
-    RestartModal,
-    KeyboardTextArea
+    KeyboardTextArea,
+    RestartModal: createAsyncComponent(() => import('@/components/RestartModal.vue')),
+    ProgressBar: createAsyncComponent(() => import('@/components/ProgressBar.vue'))
   },
 
   setup() {
     const router = useRouter()
-    const { proxy: app } = getCurrentInstance()
     const exerciseCache = useExerciseCache()
-    
-    
-    
+    const symbols = ref([])
+    const highlightedKeysRef = ref([])
+    const keyboardEvents = useKeyboardEvents()
+
     const {
       userInput,
       currentIndex,
-      items: symbols,
       currentItem,
       isLastItem,
       typingSpeed,
       animationClasses,
+      highlightedKeysCache,
       isCorrect,
       isIncorrect,
       isExerciseComplete,
       validationMessage,
-      highlightedKeysCache,
       debounce,
       checkInput,
       resetExercise,
       cleanup: cleanupExercise
     } = useKeyboardExercise()
-
-    // Initialize symbols
-    symbols.value = exerciseCache.getItems('symboles')
 
     const currentSymbol = computed(() => {
       return currentItem.value || { char: '', display: '', modifiers: [] }
@@ -137,41 +137,58 @@ export default {
     })
 
     const highlightedKeys = computed(() => {
-      const symbol = currentSymbol.value
-      if (!symbol?.char) return []
-      
-      const cacheKey = `${symbol.char}-${symbol.modifiers?.join(',') || ''}`
-      const cached = highlightedKeysCache.getFromCache(cacheKey)
-      if (cached) return cached
-      
-      const keys = [symbol.char, ...(symbol.modifiers || [])]
-      highlightedKeysCache.addToCache(cacheKey, keys)
-      return keys
+      return highlightedKeysRef.value
     })
     
-    // Load icons
+    // Mettre à jour les touches surlignées quand le symbole courant change
+    watch(() => currentSymbol.value, async (symbol) => {
+      if (!symbol?.char) {
+        highlightedKeysRef.value = []
+        return
+      }
+      
+      const cacheKey = `${symbol.char}-${symbol.modifiers?.join(',') || ''}`
+      const cached = await highlightedKeysCache.getFromCache(cacheKey)
+      
+      if (cached) {
+        highlightedKeysRef.value = cached
+      } else {
+        const keys = [symbol.char, ...(symbol.modifiers || [])]
+        highlightedKeysRef.value = keys
+        highlightedKeysCache.addToCache(cacheKey, keys)
+      }
+    }, { immediate: true })
+    
     onBeforeMount(async () => {
-      await Promise.all([
-        app.$loadIcon('rotateRight'),
-        app.$loadIcon('arrowRight')
-      ])
+      // Initialize symbols
+      symbols.value = await exerciseCache.getItems('symboles')
+      resetExercise(symbols.value)
     })
 
     const checkSymbol = () => {
       const input = userInput.value.charAt(0)
-      checkInput(input, currentCharToType.value, {
+      const result = checkInput(input, currentCharToType.value, {
         isLastItem: isLastItem.value,
         successMessage: '',
-        completeMessage: '',
-        nextMessage: ''
+        completeMessage: 'Félicitations ! Vous avez terminé cet exercice.',
+        nextMessage: 'Appuyez sur Entrée pour passer au symbole suivant'
       })
+
+      if (result && result.isCorrect && !result.isComplete) {
+        validationMessage.value = 'Appuyez sur Entrée pour continuer'
+      }
     }
 
-    const restartExerciseHandler = () => {
-      resetExercise(exerciseCache.refreshCache('symboles'))
+    const restartExerciseHandler = async () => {
+      keyboardEvents.removeEnterKeyListener()
+      const newSymbols = await exerciseCache.refreshCache('symboles')
+      resetExercise(newSymbols)
+      userInput.value = ''
+      validationMessage.value = ''
     }
 
     const goNext = () => {
+      keyboardEvents.removeEnterKeyListener()
       router.push({ name: 'keyboard-mots' })
     }
 
@@ -180,7 +197,20 @@ export default {
       checkSymbol()
     }, 100)
 
+    const handleEnterPress = () => {
+      if (isCorrect.value && !isExerciseComplete.value) {
+        if (currentIndex.value < symbols.value.length - 1) {
+          currentIndex.value++
+          userInput.value = ''
+          validationMessage.value = ''
+          isCorrect.value = false
+          isIncorrect.value = false
+        }
+      }
+    }
+
     onBeforeUnmount(() => {
+      keyboardEvents.removeEnterKeyListener()
       cleanupExercise()
       exerciseCache.cleanup()
     })
@@ -207,6 +237,7 @@ export default {
       restartExercise: restartExerciseHandler,
       goNext,
       cleanupExercise,
+      handleEnterPress,
       
       // Animation
       animationClasses,

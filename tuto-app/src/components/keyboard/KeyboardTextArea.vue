@@ -11,7 +11,7 @@
       @input="onInput"
       @compositionstart="onCompositionStart"
       @compositionend="onCompositionEnd"
-      @keydown.enter.prevent
+      @keydown.enter.prevent="onEnterPress"
     ></textarea>
     <div class="validation-message-container">
       <div 
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, onMounted } from 'vue'
+import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 
 export default defineComponent({
   name: 'KeyboardTextArea',
@@ -58,7 +58,7 @@ export default defineComponent({
     }
   },
 
-  emits: ['update:modelValue', 'input'],
+  emits: ['update:modelValue', 'input', 'enter'],
 
   setup(props, { emit }) {
     const textareaRef = ref(null)
@@ -105,10 +105,28 @@ export default defineComponent({
       processInput(event)
     }
 
+    const onEnterPress = () => {
+      if (props.isCorrect) {
+        emit('enter')
+        // Réinitialiser l'état du textarea
+        if (textareaRef.value) {
+          textareaRef.value.value = ''
+        }
+        emit('update:modelValue', '')
+      }
+    }
+
     // Optimisation du focus
     onMounted(() => {
       if (textareaRef.value) {
         textareaRef.value.focus()
+      }
+    })
+
+    // Surveiller les changements de modelValue pour synchroniser le textarea
+    watch(() => props.modelValue, (newValue) => {
+      if (textareaRef.value && textareaRef.value.value !== newValue) {
+        textareaRef.value.value = newValue
       }
     })
 
@@ -117,7 +135,8 @@ export default defineComponent({
       validationClasses,
       onInput,
       onCompositionStart,
-      onCompositionEnd
+      onCompositionEnd,
+      onEnterPress
     }
   }
 })

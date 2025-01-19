@@ -18,6 +18,7 @@
             {{ caseInfoText }}
           </div>
           <ProgressBar 
+            v-if="letters.length > 0"
             v-memo="[currentIndex]"
             :current-value="currentIndex + 1"
             :total-value="letters.length"
@@ -54,6 +55,7 @@
           :message="validationMessage"
           placeholder="Tapez la lettre ici..."
           @input="debouncedCheck"
+          @enter="handleEnterPress"
         />
       </div>
     </div>
@@ -62,12 +64,17 @@
 
 <script>
 import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
-import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
+import { onBeforeMount, onBeforeUnmount, computed, ref, watch } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
 import { useExerciseCache } from '@/composables/useExerciseCache'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faRotateRight, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { useKeyboardEvents } from '@/composables/useKeyboardEvents'
+
+library.add(faRotateRight, faArrowRight)
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -83,33 +90,30 @@ const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
       fail()
     }
   },
-  suspensible: true, // Permet une meilleure gestion de la mémoire avec Suspense
+  suspensible: true,
   ...options
 })
-
-const RestartModal = createAsyncComponent(() => import('@/components/RestartModal.vue'))
-
-const ProgressBar = createAsyncComponent(() => import('@/components/ProgressBar.vue'))
 
 export default {
   name: 'KeyboardLettreView',
   
   components: {
     GlobalKeyboard,
-    ProgressBar,
-    RestartModal,
-    KeyboardTextArea
+    KeyboardTextArea,
+    RestartModal: createAsyncComponent(() => import('@/components/RestartModal.vue')),
+    ProgressBar: createAsyncComponent(() => import('@/components/ProgressBar.vue'))
   },
 
   setup() {
     const router = useRouter()
-    const { proxy: app } = getCurrentInstance()
     const exerciseCache = useExerciseCache()
-    
+    const letters = ref([])
+    const highlightedKeysRef = ref([])
+    const keyboardEvents = useKeyboardEvents()
+
     const {
       userInput,
       currentIndex,
-      items: letters,
       currentItem,
       isLastItem,
       typingSpeed,
@@ -124,9 +128,6 @@ export default {
       resetExercise,
       cleanup: cleanupExercise
     } = useKeyboardExercise()
-
-    // Initialize letters
-    letters.value = exerciseCache.getItems('lettres')
 
     const currentLetter = computed(() => {
       return currentItem.value || { char: '', display: '', modifiers: [] }
@@ -148,41 +149,58 @@ export default {
     })
 
     const highlightedKeys = computed(() => {
-      const letter = currentLetter.value
-      if (!letter?.char) return []
-      
-      const cacheKey = `${letter.char}-${letter.modifiers?.join(',') || ''}`
-      const cached = highlightedKeysCache.getFromCache(cacheKey)
-      if (cached) return cached
-      
-      const keys = [letter.char, ...(letter.modifiers || [])]
-      highlightedKeysCache.addToCache(cacheKey, keys)
-      return keys
+      return highlightedKeysRef.value
     })
     
-    // Load icons
+    // Mettre à jour les touches surlignées quand la lettre courante change
+    watch(() => currentLetter.value, async (letter) => {
+      if (!letter?.char) {
+        highlightedKeysRef.value = []
+        return
+      }
+      
+      const cacheKey = `${letter.char}-${letter.modifiers?.join(',') || ''}`
+      const cached = await highlightedKeysCache.getFromCache(cacheKey)
+      
+      if (cached) {
+        highlightedKeysRef.value = cached
+      } else {
+        const keys = [letter.char, ...(letter.modifiers || [])]
+        highlightedKeysRef.value = keys
+        highlightedKeysCache.addToCache(cacheKey, keys)
+      }
+    }, { immediate: true })
+    
     onBeforeMount(async () => {
-      await Promise.all([
-        app.$loadIcon('rotateRight'),
-        app.$loadIcon('arrowRight')
-      ])
+      // Initialize letters
+      letters.value = await exerciseCache.getItems('lettres')
+      resetExercise(letters.value)
     })
 
     const checkLetter = () => {
       const input = userInput.value.charAt(0)
-      checkInput(input, currentCharToType.value, {
+      const result = checkInput(input, currentCharToType.value, {
         isLastItem: isLastItem.value,
         successMessage: '',
-        completeMessage: '',
-        nextMessage: ''
+        completeMessage: 'Félicitations ! Vous avez terminé cet exercice.',
+        nextMessage: 'Appuyez sur Entrée pour passer à la lettre suivante'
       })
+
+      if (result && result.isCorrect && !result.isComplete) {
+        validationMessage.value = 'Appuyez sur Entrée pour continuer'
+      }
     }
 
-    const restartExerciseHandler = () => {
-      resetExercise(exerciseCache.refreshCache('lettres'))
+    const restartExerciseHandler = async () => {
+      keyboardEvents.removeEnterKeyListener()
+      const newLetters = await exerciseCache.refreshCache('lettres')
+      resetExercise(newLetters)
+      userInput.value = ''
+      validationMessage.value = ''
     }
 
     const goNext = () => {
+      keyboardEvents.removeEnterKeyListener()
       router.push({ name: 'keyboard-symboles' })
     }
 
@@ -191,7 +209,20 @@ export default {
       checkLetter()
     }, 100)
 
+    const handleEnterPress = () => {
+      if (isCorrect.value && !isExerciseComplete.value) {
+        if (currentIndex.value < letters.value.length - 1) {
+          currentIndex.value++
+          userInput.value = ''
+          validationMessage.value = ''
+          isCorrect.value = false
+          isIncorrect.value = false
+        }
+      }
+    }
+
     onBeforeUnmount(() => {
+      keyboardEvents.removeEnterKeyListener()
       cleanupExercise()
       exerciseCache.cleanup()
     })
@@ -220,6 +251,7 @@ export default {
       restartExercise: restartExerciseHandler,
       goNext,
       cleanupExercise,
+      handleEnterPress,
       
       // Animation
       animationClasses,

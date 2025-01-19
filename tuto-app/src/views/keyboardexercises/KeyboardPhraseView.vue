@@ -14,6 +14,7 @@
             {{ currentPhrase }}
           </div>
           <ProgressBar 
+            v-if="phrases.length > 0"
             v-memo="[currentIndex]"
             :current-value="currentIndex + 1"
             :total-value="phrases.length"
@@ -50,6 +51,7 @@
           :message="validationMessage"
           placeholder="Recopiez la phrase ici..."
           @input="debouncedCheck"
+          @enter="handleEnterPress"
         />
       </div>
     </div>
@@ -58,12 +60,16 @@
 
 <script>
 import { useKeyboardExercise } from '@/composables/useKeyboardExercise'
-import { onBeforeMount, onBeforeUnmount, getCurrentInstance, computed } from 'vue'
+import { onBeforeMount, computed, ref } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import GlobalKeyboard from '@/components/keyboard/GlobalKeyboard.vue'
 import KeyboardTextArea from '@/components/keyboard/KeyboardTextArea.vue'
 import { useRouter } from 'vue-router'
 import { useExerciseCache } from '@/composables/useExerciseCache'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faRotateRight, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faRotateRight, faArrowRight)
 
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
@@ -79,32 +85,28 @@ const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
       fail()
     }
   },
-  suspensible: true, // Permet une meilleure gestion de la mémoire avec Suspense
+  suspensible: true,
   ...options
 })
-
-const RestartModal = createAsyncComponent(() => import('@/components/RestartModal.vue'))
-const ProgressBar = createAsyncComponent(() => import('@/components/ProgressBar.vue'))
 
 export default {
   name: 'KeyboardPhraseView',
   
   components: {
     GlobalKeyboard,
-    ProgressBar,
-    RestartModal,
-    KeyboardTextArea
+    KeyboardTextArea,
+    RestartModal: createAsyncComponent(() => import('@/components/RestartModal.vue')),
+    ProgressBar: createAsyncComponent(() => import('@/components/ProgressBar.vue'))
   },
 
   setup() {
     const router = useRouter()
-    const { proxy: app } = getCurrentInstance()
     const exerciseCache = useExerciseCache()
-    
+    const phrases = ref([])
+
     const {
       userInput,
       currentIndex,
-      items: phrases,
       currentItem,
       isLastItem,
       typingSpeed,
@@ -118,34 +120,40 @@ export default {
       resetExercise,
       cleanup: cleanupExercise
     } = useKeyboardExercise()
-
-    // Initialize phrases avec un nombre plus petit car les phrases sont plus longues
-    phrases.value = exerciseCache.getItems('phrases', 10)
-
-    onBeforeUnmount(() => {
-      cleanupExercise()
-      exerciseCache.cleanup()
+    
+    onBeforeMount(async () => {
+      // Initialize phrases avec un nombre plus petit car les phrases sont plus longues
+      phrases.value = await exerciseCache.getItems('phrases', 10)
+      resetExercise(phrases.value)
     })
 
     const currentPhrase = computed(() => {
       return currentItem.value?.text || ''
     })
-    
-    // Load icons
-    onBeforeMount(async () => {
-      await Promise.all([
-        app.$loadIcon('rotateRight'),
-        app.$loadIcon('arrowRight')
-      ])
-    })
 
     const checkPhrase = () => {
-      checkInput(userInput.value, currentPhrase.value, {
+      const result = checkInput(userInput.value, currentPhrase.value, {
         isLastItem: isLastItem.value,
         successMessage: '',
-        completeMessage: '',
-        nextMessage: ''
+        completeMessage: 'Félicitations ! Vous avez terminé cet exercice.',
+        nextMessage: 'Appuyez sur Entrée pour passer à la phrase suivante'
       })
+
+      if (result && result.isCorrect && !result.isComplete) {
+        validationMessage.value = 'Appuyez sur Entrée pour continuer'
+      }
+    }
+
+    const handleEnterPress = () => {
+      if (isCorrect.value && !isExerciseComplete.value) {
+        if (currentIndex.value < phrases.value.length - 1) {
+          currentIndex.value++
+          userInput.value = ''
+          validationMessage.value = ''
+          isCorrect.value = false
+          isIncorrect.value = false
+        }
+      }
     }
 
     const restartExerciseHandler = () => {
@@ -181,6 +189,7 @@ export default {
       restartExercise: restartExerciseHandler,
       goNext,
       cleanupExercise,
+      handleEnterPress,
       
       // Animation
       animationClasses,
