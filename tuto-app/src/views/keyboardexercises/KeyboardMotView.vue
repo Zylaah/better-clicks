@@ -126,7 +126,6 @@ export default {
       cleanup: cleanupExercise
     } = useKeyboardExercise()
 
-    // Initialisation sécurisée des mots
     const initializeExercise = async () => {
       try {
         isLoading.value = true
@@ -137,16 +136,18 @@ export default {
           throw new Error("Impossible de charger les mots pour l'exercice")
         }
         
+        // Précharger le prochain lot
+        exerciseCache.preloadNextExercises('mots', currentIndex.value)
+        
         mots.value = items
         isLoading.value = false
       } catch (err) {
         console.error('Erreur lors du chargement des mots:', err)
-        error.value = "Une erreur est survenue lors du chargement de l'exercice"
+        error.value = err.message
         isLoading.value = false
       }
     }
 
-    // Chargement initial
     onMounted(() => {
       initializeExercise()
     })

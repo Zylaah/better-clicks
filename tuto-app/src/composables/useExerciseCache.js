@@ -117,10 +117,56 @@ export function useExerciseCache() {
     }
   }
 
+  // Précharger les prochains exercices
+  const preloadNextExercises = async (type, currentIndex, count = 5) => {
+    try {
+      // Calculer l'index de début pour le prochain lot
+      const startIndex = currentIndex + 1
+      const endIndex = startIndex + count
+
+      // Vérifier si nous avons déjà ces exercices en cache
+      const cacheKey = `${type}-${startIndex}-${endIndex}`
+      if (cacheManager.getFromCache(cacheKey)) {
+        return // Déjà préchargé
+      }
+
+      // Charger le prochain lot d'exercices en arrière-plan
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(async () => {
+          const nextItems = await getItems(type, count)
+          cacheManager.addToCache(cacheKey, nextItems)
+        })
+      } else {
+        // Fallback pour les navigateurs ne supportant pas requestIdleCallback
+        setTimeout(async () => {
+          const nextItems = await getItems(type, count)
+          cacheManager.addToCache(cacheKey, nextItems)
+        }, 1000)
+      }
+    } catch (error) {
+      console.warn('Erreur lors du préchargement:', error)
+    }
+  }
+
+  // Précharger les exercices initiaux
+  const preloadInitialExercises = async (types = ['lettres', 'mots', 'phrases', 'symboles']) => {
+    try {
+      const preloadPromises = types.map(type => 
+        getItems(type, 10, true) // Force le rechargement initial
+      )
+      
+      await Promise.all(preloadPromises)
+    } catch (error) {
+      console.error('Erreur lors du préchargement initial:', error)
+    }
+  }
+
   return {
     getItems,
     refreshCache,
     cleanup,
-    fallbackMode // Exposé pour permettre aux composants de savoir si on est en mode dégradé
+    fallbackMode,
+    preloadNextExercises,
+    preloadInitialExercises
   }
 }

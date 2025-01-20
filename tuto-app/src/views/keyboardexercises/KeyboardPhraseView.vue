@@ -126,7 +126,6 @@ export default {
       cleanup: cleanupExercise
     } = useKeyboardExercise()
 
-    // Initialisation sécurisée des phrases
     const initializeExercise = async () => {
       try {
         isLoading.value = true
@@ -137,16 +136,17 @@ export default {
           throw new Error("Impossible de charger les phrases pour l'exercice")
         }
         
+        exerciseCache.preloadNextExercises('phrases', currentIndex.value)
+        
         phrases.value = items
         isLoading.value = false
       } catch (err) {
         console.error('Erreur lors du chargement des phrases:', err)
-        error.value = "Une erreur est survenue lors du chargement de l'exercice"
+        error.value = err.message
         isLoading.value = false
       }
     }
 
-    // Chargement initial
     onMounted(() => {
       initializeExercise()
     })

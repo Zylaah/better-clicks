@@ -144,16 +144,19 @@ export default {
           throw new Error("Impossible de charger les lettres pour l'exercice")
         }
         
+        // Précharger le prochain lot pendant que l'utilisateur travaille
+        exerciseCache.preloadNextExercises('lettres', currentIndex.value)
+        
         letters.value = items
         isLoading.value = false
       } catch (err) {
         console.error('Erreur lors du chargement des lettres:', err)
-        error.value = "Une erreur est survenue lors du chargement de l'exercice"
+        error.value = err.message
         isLoading.value = false
       }
     }
 
-    // Chargement initial
+    // Précharger les exercices initiaux au montage de l'application
     onMounted(() => {
       initializeExercise()
     })

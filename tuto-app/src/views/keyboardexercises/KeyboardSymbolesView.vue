@@ -142,11 +142,14 @@ export default {
           throw new Error("Impossible de charger les symboles pour l'exercice")
         }
         
+        // Précharger le prochain lot
+        exerciseCache.preloadNextExercises('symboles', currentIndex.value)
+        
         symbols.value = items
         isLoading.value = false
       } catch (err) {
         console.error('Erreur lors du chargement des symboles:', err)
-        error.value = "Une erreur est survenue lors du chargement de l'exercice"
+        error.value = err.message
         isLoading.value = false
       }
     }
