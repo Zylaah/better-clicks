@@ -106,4 +106,18 @@
     transition-duration: 100ms !important;
     animation-duration: 100ms !important;
   }
+}
+
+/* Ajouter des classes d'optimisation */
+.hardware-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Réduire les animations sur les appareils moins puissants */
+@media (prefers-reduced-motion: reduce) {
+  .animation-optimize {
+    animation-duration: 50ms !important;
+    transition-duration: 50ms !important;
+  }
 } 

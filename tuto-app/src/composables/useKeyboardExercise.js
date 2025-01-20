@@ -116,6 +116,9 @@ export function useKeyboardExercise(options = {}) {
     processedItems.value = []
     userInput.value = ''
     currentIndex.value = 0
+
+    window.removeEventListener('keydown', debouncedCheck)
+    window.removeEventListener('keyup', debouncedCheck)
   }
 
   // Fonction de vérification
@@ -137,15 +140,14 @@ export function useKeyboardExercise(options = {}) {
 
   const debouncedCheck = computed(() => 
     debounce((event) => {
-      if (!event?.target?.value) return
-      
-      // Éviter les mises à jour inutiles
-      if (userInput.value === event.target.value) return
-      
-      userInput.value = event.target.value
-      checkPhrase()
-    }, 100)
-  ).value // Accéder à la valeur directement
+      // Ne vérifier que sur la touche Entrée
+      if (event.key === 'Enter') {
+        if (!event?.target?.value) return
+        userInput.value = event.target.value
+        checkPhrase()
+      }
+    }, 50) // Réduire le délai de debounce
+  ).value
 
   // Nettoyage
   onBeforeUnmount(() => {

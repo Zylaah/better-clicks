@@ -1,21 +1,14 @@
 <template>
   <div class="keyboard-test" :class="animationClasses">
     <GlobalKeyboard
+      v-memo="[highlightedKeys, currentCharToType]"
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
       :highlighted-keys="highlightedKeys"
+      :current-char-to-type="currentCharToType"
     />
 
-    <div v-if="error" class="error-container">
-      <p class="error-message">{{ error }}</p>
-      <button class="retry-button" @click="initializeExercise">
-        <font-awesome-icon icon="rotate-right" />
-        <span>Réessayer</span>
-      </button>
-    </div>
-
-    <div v-else class="example-phrase-container slide-up">
       <div v-if="isLoading" class="loading-container">
         <p>Chargement de l'exercice...</p>
       </div>
@@ -59,6 +52,7 @@
         </RestartModal>
 
         <KeyboardTextArea
+          v-memo="[currentCharToType, isCorrect, isIncorrect, validationMessage]"
           v-model="userInput"
           :is-complete="isExerciseComplete"
           :is-correct="isCorrect"
@@ -68,7 +62,6 @@
           placeholder="Tapez la lettre ici..."
           @input="debouncedCheck"
         />
-      </div>
     </div>
   </div>
 </template>
@@ -215,7 +208,8 @@ export default {
         isLastItem: isLastItem.value,
         successMessage: 'Correct !',
         completeMessage: 'Exercice terminé !',
-        nextMessage: 'Appuyez sur Entrée pour continuer'
+        nextMessage: 'Appuyez sur Entrée pour continuer',
+        isEnterPressed: true
       })
     }
 

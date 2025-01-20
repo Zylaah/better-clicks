@@ -1,5 +1,6 @@
 const CRITICAL_COMPONENTS = ['AzuretyKeyboard']
 const SECONDARY_COMPONENTS = ['RestartModal', 'ProgressBar']
+const LAZY_COMPONENTS = ['KeyboardTextArea', 'GlobalKeyboard']
 
 // Fonction pour précharger les composants critiques
 export const preloadComponents = async () => {
@@ -11,20 +12,40 @@ export const preloadComponents = async () => {
       )
     )
     
-    // Précharger les composants secondaires en background
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => {
-        SECONDARY_COMPONENTS.forEach(comp => {
-          import(`@/components/${comp}.vue`)
-        })
+    // Utiliser l'Intersection Observer pour les composants secondaires
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Charger les composants secondaires
+          SECONDARY_COMPONENTS.forEach(comp => {
+            import(`@/components/${comp}.vue`)
+          })
+          
+          // Charger les composants lazy en dernier
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+              LAZY_COMPONENTS.forEach(comp => {
+                import(`@/components/keyboard/${comp}.vue`)
+              })
+            })
+          } else {
+            // Fallback pour les navigateurs qui ne supportent pas requestIdleCallback
+            setTimeout(() => {
+              LAZY_COMPONENTS.forEach(comp => {
+                import(`@/components/keyboard/${comp}.vue`)
+              })
+            }, 1500) // Délai plus long pour les composants lazy
+          }
+          
+          observer.disconnect()
+        }
       })
-    } else {
-      // Fallback pour les navigateurs qui ne supportent pas requestIdleCallback
-      setTimeout(() => {
-        SECONDARY_COMPONENTS.forEach(comp => {
-          import(`@/components/${comp}.vue`)
-        })
-      }, 1000)
+    })
+
+    // Observer un élément visible dans la page
+    const target = document.querySelector('#app')
+    if (target) {
+      observer.observe(target)
     }
   } catch (error) {
     console.error('Erreur de préchargement:', error)

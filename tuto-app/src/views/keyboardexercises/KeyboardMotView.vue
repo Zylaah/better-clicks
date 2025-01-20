@@ -1,70 +1,62 @@
 <template>
   <div class="keyboard-test" :class="animationClasses">
     <GlobalKeyboard
+      v-memo="[currentMot, isCorrect, isIncorrect, validationMessage]"
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
     />
 
-    <div v-if="error" class="error-container">
-      <p class="error-message">{{ error }}</p>
-      <button class="retry-button" @click="initializeExercise">
-        <font-awesome-icon icon="rotate-right" />
-        <span>Réessayer</span>
-      </button>
+    <div v-if="isLoading" class="loading-container">
+      <p>Chargement de l'exercice...</p>
     </div>
 
-    <div v-else class="example-phrase-container slide-up">
-      <div v-if="isLoading" class="loading-container">
-        <p>Chargement de l'exercice...</p>
-      </div>
-
-      <div v-else class="example-phrases">
-        <h3 v-once>Mot à recopier :</h3>
-        <div class="phrases-container">
-          <div class="phrase-item current">
-            {{ currentMot }}
-          </div>
-          <ProgressBar 
-            v-memo="[currentIndex]"
-            :current-value="currentIndex + 1"
-            :total-value="mots.length"
-          />
+    <div v-else class="example-phrases">
+      <h3 v-once>Mot à recopier :</h3>
+      <div class="phrases-container">
+        <div class="phrase-item current">
+          {{ currentMot }}
         </div>
-      </div>
-
-      <div class="textarea-container">
-        <RestartModal v-model="isExerciseComplete">
-          <template #header>
-            <h2 v-once>Félicitations !</h2>
-          </template>
-          
-          <div class="modal-buttons">
-            <button 
-              class="restart-button"
-              @click="restartExercise"
-            >
-              <font-awesome-icon v-once icon="rotate-right" />
-              <span v-once>Recommencer l'exercice</span>
-            </button>
-            <button class="next-button" @click="goNext">
-              <font-awesome-icon v-once icon="arrow-right" />
-              <span v-once>Passer à l'exercice suivant</span>
-            </button>
-          </div>
-        </RestartModal>
-
-        <KeyboardTextArea
-          v-model="userInput"
-          :is-complete="isExerciseComplete"
-          :is-correct="isCorrect"
-          :is-incorrect="isIncorrect"
-          :message="validationMessage"
-          :disabled="isLoading"
-          placeholder="Recopiez le mot ici..."
-          @input="debouncedCheck"
+        <ProgressBar 
+          v-memo="[currentIndex]"
+          :current-value="currentIndex + 1"
+          :total-value="mots.length"
         />
       </div>
+    </div>
+
+    <div class="textarea-container">
+      <RestartModal v-model="isExerciseComplete">
+        <template #header>
+          <h2 v-once>Félicitations !</h2>
+        </template>
+        
+        <div class="modal-buttons">
+          <button 
+            class="restart-button"
+            @click="restartExercise"
+          >
+            <font-awesome-icon v-once icon="rotate-right" />
+            <span v-once>Recommencer l'exercice</span>
+          </button>
+          <button class="next-button" @click="goNext">
+            <font-awesome-icon v-once icon="arrow-right" />
+            <span v-once>Passer à l'exercice suivant</span>
+          </button>
+        </div>
+      </RestartModal>
+
+      <KeyboardTextArea
+        v-memo="[currentMot, isCorrect, isIncorrect, validationMessage]"
+        v-model="userInput"
+        :is-complete="isExerciseComplete"
+        :is-correct="isCorrect"
+        :is-incorrect="isIncorrect"
+        :message="validationMessage"
+        :disabled="isLoading"
+        placeholder="Recopiez le mot ici..."
+        @input="debouncedCheck"
+      />
     </div>
   </div>
 </template>
@@ -176,7 +168,8 @@ export default {
         isLastItem: isLastItem.value,
         successMessage: 'Correct !',
         completeMessage: 'Exercice terminé !',
-        nextMessage: 'Appuyez sur Entrée pour continuer'
+        nextMessage: 'Appuyez sur Entrée pour continuer',
+        isEnterPressed: true
       })
     }
 

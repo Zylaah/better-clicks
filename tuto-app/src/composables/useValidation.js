@@ -7,7 +7,10 @@ export function useValidation(options = {}) {
     maxMessageLength = 100
   } = options
 
-  const validationCache = useCacheManager(maxCacheSize)
+  const validationCache = useCacheManager({
+    maxSize: maxCacheSize,
+    ttl: 5 * 60 * 1000 // 5 minutes
+  })
   const memoCache = new Map() // Cache pour la memoization des calculs intermédiaires
   const isCorrect = ref(false)
   const isIncorrect = ref(false)
@@ -28,13 +31,34 @@ export function useValidation(options = {}) {
       isLastItem = false,
       successMessage = '',
       completeMessage = '',
-      nextMessage = ''
+      nextMessage = '',
+      isEnterPressed = false,
+      forceValidation = false
     } = options
 
-    // Toujours valider l'entrée, même si elle n'a pas changé
+    // Si ce n'est pas une validation forcée et qu'on n'appuie pas sur Entrée,
+    // on retourne un résultat par défaut au lieu de null
+    if (!forceValidation && !isEnterPressed) {
+      return {
+        isCorrect: false,
+        isIncorrect: false,
+        isPartiallyCorrect: expected.startsWith(input),
+        message: '',
+        isComplete: false
+      }
+    }
+
     const cacheKey = `${input}-${expected}`
+    const cached = validationCache.getFromCache(cacheKey)
     
-    // Validation immédiate pour les cas simples
+    if (cached) {
+      isCorrect.value = cached.isCorrect
+      isIncorrect.value = cached.isIncorrect
+      validationMessage.value = cached.message
+      isExerciseComplete.value = cached.isComplete
+      return cached
+    }
+
     const result = {
       isCorrect: input === expected,
       isIncorrect: false,
@@ -43,31 +67,27 @@ export function useValidation(options = {}) {
       isComplete: false
     }
 
-    // Gestion des messages
     if (result.isCorrect) {
       result.message = isLastItem ? completeMessage : `${successMessage} ${nextMessage}`
       result.isComplete = isLastItem
-    } else if (input) {
+    } else {
       result.isIncorrect = !result.isPartiallyCorrect
-      if (!result.isPartiallyCorrect) {
+      if (!result.isPartiallyCorrect && input) {
         result.message = `Vous avez écrit : "${input.slice(0, maxMessageLength)}"
         Attendu : "${expected.slice(0, Math.min(input.length, maxMessageLength))}"`
       }
     }
 
-    // Mise à jour du cache et de l'état
-    validationCache.addToCache(cacheKey, result)
-    updateState(result)
-    lastValidInput.value = input
-
-    return result
-  }
-
-  const updateState = (result) => {
+    // Met à jour l'état
     isCorrect.value = result.isCorrect
     isIncorrect.value = result.isIncorrect
     validationMessage.value = result.message
     isExerciseComplete.value = result.isComplete
+
+    // Met en cache le résultat
+    validationCache.addToCache(cacheKey, result)
+
+    return result
   }
 
   const resetValidation = () => {
