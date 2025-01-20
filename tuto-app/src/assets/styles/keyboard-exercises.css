@@ -134,6 +134,13 @@ h1 {
   contain: content;
 }
 
+.symbol-hint {
+  color: var(--accent-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+  contain: content;
+}
+
 .progress-info {
   margin-block-start: clamp(0.5rem, 1vh, 1rem);
   text-align: center;

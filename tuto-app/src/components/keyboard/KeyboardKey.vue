@@ -555,7 +555,7 @@ export default {
     inset 2px 2px 5px -2px rgba(255, 255, 255, 0.1);
 }
 
-.keyboard-key[data-key="ShiftLeft"].is-pressed {
+.keyboard-key:not(.is-highlighted)[data-key="ShiftLeft"].is-pressed {
   transform: translateY(2px);
   background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
   box-shadow: 
@@ -565,7 +565,7 @@ export default {
     inset 4px 4px 8px -3px rgba(255, 255, 255, 0.05);
 }
 
-.keyboard-key[data-key="ShiftRight"].is-pressed {
+.keyboard-key:not(.is-highlighted)[data-key="ShiftRight"].is-pressed {
   transform: translateY(2px);
   background: linear-gradient(145deg, var(--accent-color), var(--hover-color));
   box-shadow: 

@@ -50,18 +50,26 @@
             </button>
           </div>
         </RestartModal>
-
-        <KeyboardTextArea
-          v-memo="[currentCharToType, isCorrect, isIncorrect, validationMessage]"
-          v-model="userInput"
-          :is-complete="isExerciseComplete"
-          :is-correct="isCorrect"
-          :is-incorrect="isIncorrect"
+        <Suspense>
+          <template #default>
+            <KeyboardTextArea
+            v-memo="[currentCharToType, isCorrect, isIncorrect, validationMessage]"
+            v-model="userInput"
+            :is-complete="isExerciseComplete"
+            :is-correct="isCorrect"
+            :is-incorrect="isIncorrect"
           :message="validationMessage"
           :disabled="isLoading"
           placeholder="Tapez la lettre ici..."
-          @input="debouncedCheck"
-        />
+            @input="debouncedCheck"
+          />
+          </template>
+          <template #fallback>
+            <div class="loading-container">
+              <p>Chargement de la zone de saisie...</p>
+            </div>
+          </template>
+        </Suspense>
     </div>
   </div>
 </template>
@@ -296,48 +304,6 @@ export default {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
-}
-
-.typing-speed {
-  will-change: transform, opacity;
-}
-
-.example-phrase-container {
-  will-change: transform;
-}
-
-/* États de chargement et d'erreur */
-.loading-container,
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  text-align: center;
-  padding: 2rem;
-}
-
-.error-message {
-  color: var(--error-color);
-  margin-bottom: 1rem;
-}
-
-.retry-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  background-color: var(--accent-color);
-  color: var(--text-color);
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.retry-button:hover {
-  background-color: var(--hover-color);
 }
 
 /* Styles spécifiques aux lettres */
