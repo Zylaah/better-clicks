@@ -134,7 +134,6 @@ preloadCriticalResources().then(() => {
     if (router.currentRoute.value.path !== '/') {
       router.push('/')
     }
+    app.mount('#app')
   })
-
-  app.mount('#app')
 })

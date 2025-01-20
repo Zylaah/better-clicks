@@ -79,9 +79,11 @@
 
 <script>
 import ThemeToggle from './components/ThemeToggle.vue';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import TitleBar from './views/TitleBar.vue';
+import { useIndexedDB } from '@/composables/useIndexedDB'
+import { useExerciseCache } from '@/composables/useExerciseCache'
 
 export default {
   name: 'App',
@@ -91,6 +93,8 @@ export default {
   },
   setup() {
     const route = useRoute();
+    const { isReady, hasError } = useIndexedDB()
+    const { preloadInitialExercises } = useExerciseCache()
 
     const isGuideActive = computed(() => {
       return route.path === '/guide-explorer'; // Ajustez selon vos routes
@@ -114,6 +118,35 @@ export default {
       }
       return '/keyboard';
     });
+
+    onMounted(async () => {
+      console.log('App mounted, initializing IndexedDB...')
+      try {
+        // Attendre que IndexedDB soit prêt
+        await new Promise((resolve) => {
+          const checkReady = () => {
+            console.log('Checking IndexedDB status:', { isReady: isReady.value, hasError: hasError.value })
+            if (isReady.value) {
+              console.log('IndexedDB is ready')
+              resolve()
+            } else if (hasError.value) {
+              console.warn('IndexedDB initialization failed, continuing in fallback mode')
+              resolve()
+            } else {
+              setTimeout(checkReady, 100)
+            }
+          }
+          checkReady()
+        })
+
+        // Précharger les exercices
+        console.log('Preloading exercises...')
+        await preloadInitialExercises(['lettres', 'mots', 'phrases', 'symboles'])
+        console.log('Exercises preloaded successfully')
+      } catch (error) {
+        console.error('Error during app initialization:', error)
+      }
+    })
 
     return {
       isGuideActive,

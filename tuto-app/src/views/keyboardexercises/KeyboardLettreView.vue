@@ -146,7 +146,7 @@ export default {
       try {
         isLoading.value = true
         error.value = null
-        const items = await exerciseCache.getItems('lettres', 20)
+        const items = await exerciseCache.getItems('lettres', 36)
         
         if (!items || items.length === 0) {
           throw new Error("Impossible de charger les lettres pour l'exercice")

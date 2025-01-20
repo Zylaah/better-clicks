@@ -1,5 +1,5 @@
 export class LetterGenerator {
-    static generateRandomLetters() {
+    static generateRandomLetters(count = 36) {
       const alphabet = 'abcdefghijklmnopqrstuvwxyz'
       const numbers = '0123456789'
       let characters = []
@@ -24,7 +24,9 @@ export class LetterGenerator {
         })
       }
   
-      return this.shuffleArray(characters)
+      // Mélanger et retourner seulement le nombre demandé
+      const shuffled = this.shuffleArray(characters)
+      return shuffled.slice(0, count)
     }
   
     static shuffleArray(array) {
