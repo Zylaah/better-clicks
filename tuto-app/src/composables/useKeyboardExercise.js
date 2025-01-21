@@ -121,6 +121,14 @@ export function useKeyboardExercise(options = {}) {
     window.removeEventListener('keyup', debouncedCheck)
   }
 
+  const cleanupMemory = () => {
+    items.value = null
+    processedItems.value = null
+    currentItem.value = null
+
+    if (window.gc) window.gc()
+  }
+
   // Fonction de vérification
   const checkPhrase = () => {
     if (!currentItem.value) return
@@ -179,7 +187,8 @@ export function useKeyboardExercise(options = {}) {
     checkInput,
     resetExercise,
     cleanup,
-    
+    cleanupMemory,
+
     // Debounce helper
     debounce,
     checkPhrase,

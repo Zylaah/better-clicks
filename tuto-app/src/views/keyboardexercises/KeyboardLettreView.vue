@@ -1,7 +1,7 @@
 <template>
   <div class="keyboard-test" :class="animationClasses">
     <GlobalKeyboard
-      v-memo="[highlightedKeys, currentCharToType]"
+      v-memo="[highlightedKeys, currentCharToType, isCorrect, isIncorrect]"
       :show-debug-controls="true"
       :show-event-log="true"
       :max-log-entries="10"
@@ -86,12 +86,12 @@ import { useExerciseCache } from '@/composables/useExerciseCache'
 const createAsyncComponent = (loader, options = {}) => defineAsyncComponent({
   loader,
   loadingComponent: null,
-  delay: 200,
-  timeout: 3000,
+  delay: 100,
+  timeout: 5000,
   errorComponent: null,
   onError(error, retry, fail, attempts) {
-    if (attempts <= 3) {
-      retry()
+    if (attempts <= 2) {
+      setTimeout(retry, 200 * attempts)
     } else {
       console.error('Failed to load component:', error)
       fail()
@@ -248,9 +248,13 @@ export default {
     }
 
     const debouncedCheck = debounce((event) => {
-      userInput.value = event.target.value
-      checkLetter()
-    }, 100)
+      if (!event?.target?.value) return
+      
+      requestAnimationFrame(() => {
+        userInput.value = event.target.value
+        checkLetter()
+      })
+    }, 50) 
 
     onBeforeUnmount(() => {
       cleanupExercise()
