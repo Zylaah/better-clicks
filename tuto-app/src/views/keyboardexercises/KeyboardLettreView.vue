@@ -58,10 +58,11 @@
             :is-complete="isExerciseComplete"
             :is-correct="isCorrect"
             :is-incorrect="isIncorrect"
-          :message="validationMessage"
-          :disabled="isLoading"
-          placeholder="Tapez la lettre ici..."
-            @input="debouncedCheck"
+            :message="validationMessage"
+            :disabled="isLoading"
+            placeholder="Tapez la lettre ici..."
+            @input="onInput"
+            @enter="checkLetter"
           />
           </template>
           <template #fallback>
@@ -135,7 +136,6 @@ export default {
       isIncorrect,
       isExerciseComplete,
       validationMessage,
-      debounce,
       checkInput,
       resetExercise,
       cleanup: cleanupExercise
@@ -228,7 +228,7 @@ export default {
       try {
         isLoading.value = true
         error.value = null
-        const newItems = await exerciseCache.refreshCache('lettres', 20)
+        const newItems = await exerciseCache.refreshCache('lettres', 36)
         
         if (!newItems || newItems.length === 0) {
           throw new Error("Impossible de recharger les lettres pour l'exercice")
@@ -247,14 +247,12 @@ export default {
       router.push({ name: 'keyboard-symboles' })
     }
 
-    const debouncedCheck = debounce((event) => {
-      if (!event?.target?.value) return
-      
-      requestAnimationFrame(() => {
+    const onInput = (event) => {
+      if (event.key === 'Enter') {
         userInput.value = event.target.value
         checkLetter()
-      })
-    }, 50) 
+      }
+    }
 
     onBeforeUnmount(() => {
       cleanupExercise()
@@ -283,7 +281,8 @@ export default {
       validationMessage,
       
       // Methods
-      debouncedCheck,
+      onInput,
+      checkLetter,
       restartExercise: restartExerciseHandler,
       goNext,
       cleanupExercise,

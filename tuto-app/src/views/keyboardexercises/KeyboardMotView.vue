@@ -56,7 +56,8 @@
             :message="validationMessage"
             :disabled="isLoading"
             placeholder="Recopiez le mot ici..."
-            @input="debouncedCheck"
+            @input="onInput"
+            @enter="checkMot"
           />
         </template>
         <template #fallback>
@@ -129,7 +130,6 @@ export default {
       isIncorrect,
       isExerciseComplete,
       validationMessage,
-      debounce,
       checkInput,
       resetExercise,
       cleanup: cleanupExercise
@@ -206,14 +206,12 @@ export default {
       router.push({ name: 'keyboard-phrase' })
     }
 
-    const debouncedCheck = debounce((event) => {
-      if (!event?.target?.value) return
-      
-      requestAnimationFrame(() => {
+    const onInput = (event) => {
+      if (event.key === 'Enter') {
         userInput.value = event.target.value
         checkMot()
-      })
-    }, 50) 
+      }
+    }
 
     onBeforeUnmount(() => {
       cleanupExercise()
@@ -242,7 +240,8 @@ export default {
       validationMessage,
       
       // Methods
-      debouncedCheck,
+      onInput,
+      checkMot,
       restartExercise: restartExerciseHandler,
       goNext,
       cleanupExercise,

@@ -3,7 +3,7 @@
     <textarea 
       ref="textareaRef"
       v-show="!isComplete"
-      :value="modelValue"
+      :value="localValue"
       class="modern-textarea"
       :class="validationClasses"
       :placeholder="placeholder"
@@ -11,7 +11,7 @@
       @input="onInput"
       @compositionstart="onCompositionStart"
       @compositionend="onCompositionEnd"
-      @keydown.enter.prevent
+      @keydown.enter.prevent="onEnterPress"
     ></textarea>
     <div class="validation-message-container">
       <div 
@@ -57,42 +57,30 @@ export default defineComponent({
     }
   },
 
-  emits: ['update:modelValue', 'input'],
+  emits: ['update:modelValue', 'input', 'enter'],
 
   setup(props, { emit }) {
     const textareaRef = ref(null)
-    const inputBuffer = ref('')
-    const lastInputTime = ref(0)
+    const localValue = ref(props.modelValue)
     const isComposing = ref(false)
-    const inputThrottle = 16 // ~60fps
 
-    // Optimisation du rendu des classes
     const validationClasses = computed(() => ({
       'correct': props.isCorrect,
       'incorrect': props.isIncorrect
     }))
 
-    // Gestion optimisée de l'input avec throttling
-    const processInput = (event) => {
-      const now = performance.now()
-      if (now - lastInputTime.value < inputThrottle) {
-        return
-      }
-      
-      lastInputTime.value = now
-      const value = event.target.value
-      
-      // Mise à jour du buffer local
-      inputBuffer.value = value
-      
-      // Émission des événements
-      emit('update:modelValue', value)
-      emit('input', event)
-    }
-
     const onInput = (event) => {
       if (isComposing.value) return
-      processInput(event)
+      localValue.value = event.target.value
+      emit('update:modelValue', event.target.value)
+    }
+
+    const onEnterPress = () => {
+      if (isComposing.value) return
+      emit('enter', { target: { value: localValue.value } })
+      // Reset the input after validation
+      localValue.value = ''
+      emit('update:modelValue', '')
     }
 
     const onCompositionStart = () => {
@@ -101,10 +89,9 @@ export default defineComponent({
 
     const onCompositionEnd = (event) => {
       isComposing.value = false
-      processInput(event)
+      localValue.value = event.target.value
     }
 
-    // Optimisation du focus
     onMounted(() => {
       if (textareaRef.value) {
         textareaRef.value.focus()
@@ -113,8 +100,10 @@ export default defineComponent({
 
     return {
       textareaRef,
+      localValue,
       validationClasses,
       onInput,
+      onEnterPress,
       onCompositionStart,
       onCompositionEnd
     }

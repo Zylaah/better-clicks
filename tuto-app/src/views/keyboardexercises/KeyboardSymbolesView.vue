@@ -60,7 +60,8 @@
             :message="validationMessage"
             :disabled="isLoading"
             placeholder="Tapez le symbole ici..."
-            @input="debouncedCheck"
+            @input="onInput"
+            @enter="checkSymbol"
           />
         </template>
         <template #fallback>
@@ -133,7 +134,6 @@ export default {
       isIncorrect,
       isExerciseComplete,
       validationMessage,
-      debounce,
       checkInput,
       resetExercise,
       cleanup: cleanupExercise
@@ -236,14 +236,12 @@ export default {
       router.push({ name: 'keyboard-mots' })
     }
 
-    const debouncedCheck = debounce((event) => {
-      if (!event?.target?.value) return
-      
-      requestAnimationFrame(() => {
+    const onInput = (event) => {
+      if (event.key === 'Enter') {
         userInput.value = event.target.value
         checkSymbol()
-      })
-    }, 50)
+      }
+    }
 
     onBeforeUnmount(() => {
       cleanupExercise()
@@ -270,7 +268,8 @@ export default {
       validationMessage,
       
       // Methods
-      debouncedCheck,
+      onInput,
+      checkSymbol,
       restartExercise: restartExerciseHandler,
       goNext,
       cleanupExercise,
